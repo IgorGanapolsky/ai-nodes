@@ -38,7 +38,7 @@
     "@shopify/flash-list": "^1.7.1",
     "react-hook-form": "^7.48.2",
     "zod": "^3.22.4",
-    "@hookform/resolvers": "^3.3.2",
+    "@hookform/resolvers": "^5.2.2",
     "axios": "^1.6.2",
     "date-fns": "^3.0.6",
     "react-native-vector-icons": "^10.2.0"
