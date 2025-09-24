@@ -12,139 +12,107 @@ concurrency:
 
 env:
   CI: true
+  PNPM_CACHE_FOLDER: .pnpm-store
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
+      fail-fast: true
       matrix:
         node: [20, 22]
     steps:
       - uses: actions/checkout@v5
       - name: Enable Corepack (PNPM)
         run: corepack enable
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
           cache: 'pnpm'
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 8
-      - name: Get pnpm store path
-        id: pnpm-cache
-        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v4
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
       - uses: actions/cache@v4
         with:
           path: .turbo
-          key: turbo-${{ runner.os }}-${{ hashFiles('turbo.json') }}-${{ github.sha }}
+          key: turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-${{ github.sha }}
           restore-keys: |
-            turbo-${{ runner.os }}-${{ hashFiles('turbo.json') }}-
-      - run: pnpm install --no-frozen-lockfile
+            turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-
+            turbo-${{ runner.os }}-${{ matrix.node }}-
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
 
   type-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
+      fail-fast: true
       matrix:
         node: [20, 22]
     steps:
       - uses: actions/checkout@v5
       - name: Enable Corepack (PNPM)
         run: corepack enable
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
           cache: 'pnpm'
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 8
-      - name: Get pnpm store path
-        id: pnpm-cache
-        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v4
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
       - uses: actions/cache@v4
         with:
           path: .turbo
-          key: turbo-${{ runner.os }}-${{ hashFiles('turbo.json') }}-${{ github.sha }}
+          key: turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-${{ github.sha }}
           restore-keys: |
-            turbo-${{ runner.os }}-${{ hashFiles('turbo.json') }}-
-      - run: pnpm install --no-frozen-lockfile
+            turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-
+            turbo-${{ runner.os }}-${{ matrix.node }}-
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run type-check
 
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
+      fail-fast: true
       matrix:
         node: [20, 22]
     steps:
       - uses: actions/checkout@v5
       - name: Enable Corepack (PNPM)
         run: corepack enable
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
           cache: 'pnpm'
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 8
-      - name: Get pnpm store path
-        id: pnpm-cache
-        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v4
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
       - uses: actions/cache@v4
         with:
           path: .turbo
-          key: turbo-${{ runner.os }}-${{ hashFiles('turbo.json') }}-${{ github.sha }}
+          key: turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-${{ github.sha }}
           restore-keys: |
-            turbo-${{ runner.os }}-${{ hashFiles('turbo.json') }}-
-      - run: pnpm install --no-frozen-lockfile
+            turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-
+            turbo-${{ runner.os }}-${{ matrix.node }}-
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run test
 
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [lint, type-check, test]
     steps:
       - uses: actions/checkout@v5
       - name: Enable Corepack (PNPM)
         run: corepack enable
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: 'pnpm'
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 8
-      - name: Get pnpm store path
-        id: pnpm-cache
-        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v4
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
       - uses: actions/cache@v4
         with:
           path: .turbo
-          key: turbo-${{ runner.os }}-${{ hashFiles('turbo.json') }}-${{ github.sha }}
+          key: turbo-${{ runner.os }}-20-${{ hashFiles('turbo.json') }}-${{ github.sha }}
           restore-keys: |
-            turbo-${{ runner.os }}-${{ hashFiles('turbo.json') }}-
-      - run: pnpm install --no-frozen-lockfile
+            turbo-${{ runner.os }}-20-${{ hashFiles('turbo.json') }}-
+            turbo-${{ runner.os }}-20-
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run build
 
