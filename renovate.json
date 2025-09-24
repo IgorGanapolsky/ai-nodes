@@ -1,0 +1,197 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Ultra-aggressive Renovate configuration for maximum automation and speed",
+  "extends": [
+    "config:recommended",
+    "config:js-app",
+    "docker:enableMajor",
+    "schedule:hourly"
+  ],
+  "timezone": "America/New_York",
+  "schedule": ["every hour"],
+  "prConcurrentLimit": 20,
+  "branchConcurrentLimit": 20,
+  "prHourlyLimit": 0,
+  "platformAutomerge": true,
+  "automerge": true,
+  "automergeType": "branch",
+  "rangeStrategy": "bump",
+  "recreateWhen": "always",
+  "rebaseWhen": "auto",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "🤖 Renovate Dashboard - AGGRESSIVE MODE",
+  "dependencyDashboardHeader": "This dashboard shows all pending updates. Everything is set to auto-merge for maximum velocity!",
+  "labels": ["dependencies", "renovate", "auto-merge"],
+  "addLabels": ["fast-track"],
+  "assignees": [],
+  "reviewers": [],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**"
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["at any time"]
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["every hour"]
+  },
+  "packageRules": [
+    {
+      "description": "Auto-merge all patch updates immediately",
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Auto-merge all minor updates immediately",
+      "matchUpdateTypes": ["minor"],
+      "automerge": true,
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Auto-merge major updates (YOLO mode!)",
+      "matchUpdateTypes": ["major"],
+      "automerge": true,
+      "schedule": ["at any time"],
+      "addLabels": ["major-update"]
+    },
+    {
+      "description": "Ultra-fast DevDependencies - merge everything immediately",
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true,
+      "schedule": ["at any time"],
+      "rangeStrategy": "bump",
+      "addLabels": ["dev-deps"]
+    },
+    {
+      "description": "Production dependencies - still auto-merge for speed",
+      "matchDepTypes": ["dependencies"],
+      "automerge": true,
+      "schedule": ["at any time"],
+      "addLabels": ["prod-deps"]
+    },
+    {
+      "description": "GitHub Actions - always latest",
+      "matchManagers": ["github-actions"],
+      "automerge": true,
+      "schedule": ["at any time"],
+      "pinDigests": false,
+      "rangeStrategy": "bump",
+      "addLabels": ["github-actions"]
+    },
+    {
+      "description": "Docker base images - keep them fresh",
+      "matchManagers": ["dockerfile"],
+      "automerge": true,
+      "schedule": ["at any time"],
+      "addLabels": ["docker"]
+    },
+    {
+      "description": "TypeScript and type definitions - immediate updates",
+      "matchPackageNames": ["typescript"],
+      "matchPackagePatterns": ["^@types/"],
+      "automerge": true,
+      "schedule": ["at any time"],
+      "rangeStrategy": "bump"
+    },
+    {
+      "description": "Testing frameworks - keep current",
+      "matchPackagePatterns": [
+        "^jest",
+        "^vitest",
+        "^@testing-library/",
+        "^cypress",
+        "^playwright"
+      ],
+      "automerge": true,
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Linting and formatting - always latest",
+      "matchPackagePatterns": [
+        "^eslint",
+        "^prettier",
+        "^@typescript-eslint/"
+      ],
+      "automerge": true,
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Build tools - keep them current",
+      "matchPackagePatterns": [
+        "^webpack",
+        "^vite",
+        "^rollup",
+        "^esbuild",
+        "^babel"
+      ],
+      "automerge": true,
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "React ecosystem - immediate updates",
+      "matchPackagePatterns": [
+        "^react",
+        "^@react-",
+        "^next"
+      ],
+      "automerge": true,
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Node.js runtime - auto-update",
+      "matchPackageNames": ["node"],
+      "automerge": true,
+      "schedule": ["at any time"]
+    }
+  ],
+  "regexManagers": [
+    {
+      "description": "Update Node.js version in Dockerfiles",
+      "fileMatch": ["(^|/)Dockerfile$", "\\.dockerfile$"],
+      "matchStrings": ["FROM node:(?<currentValue>.*?)\\n"],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "node"
+    },
+    {
+      "description": "Update Node.js version in package.json engines",
+      "fileMatch": ["(^|/)package\\.json$"],
+      "matchStrings": ["\"node\":\\s*\"[^\"]*?(?<currentValue>\\d+\\.\\d+\\.\\d+)\""],
+      "datasourceTemplate": "node-version",
+      "depNameTemplate": "node"
+    }
+  ],
+  "hostRules": [],
+  "postUpdateOptions": [
+    "npmDedupe"
+  ],
+  "npm": {
+    "rangeStrategy": "bump"
+  },
+  "docker": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["at any time"],
+    "pinDigests": false
+  },
+  "dockerfile": {
+    "enabled": true,
+    "automerge": true
+  },
+  "github-actions": {
+    "enabled": true,
+    "automerge": true,
+    "pinDigests": false
+  },
+  "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
+  "commitMessagePrefix": "⬆️",
+  "commitMessageTopic": "{{depName}}",
+  "commitMessageExtra": "to {{newVersion}}",
+  "prTitle": "⬆️ Update {{depName}} to {{newVersion}}",
+  "prBodyTemplate": "This PR updates **{{depName}}** from `{{currentVersion}}` to `{{newVersion}}`.\n\n**Auto-merge is enabled** - this will merge automatically once CI passes.\n\n---\n\n{{#if hasReleaseNotes}}\n## Release Notes\n\n{{#each releases}}\n### {{title}}\n\n{{#if body}}\n{{body}}\n{{/if}}\n\n{{#if compare}}\n**Full Changelog**: {{compare}}\n{{/if}}\n\n---\n{{/each}}\n{{/if}}\n\n**Confidence**: {{confidence}}\n\n---\n\n🤖 This PR was generated automatically by Renovate Bot\n\n*Speed is our competitive advantage!*"
+}

@@ -1,0 +1,75 @@
+name: Renovate - Ultra Aggressive Dependency Updates
+
+on:
+  # Run every hour for maximum aggressiveness
+  schedule:
+    - cron: '0 * * * *'  # Every hour
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      repoCache:
+        description: 'Reset or disable the cache?'
+        type: choice
+        default: enabled
+        options:
+          - enabled
+          - disabled
+          - reset
+  # Run on pushes to renovate config files
+  push:
+    paths:
+      - '.github/workflows/renovate.yml'
+      - 'renovate.json'
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  actions: write
+  checks: write
+  statuses: write
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  renovate:
+    name: 🤖 Renovate - AGGRESSIVE MODE
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.RENOVATE_APP_ID || '0' }}
+          private-key: ${{ secrets.RENOVATE_PRIVATE_KEY || '' }}
+        continue-on-error: true
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v40.3.2
+        with:
+          configurationFile: renovate.json
+          token: ${{ steps.generate-token.outputs.token || secrets.RENOVATE_TOKEN || secrets.GITHUB_TOKEN }}
+        env:
+          # Renovate configuration via environment variables for extra aggressiveness
+          LOG_LEVEL: 'info'
+          RENOVATE_AUTODISCOVER: 'false'
+          RENOVATE_BASE_BRANCHES: '["main", "master", "develop"]'
+          RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
+          RENOVATE_PLATFORM: 'github'
+          RENOVATE_REPOSITORY_CACHE: ${{ github.event.inputs.repoCache || 'enabled' }}
+          # Ultra-aggressive settings
+          RENOVATE_PR_CONCURRENT_LIMIT: '20'
+          RENOVATE_BRANCH_CONCURRENT_LIMIT: '20'
+          RENOVATE_PR_HOURLY_LIMIT: '0'  # No limits!
+          RENOVATE_RECREATE_WHEN: 'always'
+          RENOVATE_REBASE_WHEN: 'auto'
+          # Enable all the things
+          RENOVATE_ENABLE_PREVIEW_MODE: 'false'
+          RENOVATE_REQUIRE_CONFIG: 'optional'
+          # Performance optimizations
+          RENOVATE_PERSIST_REPO_DATA: 'true'
+          RENOVATE_REPOSITORY_CACHE_TYPE: 'enabled'
