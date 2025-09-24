@@ -27,7 +27,7 @@
     "clsx": "^2.0.0",
     "tailwind-merge": "^2.2.0",
     "tailwindcss-animate": "^1.0.7",
-    "@hookform/resolvers": "^3.3.2",
+    "@hookform/resolvers": "^5.2.2",
     "react-hook-form": "^7.48.2",
     "zod": "^3.22.4",
     "date-fns": "^3.0.6",
