@@ -1,0 +1,233 @@
+# Self-Healing CI Configuration
+# This file configures the behavior of the self-healing system
+
+healing:
+  # Enable/disable specific healing types
+  enabled:
+    dependencies: true
+    lint: true
+    types: true
+    tests: true
+    ai_diagnosis: true
+
+  # Healing aggressiveness levels
+  # conservative: minimal changes, safe fixes only
+  # moderate: standard fixes with some risk
+  # aggressive: maximum fixes, higher risk of breaking changes
+  aggressiveness:
+    dependencies: moderate
+    lint: aggressive
+    types: conservative
+    tests: moderate
+
+  # Auto-merge settings for healing PRs
+  auto_merge:
+    enabled: false # Set to true to enable auto-merge of healing PRs
+    conditions:
+      - all_checks_pass: true
+      - no_conflicts: true
+      - max_age_hours: 24
+      - require_review: true
+
+  # Notification settings
+  notifications:
+    slack:
+      enabled: false
+      webhook_url_secret: SLACK_WEBHOOK_URL
+      channels:
+        - "#ci-alerts"
+        - "#engineering"
+
+    email:
+      enabled: false
+      recipients:
+        - "devops@example.com"
+        - "engineering@example.com"
+
+    github:
+      create_issues: true
+      assign_to: []
+      labels:
+        - "ci-failure"
+        - "auto-heal"
+        - "needs-review"
+
+# Healing strategies for specific error patterns
+strategies:
+  dependencies:
+    # Package conflict resolution strategies
+    conflicts:
+      react:
+        strategy: "pin_to_latest_stable"
+        version: "^18.3.0"
+
+      typescript:
+        strategy: "pin_to_latest_stable"
+        version: "^5.6.0"
+
+      eslint:
+        strategy: "use_recommended_config"
+        plugins:
+          - "@typescript-eslint/eslint-plugin@^8.44.0"
+          - "@typescript-eslint/parser@^8.44.0"
+
+    # Lockfile handling
+    lockfile:
+      regenerate_on_conflict: true
+      update_outdated_packages: true
+      prune_unused_packages: true
+
+  lint:
+    # ESLint fixing strategies
+    eslint:
+      auto_fix: true
+      disable_failing_rules: false
+      ignore_patterns:
+        - "*.d.ts"
+        - "build/"
+        - "dist/"
+
+    # Prettier formatting
+    prettier:
+      auto_format: true
+      preserve_existing_config: true
+
+    # Import organization
+    imports:
+      sort_imports: true
+      remove_unused: true
+      group_external_first: true
+
+  types:
+    # TypeScript error handling
+    typescript:
+      # Suppression strategy: comment, ignore, or any
+      suppression_method: "comment"
+
+      # Generate missing type definitions
+      generate_missing_types: true
+
+      # Add type assertions for assignment errors
+      add_type_assertions: true
+
+      # Use optional chaining for property access errors
+      use_optional_chaining: true
+
+      # Skip type checking for specific files/patterns
+      skip_type_check:
+        - "**/*.test.ts"
+        - "**/*.spec.ts"
+        - "**/mocks/**"
+
+  tests:
+    # Test failure handling strategies
+    vitest:
+      # Timeout handling
+      increase_timeout: true
+      default_timeout_ms: 30000
+
+      # Flaky test handling
+      retry_flaky_tests: 3
+      skip_consistently_failing: true
+
+      # Mock generation
+      auto_generate_mocks: true
+      mock_external_modules: true
+
+      # Test isolation
+      reset_modules_between_tests: true
+
+    # Test environment setup
+    environment:
+      setup_jsdom: true
+      setup_testing_library: true
+      add_common_mocks: true
+
+# AI diagnosis configuration
+ai_diagnosis:
+  enabled: true
+
+  # Failure analysis
+  analysis:
+    capture_logs: true
+    max_log_lines: 1000
+    analyze_stack_traces: true
+    check_recent_commits: true
+
+  # Pattern recognition
+  patterns:
+    dependency_conflicts: true
+    environment_issues: true
+    race_conditions: true
+    resource_constraints: true
+
+  # Reporting
+  reports:
+    create_github_issue: true
+    include_reproduction_steps: true
+    suggest_fixes: true
+    assign_to_maintainers: false
+
+# Branch and PR management
+branch_management:
+  # Healing branch naming
+  branch_prefix: "auto-heal/"
+  include_timestamp: true
+  include_failure_type: true
+
+  # PR settings
+  pr_settings:
+    auto_assign_reviewers: true
+    default_reviewers: []
+
+    # PR template customization
+    title_prefix: "🔧 Auto-heal:"
+
+    # Labels to add to healing PRs
+    labels:
+      - "auto-heal"
+      - "ci-fix"
+      - "bot"
+
+    # Auto-delete branch after merge
+    delete_branch_after_merge: true
+
+# Rate limiting and safety measures
+safety:
+  # Maximum healing attempts per day
+  max_healing_attempts_per_day: 10
+
+  # Cooldown between healing attempts (minutes)
+  cooldown_minutes: 30
+
+  # Skip healing if too many recent failures
+  skip_if_failure_rate_exceeds: 0.8
+
+  # Never heal these file patterns
+  protected_files:
+    - "package.json"
+    - "pnpm-lock.yaml"
+    - "tsconfig.json"
+    - ".github/workflows/ci.yml"
+
+  # Always require manual review for these changes
+  require_manual_review:
+    - "database migrations"
+    - "security-related files"
+    - "configuration files"
+
+# Monitoring and metrics
+monitoring:
+  # Track healing effectiveness
+  track_success_rate: true
+
+  # Metrics to collect
+  metrics:
+    - healing_attempts
+    - success_rate
+    - time_to_heal
+    - failure_types
+    - most_common_fixes
+
+  # Retention period for metrics (days)
+  retention_days: 90
