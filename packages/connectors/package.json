@@ -27,7 +27,7 @@
     "axios": "^1.6.2",
     "playwright": "^1.55.1",
     "node-cache": "^5.1.2",
-    "p-retry": "^5.1.2",
+    "p-retry": "^7.0.0",
     "p-limit": "^4.0.0",
     "winston": "^3.11.0"
   },
