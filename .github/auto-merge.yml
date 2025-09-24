@@ -1,0 +1,30 @@
+# Configuration for auto-merge behavior
+
+# Automatically merge these types of PRs
+merge_rules:
+  - name: Auto merge Dependabot minor updates
+    authors:
+      - dependabot[bot]
+    update_types:
+      - minor
+      - patch
+    
+  - name: Auto merge Dependabot security updates  
+    authors:
+      - dependabot[bot]
+    labels:
+      - security
+
+# Don't auto-merge these
+block_rules:
+  - name: Block major version updates
+    update_types:
+      - major
+      
+  - name: Block production dependencies
+    paths:
+      - packages/*/package.json
+    dependencies:
+      - "!@types/*"
+      - "!eslint*"
+      - "!prettier"

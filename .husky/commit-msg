@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/h"
+
+echo "Validating commit message with commitlint"
+pnpm -w exec commitlint --edit "$1"
+
