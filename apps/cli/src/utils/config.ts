@@ -14,7 +14,7 @@ export interface Config {
     slack?: boolean;
     webhookUrl?: string;
   };
-  thresholds?: {
+  thresholds: {
     lowUtilization: number;
     highUtilization: number;
     offlineAlert: number; // minutes

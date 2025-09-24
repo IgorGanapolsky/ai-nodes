@@ -118,7 +118,7 @@ export const monitorCommand = new Command('monitor')
         const minSeverity = options.severity;
         let running = true;
         let lastAlertCount = 0;
-        let seenAlerts = new Set();
+        let seenAlerts = new Set<string>();
 
         const severityLevels = ['low', 'medium', 'high', 'critical'];
         const minSeverityIndex = severityLevels.indexOf(minSeverity);
