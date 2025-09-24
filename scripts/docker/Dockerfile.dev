@@ -1,0 +1,110 @@
+# Development AI Nodes Docker Image
+FROM node:20-alpine
+
+# Metadata
+LABEL maintainer="AI Nodes Team"
+LABEL description="AI Nodes development environment"
+LABEL version="1.0.0-dev"
+
+# Install system dependencies + development tools
+RUN apk add --no-cache \
+    bash \
+    curl \
+    wget \
+    git \
+    sqlite \
+    jq \
+    bc \
+    openssl \
+    tar \
+    gzip \
+    rsync \
+    coreutils \
+    findutils \
+    procps \
+    vim \
+    nano \
+    htop \
+    && rm -rf /var/cache/apk/*
+
+# Install global npm packages for development
+RUN npm install -g \
+    nodemon \
+    pm2 \
+    eslint \
+    prettier
+
+# Create app user and group
+RUN addgroup -g 1001 -S ai-nodes \
+    && adduser -u 1001 -S ai-nodes -G ai-nodes
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm install && npm cache clean --force
+
+# Create necessary directories
+RUN mkdir -p \
+    logs \
+    data \
+    backups \
+    db \
+    monitoring \
+    config \
+    tmp \
+    && chown -R ai-nodes:ai-nodes /app
+
+# Create development entrypoint
+RUN cat > /app/entrypoint-dev.sh << 'EOF'
+#!/bin/bash
+set -e
+
+# Install/update dependencies if package.json changed
+if [[ -f "/app/package.json" ]]; then
+    echo "Installing/updating dependencies..."
+    npm install
+fi
+
+# Initialize database if it doesn't exist
+if [[ ! -f "/app/db/ai_nodes.db" ]]; then
+    echo "Initializing database..."
+    bash /app/scripts/setup.sh
+fi
+
+# Check if .env exists
+if [[ ! -f "/app/.env" ]]; then
+    echo "Warning: .env file not found. Using template..."
+    if [[ -f "/app/.env.template" ]]; then
+        cp /app/.env.template /app/.env
+    fi
+fi
+
+# Start development server with nodemon
+echo "Starting development environment..."
+exec "$@"
+EOF
+
+RUN chmod +x /app/entrypoint-dev.sh && chown ai-nodes:ai-nodes /app/entrypoint-dev.sh
+
+# Switch to non-root user
+USER ai-nodes
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD bash /app/scripts/health-checks/basic.sh || exit 1
+
+# Expose ports
+EXPOSE 3000 9229
+
+# Set environment variables
+ENV NODE_ENV=development
+ENV DEBUG=ai-nodes:*
+ENV PATH="/app/scripts:$PATH"
+
+# Default command for development
+ENTRYPOINT ["/app/entrypoint-dev.sh"]
+CMD ["npm", "run", "dev"]

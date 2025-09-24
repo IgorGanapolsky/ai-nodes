@@ -1,0 +1,44 @@
+[Unit]
+Description=AI Nodes Auto-Reinvestment Service
+Documentation=https://github.com/your-org/ai-nodes
+After=network.target
+Wants=network.target
+Requires=ai-nodes-monitor.service
+
+[Service]
+Type=forking
+User=ai-nodes
+Group=ai-nodes
+WorkingDirectory=/opt/ai-nodes
+Environment=NODE_ENV=production
+Environment=PATH=/usr/bin:/usr/local/bin
+EnvironmentFile=/opt/ai-nodes/.env
+
+# Main command - runs reinvestment script every hour
+ExecStart=/bin/bash -c 'while true; do /opt/ai-nodes/scripts/reinvest.sh; sleep 3600; done'
+
+# Restart policy
+Restart=always
+RestartSec=30
+StartLimitInterval=300
+StartLimitBurst=3
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/ai-nodes/logs /opt/ai-nodes/data /opt/ai-nodes/db
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ai-nodes-reinvest
+
+# Process management
+KillMode=control-group
+KillSignal=SIGTERM
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target

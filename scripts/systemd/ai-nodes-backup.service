@@ -1,0 +1,34 @@
+[Unit]
+Description=AI Nodes Backup Service (One-shot)
+Documentation=https://github.com/your-org/ai-nodes
+After=network.target
+
+[Service]
+Type=oneshot
+User=ai-nodes
+Group=ai-nodes
+WorkingDirectory=/opt/ai-nodes
+Environment=NODE_ENV=production
+Environment=PATH=/usr/bin:/usr/local/bin
+EnvironmentFile=/opt/ai-nodes/.env
+
+# Backup command
+ExecStart=/opt/ai-nodes/scripts/backup.sh full
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/ai-nodes/logs /opt/ai-nodes/data /opt/ai-nodes/db /opt/ai-nodes/backups
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ai-nodes-backup
+
+# Timeout (backup might take a while)
+TimeoutStartSec=1800
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,51 @@
+{
+  "name": "@depinautopilot/notify",
+  "version": "1.0.0",
+  "description": "Notification system for Discord, email, and other channels",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@depinautopilot/core": "workspace:*",
+    "@depinautopilot/utils": "workspace:*",
+    "discord.js": "^14.14.1",
+    "nodemailer": "^6.9.8",
+    "twilio": "^4.20.1",
+    "axios": "^1.6.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/nodemailer": "^6.4.14",
+    "typescript": "^5.3.3",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
+    "vitest": "^1.1.1",
+    "@vitest/coverage-v8": "^1.1.1"
+  },
+  "keywords": [
+    "notifications",
+    "discord",
+    "email",
+    "sms",
+    "alerts"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

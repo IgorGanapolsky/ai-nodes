@@ -1,0 +1,43 @@
+[Unit]
+Description=AI Nodes Monitoring Service
+Documentation=https://github.com/your-org/ai-nodes
+After=network.target
+Wants=network.target
+
+[Service]
+Type=forking
+User=ai-nodes
+Group=ai-nodes
+WorkingDirectory=/opt/ai-nodes
+Environment=NODE_ENV=production
+Environment=PATH=/usr/bin:/usr/local/bin
+EnvironmentFile=/opt/ai-nodes/.env
+
+# Main command - runs monitoring script every 15 minutes
+ExecStart=/bin/bash -c 'while true; do /opt/ai-nodes/scripts/monitor.sh; sleep 900; done'
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=60
+StartLimitBurst=3
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/ai-nodes/logs /opt/ai-nodes/data /opt/ai-nodes/db /opt/ai-nodes/backups
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ai-nodes-monitor
+
+# Process management
+KillMode=control-group
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

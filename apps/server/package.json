@@ -1,0 +1,47 @@
+{
+  "name": "@depinautopilot/server",
+  "version": "1.0.0",
+  "description": "DePIN Autopilot REST API Server",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@depinautopilot/core": "workspace:*",
+    "@depinautopilot/db": "workspace:*",
+    "@depinautopilot/utils": "workspace:*",
+    "@depinautopilot/connectors": "workspace:*",
+    "@depinautopilot/notify": "workspace:*",
+    "fastify": "^4.25.1",
+    "@fastify/cors": "^8.4.2",
+    "@fastify/helmet": "^11.1.1",
+    "@fastify/swagger": "^8.13.0",
+    "@fastify/swagger-ui": "^2.1.0",
+    "@fastify/env": "^4.2.0",
+    "@fastify/jwt": "^7.2.4",
+    "@fastify/rate-limit": "^9.1.0",
+    "zod": "^3.22.4",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.3",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
+    "vitest": "^1.1.1",
+    "@vitest/coverage-v8": "^1.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

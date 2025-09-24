@@ -1,0 +1,59 @@
+{
+  "name": "@depinautopilot/cli",
+  "version": "1.0.0",
+  "description": "DePIN Autopilot Command Line Interface",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "depin": "dist/index.js",
+    "depinautopilot": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@depinautopilot/core": "workspace:*",
+    "@depinautopilot/db": "workspace:*",
+    "@depinautopilot/utils": "workspace:*",
+    "@depinautopilot/connectors": "workspace:*",
+    "@depinautopilot/notify": "workspace:*",
+    "commander": "^11.1.0",
+    "chalk": "^5.3.0",
+    "inquirer": "^9.2.12",
+    "ora": "^8.0.1",
+    "table": "^6.8.1",
+    "conf": "^12.0.0",
+    "axios": "^1.6.2",
+    "figlet": "^1.7.0",
+    "boxen": "^7.1.1",
+    "update-notifier": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/inquirer": "^9.0.7",
+    "@types/figlet": "^1.5.8",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.3",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
+    "vitest": "^1.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "cli",
+    "depin",
+    "blockchain",
+    "nodes",
+    "monitoring",
+    "automation"
+  ]
+}

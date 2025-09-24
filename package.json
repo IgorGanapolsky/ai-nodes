@@ -1,0 +1,52 @@
+{
+  "name": "depinautopilot",
+  "version": "1.0.0",
+  "description": "Zero-capex DePIN Ops-as-a-Service platform for managing AI/blockchain nodes",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean",
+    "seed": "pnpm --filter @depinautopilot/db seed",
+    "db:migrate": "pnpm --filter @depinautopilot/db migrate",
+    "db:generate": "pnpm --filter @depinautopilot/db generate",
+    "db:studio": "pnpm --filter @depinautopilot/db studio",
+    "demo": "tsx scripts/demo.ts",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "depinautopilot": "pnpm --filter @depinautopilot/cli depinautopilot"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.0",
+    "tsx": "^4.7.0",
+    "turbo": "^1.11.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IgorGanapolsky/ai-nodes.git"
+  },
+  "keywords": [
+    "depin",
+    "blockchain",
+    "monitoring",
+    "automation",
+    "nodes",
+    "infrastructure"
+  ],
+  "author": "DePIN Autopilot Team",
+  "license": "MIT"
+}
