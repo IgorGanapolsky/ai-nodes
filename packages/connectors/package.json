@@ -17,7 +17,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "lint": "ESLINT_USE_FLAT_CONFIG=true eslint . --ext .ts,.tsx --max-warnings=0",
+    "lint": "ESLINT_USE_FLAT_CONFIG=true eslint . --max-warnings=0",
     "lint:fix": "eslint src/**/*.ts --fix",
     "clean": "rimraf dist",
     "prepublishOnly": "npm run clean && npm run build"
