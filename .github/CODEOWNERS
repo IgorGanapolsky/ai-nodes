@@ -1,0 +1,16 @@
+# Default code owners
+* @IgorGanapolsky
+
+# Apps
+/apps/server/ @IgorGanapolsky
+/apps/web/ @IgorGanapolsky
+/apps/cli/ @IgorGanapolsky
+/apps/mobile/ @IgorGanapolsky
+
+# Packages
+/packages/core/ @IgorGanapolsky
+/packages/db/ @IgorGanapolsky
+/packages/connectors/ @IgorGanapolsky
+/packages/utils/ @IgorGanapolsky
+/packages/notify/ @IgorGanapolsky
+
