@@ -1,0 +1,26 @@
+{
+  "github": {
+    "silent": false,
+    "autoJobCancelation": true
+  },
+  "functions": {
+    "api/**/*": {
+      "maxDuration": 30
+    }
+  },
+  "crons": [],
+  "redirects": [],
+  "headers": [],
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install",
+  "devCommand": "pnpm dev",
+  "agent": {
+    "enabled": true,
+    "review": {
+      "enabled": true,
+      "mode": "auto",
+      "triggers": ["pull_request_opened", "pull_request_synchronize"],
+      "instructions": "Review this PR for code quality, best practices, performance, and security. Focus on: TypeScript type safety, React patterns, potential bugs, and suggest improvements where applicable."
+    }
+  }
+}
