@@ -9,11 +9,12 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 // Import commands
-import { nodeCommand } from './commands/node.js';
-import { metricsCommand } from './commands/metrics.js';
-import { configCommand } from './commands/config.js';
-import { dashboardCommand } from './commands/dashboard.js';
-import { monitorCommand } from './commands/monitor.js';
+import { ownersCommand } from './commands/owners.js';
+import { devicesCommand } from './commands/devices.js';
+import { pullCommand } from './commands/pull.js';
+import { planCommand } from './commands/plan.js';
+import { repriceCommand } from './commands/reprice.js';
+import { statementCommand } from './commands/statement.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -46,9 +47,9 @@ console.log(
 console.log(chalk.gray('🚀 DePIN Node Management & Monitoring CLI\n'));
 
 program
-  .name('depin')
-  .description('DePIN Autopilot - Manage and monitor your DePIN nodes')
-  .version(packageJson.version)
+  .name('depinautopilot')
+  .description('DePIN Autopilot CLI')
+  .version('1.0.0')
   .option('-v, --verbose', 'Enable verbose logging')
   .option('--api-url <url>', 'API server URL', 'http://localhost:3001')
   .hook('preAction', (thisCommand, actionCommand) => {
@@ -60,11 +61,12 @@ program
   });
 
 // Register commands
-program.addCommand(nodeCommand);
-program.addCommand(metricsCommand);
-program.addCommand(configCommand);
-program.addCommand(dashboardCommand);
-program.addCommand(monitorCommand);
+program.addCommand(ownersCommand);
+program.addCommand(devicesCommand);
+program.addCommand(pullCommand);
+program.addCommand(planCommand);
+program.addCommand(repriceCommand);
+program.addCommand(statementCommand);
 
 // Global error handler
 process.on('uncaughtException', (error) => {
