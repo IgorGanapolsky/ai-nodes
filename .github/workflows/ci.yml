@@ -13,6 +13,8 @@ concurrency:
 env:
   CI: true
   PNPM_CACHE_FOLDER: .pnpm-store
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
 
 jobs:
   lint:
@@ -31,13 +33,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: 'pnpm'
-      - uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-${{ github.sha }}
-          restore-keys: |
-            turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-
-            turbo-${{ runner.os }}-${{ matrix.node }}-
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
 
@@ -57,13 +52,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: 'pnpm'
-      - uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-${{ github.sha }}
-          restore-keys: |
-            turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-
-            turbo-${{ runner.os }}-${{ matrix.node }}-
       - run: pnpm install --frozen-lockfile
       - run: pnpm run type-check
 
@@ -83,13 +71,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: 'pnpm'
-      - uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-${{ github.sha }}
-          restore-keys: |
-            turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('turbo.json') }}-
-            turbo-${{ runner.os }}-${{ matrix.node }}-
       - run: pnpm install --frozen-lockfile
       - run: pnpm run test
 
@@ -106,13 +87,6 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-      - uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: turbo-${{ runner.os }}-20-${{ hashFiles('turbo.json') }}-${{ github.sha }}
-          restore-keys: |
-            turbo-${{ runner.os }}-20-${{ hashFiles('turbo.json') }}-
-            turbo-${{ runner.os }}-20-
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
 
