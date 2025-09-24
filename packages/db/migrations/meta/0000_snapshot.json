@@ -1,74 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "283f5970-bbcb-4153-b3b0-87f91d83c80d",
+  "id": "e8023031-3b63-474f-8c22-238926d8671a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "users": {
-      "name": "users",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "password_hash": {
-          "name": "password_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "role": {
-          "name": "role",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'user'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "users_email_unique": {
-          "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "nodes": {
-      "name": "nodes",
+    "alerts": {
+      "name": "alerts",
       "columns": {
         "id": {
           "name": "id",
@@ -84,616 +21,11 @@
           "notNull": true,
           "autoincrement": false
         },
-        "type": {
-          "name": "type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
+        "device_id": {
+          "name": "device_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
-        },
-        "api_key": {
-          "name": "api_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "api_url": {
-          "name": "api_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'pending'"
-        },
-        "version": {
-          "name": "version",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "location": {
-          "name": "location",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "hardware": {
-          "name": "hardware",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "bandwidth": {
-          "name": "bandwidth",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "storage": {
-          "name": "storage",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "is_online": {
-          "name": "is_online",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
-        },
-        "last_seen": {
-          "name": "last_seen",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "nodes_owner_id_idx": {
-          "name": "nodes_owner_id_idx",
-          "columns": [
-            "owner_id"
-          ],
-          "isUnique": false
-        },
-        "nodes_type_idx": {
-          "name": "nodes_type_idx",
-          "columns": [
-            "type"
-          ],
-          "isUnique": false
-        },
-        "nodes_status_idx": {
-          "name": "nodes_status_idx",
-          "columns": [
-            "status"
-          ],
-          "isUnique": false
-        },
-        "nodes_is_online_idx": {
-          "name": "nodes_is_online_idx",
-          "columns": [
-            "is_online"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "nodes_owner_id_users_id_fk": {
-          "name": "nodes_owner_id_users_id_fk",
-          "tableFrom": "nodes",
-          "tableTo": "users",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "earnings": {
-      "name": "earnings",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "node_id": {
-          "name": "node_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "amount": {
-          "name": "amount",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "currency": {
-          "name": "currency",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'USD'"
-        },
-        "crypto_amount": {
-          "name": "crypto_amount",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "crypto_currency": {
-          "name": "crypto_currency",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "exchange_rate": {
-          "name": "exchange_rate",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "source": {
-          "name": "source",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "transaction_hash": {
-          "name": "transaction_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "block_height": {
-          "name": "block_height",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "earning_type": {
-          "name": "earning_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'other'"
-        },
-        "is_paid": {
-          "name": "is_paid",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
-        },
-        "paid_at": {
-          "name": "paid_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "earnings_node_id_idx": {
-          "name": "earnings_node_id_idx",
-          "columns": [
-            "node_id"
-          ],
-          "isUnique": false
-        },
-        "earnings_timestamp_idx": {
-          "name": "earnings_timestamp_idx",
-          "columns": [
-            "timestamp"
-          ],
-          "isUnique": false
-        },
-        "earnings_currency_idx": {
-          "name": "earnings_currency_idx",
-          "columns": [
-            "currency"
-          ],
-          "isUnique": false
-        },
-        "earnings_earning_type_idx": {
-          "name": "earnings_earning_type_idx",
-          "columns": [
-            "earning_type"
-          ],
-          "isUnique": false
-        },
-        "earnings_is_paid_idx": {
-          "name": "earnings_is_paid_idx",
-          "columns": [
-            "is_paid"
-          ],
-          "isUnique": false
-        },
-        "earnings_node_timestamp_idx": {
-          "name": "earnings_node_timestamp_idx",
-          "columns": [
-            "node_id",
-            "timestamp"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "earnings_node_id_nodes_id_fk": {
-          "name": "earnings_node_id_nodes_id_fk",
-          "tableFrom": "earnings",
-          "tableTo": "nodes",
-          "columnsFrom": [
-            "node_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "metrics": {
-      "name": "metrics",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "node_id": {
-          "name": "node_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "cpu_usage": {
-          "name": "cpu_usage",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "cpu_cores": {
-          "name": "cpu_cores",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "cpu_frequency": {
-          "name": "cpu_frequency",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "cpu_temperature": {
-          "name": "cpu_temperature",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "memory_usage": {
-          "name": "memory_usage",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "memory_total": {
-          "name": "memory_total",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "memory_used": {
-          "name": "memory_used",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "memory_free": {
-          "name": "memory_free",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "storage_usage": {
-          "name": "storage_usage",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "storage_total": {
-          "name": "storage_total",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "storage_used": {
-          "name": "storage_used",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "storage_free": {
-          "name": "storage_free",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "storage_iops": {
-          "name": "storage_iops",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "bandwidth_up": {
-          "name": "bandwidth_up",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "bandwidth_down": {
-          "name": "bandwidth_down",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "network_latency": {
-          "name": "network_latency",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "packet_loss": {
-          "name": "packet_loss",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "uptime": {
-          "name": "uptime",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "connections": {
-          "name": "connections",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "requests_per_second": {
-          "name": "requests_per_second",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "error_rate": {
-          "name": "error_rate",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "sync_status": {
-          "name": "sync_status",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "block_height": {
-          "name": "block_height",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "peer_count": {
-          "name": "peer_count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "metrics_node_id_idx": {
-          "name": "metrics_node_id_idx",
-          "columns": [
-            "node_id"
-          ],
-          "isUnique": false
-        },
-        "metrics_timestamp_idx": {
-          "name": "metrics_timestamp_idx",
-          "columns": [
-            "timestamp"
-          ],
-          "isUnique": false
-        },
-        "metrics_node_timestamp_idx": {
-          "name": "metrics_node_timestamp_idx",
-          "columns": [
-            "node_id",
-            "timestamp"
-          ],
-          "isUnique": false
-        },
-        "metrics_cpu_usage_idx": {
-          "name": "metrics_cpu_usage_idx",
-          "columns": [
-            "cpu_usage"
-          ],
-          "isUnique": false
-        },
-        "metrics_memory_usage_idx": {
-          "name": "metrics_memory_usage_idx",
-          "columns": [
-            "memory_usage"
-          ],
-          "isUnique": false
-        },
-        "metrics_storage_usage_idx": {
-          "name": "metrics_storage_usage_idx",
-          "columns": [
-            "storage_usage"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "metrics_node_id_nodes_id_fk": {
-          "name": "metrics_node_id_nodes_id_fk",
-          "tableFrom": "metrics",
-          "tableTo": "nodes",
-          "columnsFrom": [
-            "node_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "alerts": {
-      "name": "alerts",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "node_id": {
-          "name": "node_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
           "autoincrement": false
         },
         "type": {
@@ -747,23 +79,9 @@
           "notNull": false,
           "autoincrement": false
         },
-        "resolved_by": {
-          "name": "resolved_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "acknowledged_at": {
           "name": "acknowledged_at",
           "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "acknowledged_by": {
-          "name": "acknowledged_by",
-          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -788,31 +106,35 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
+          "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
+          "autoincrement": false
         }
       },
       "indexes": {
-        "alerts_node_id_idx": {
-          "name": "alerts_node_id_idx",
+        "alerts_owner_id_idx": {
+          "name": "alerts_owner_id_idx",
           "columns": [
-            "node_id"
+            "owner_id"
+          ],
+          "isUnique": false
+        },
+        "alerts_device_id_idx": {
+          "name": "alerts_device_id_idx",
+          "columns": [
+            "device_id"
           ],
           "isUnique": false
         },
@@ -843,23 +165,304 @@
             "timestamp"
           ],
           "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "alerts_owner_id_owners_id_fk": {
+          "name": "alerts_owner_id_owners_id_fk",
+          "tableFrom": "alerts",
+          "tableTo": "owners",
+          "columnsFrom": [
+            "owner_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
-        "alerts_node_resolved_idx": {
-          "name": "alerts_node_resolved_idx",
+        "alerts_device_id_devices_id_fk": {
+          "name": "alerts_device_id_devices_id_fk",
+          "tableFrom": "alerts",
+          "tableTo": "devices",
+          "columnsFrom": [
+            "device_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "devices": {
+      "name": "devices",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "marketplace": {
+          "name": "marketplace",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "external_id": {
+          "name": "external_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "hourly_price_usd": {
+          "name": "hourly_price_usd",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "region": {
+          "name": "region",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "active": {
+          "name": "active",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "devices_owner_id_idx": {
+          "name": "devices_owner_id_idx",
           "columns": [
-            "node_id",
-            "resolved"
+            "owner_id"
+          ],
+          "isUnique": false
+        },
+        "devices_marketplace_idx": {
+          "name": "devices_marketplace_idx",
+          "columns": [
+            "marketplace"
+          ],
+          "isUnique": false
+        },
+        "devices_active_idx": {
+          "name": "devices_active_idx",
+          "columns": [
+            "active"
+          ],
+          "isUnique": false
+        },
+        "devices_external_id_idx": {
+          "name": "devices_external_id_idx",
+          "columns": [
+            "external_id"
           ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "alerts_node_id_nodes_id_fk": {
-          "name": "alerts_node_id_nodes_id_fk",
-          "tableFrom": "alerts",
-          "tableTo": "nodes",
+        "devices_owner_id_owners_id_fk": {
+          "name": "devices_owner_id_owners_id_fk",
+          "tableFrom": "devices",
+          "tableTo": "owners",
           "columnsFrom": [
-            "node_id"
+            "owner_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "metrics": {
+      "name": "metrics",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "device_id": {
+          "name": "device_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "cpu_usage": {
+          "name": "cpu_usage",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "memory_usage": {
+          "name": "memory_usage",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "gpu_usage": {
+          "name": "gpu_usage",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "storage_usage": {
+          "name": "storage_usage",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "earnings_usd": {
+          "name": "earnings_usd",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "utilization_hours": {
+          "name": "utilization_hours",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "uptime": {
+          "name": "uptime",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "bandwidth_up": {
+          "name": "bandwidth_up",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "bandwidth_down": {
+          "name": "bandwidth_down",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "latency": {
+          "name": "latency",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "temperature": {
+          "name": "temperature",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "power_usage": {
+          "name": "power_usage",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "metrics_device_id_idx": {
+          "name": "metrics_device_id_idx",
+          "columns": [
+            "device_id"
+          ],
+          "isUnique": false
+        },
+        "metrics_timestamp_idx": {
+          "name": "metrics_timestamp_idx",
+          "columns": [
+            "timestamp"
+          ],
+          "isUnique": false
+        },
+        "metrics_device_timestamp_idx": {
+          "name": "metrics_device_timestamp_idx",
+          "columns": [
+            "device_id",
+            "timestamp"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "metrics_device_id_devices_id_fk": {
+          "name": "metrics_device_id_devices_id_fk",
+          "tableFrom": "metrics",
+          "tableTo": "devices",
+          "columnsFrom": [
+            "device_id"
           ],
           "columnsTo": [
             "id"
@@ -872,8 +475,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "revenue_shares": {
-      "name": "revenue_shares",
+    "owners": {
+      "name": "owners",
       "columns": {
         "id": {
           "name": "id",
@@ -882,40 +485,93 @@
           "notNull": true,
           "autoincrement": false
         },
-        "node_id": {
-          "name": "node_id",
+        "display_name": {
+          "name": "display_name",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "percentage": {
-          "name": "percentage",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "amount": {
-          "name": "amount",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "currency": {
-          "name": "currency",
+        "email": {
+          "name": "email",
           "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "discord_webhook": {
+          "name": "discord_webhook",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "rev_share_pct": {
+          "name": "rev_share_pct",
+          "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'USD'"
+          "default": 0.15
         },
-        "period": {
-          "name": "period",
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "owners_email_unique": {
+          "name": "owners_email_unique",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        },
+        "owners_email_idx": {
+          "name": "owners_email_idx",
+          "columns": [
+            "email"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "statements": {
+      "name": "statements",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "owner_id": {
+          "name": "owner_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "device_id": {
+          "name": "device_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "period_start": {
@@ -932,154 +588,154 @@
           "notNull": true,
           "autoincrement": false
         },
-        "total_earnings": {
-          "name": "total_earnings",
+        "gross_earnings_usd": {
+          "name": "gross_earnings_usd",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "platform_fee_pct": {
+          "name": "platform_fee_pct",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0.15
+        },
+        "platform_fee_usd": {
+          "name": "platform_fee_usd",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "owner_earnings_usd": {
+          "name": "owner_earnings_usd",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "total_utilization_hours": {
+          "name": "total_utilization_hours",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "average_hourly_rate": {
+          "name": "average_hourly_rate",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
-        "share_type": {
-          "name": "share_type",
+        "uptime_percentage": {
+          "name": "uptime_percentage",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "marketplace": {
+          "name": "marketplace",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "currency": {
+          "name": "currency",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'owner'"
+          "default": "'USD'"
         },
-        "recipient_id": {
-          "name": "recipient_id",
+        "status": {
+          "name": "status",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "recipient_address": {
-          "name": "recipient_address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "paid_out": {
-          "name": "paid_out",
-          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": false
-        },
-        "paid_at": {
-          "name": "paid_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "transaction_hash": {
-          "name": "transaction_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "notes": {
-          "name": "notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
+          "default": "'pending'"
         },
         "created_at": {
           "name": "created_at",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
+          "autoincrement": false
         }
       },
       "indexes": {
-        "revenue_shares_node_id_idx": {
-          "name": "revenue_shares_node_id_idx",
+        "statements_owner_id_idx": {
+          "name": "statements_owner_id_idx",
           "columns": [
-            "node_id"
+            "owner_id"
           ],
           "isUnique": false
         },
-        "revenue_shares_period_idx": {
-          "name": "revenue_shares_period_idx",
+        "statements_device_id_idx": {
+          "name": "statements_device_id_idx",
           "columns": [
-            "period"
+            "device_id"
           ],
           "isUnique": false
         },
-        "revenue_shares_share_type_idx": {
-          "name": "revenue_shares_share_type_idx",
-          "columns": [
-            "share_type"
-          ],
-          "isUnique": false
-        },
-        "revenue_shares_paid_out_idx": {
-          "name": "revenue_shares_paid_out_idx",
-          "columns": [
-            "paid_out"
-          ],
-          "isUnique": false
-        },
-        "revenue_shares_recipient_id_idx": {
-          "name": "revenue_shares_recipient_id_idx",
-          "columns": [
-            "recipient_id"
-          ],
-          "isUnique": false
-        },
-        "revenue_shares_period_range_idx": {
-          "name": "revenue_shares_period_range_idx",
+        "statements_period_idx": {
+          "name": "statements_period_idx",
           "columns": [
             "period_start",
             "period_end"
           ],
           "isUnique": false
         },
-        "revenue_shares_node_period_idx": {
-          "name": "revenue_shares_node_period_idx",
+        "statements_status_idx": {
+          "name": "statements_status_idx",
           "columns": [
-            "node_id",
-            "period"
+            "status"
           ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "revenue_shares_node_id_nodes_id_fk": {
-          "name": "revenue_shares_node_id_nodes_id_fk",
-          "tableFrom": "revenue_shares",
-          "tableTo": "nodes",
+        "statements_owner_id_owners_id_fk": {
+          "name": "statements_owner_id_owners_id_fk",
+          "tableFrom": "statements",
+          "tableTo": "owners",
           "columnsFrom": [
-            "node_id"
+            "owner_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "statements_device_id_devices_id_fk": {
+          "name": "statements_device_id_devices_id_fk",
+          "tableFrom": "statements",
+          "tableTo": "devices",
+          "columnsFrom": [
+            "device_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },

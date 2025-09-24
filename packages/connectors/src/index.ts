@@ -1,64 +1,57 @@
 /**
- * @ai-nodes/connectors
+ * @depinautopilot/connectors
  *
- * Comprehensive DePIN node connectors for monitoring and optimization
+ * Complete mock DePIN connectors for device monitoring and pricing optimization
  *
  * Features:
- * - Read-only custody-safe access
- * - Multiple connector types (IoNet, Nosana, Render, Grass, Natix, Huddle01, OwnAI)
- * - Playwright-based scraper fallback
- * - Rate limiting and retry logic
- * - Comprehensive caching
- * - Mock data generation for testing
+ * - Deterministic mock data generation
+ * - Five specialized connector types (IoNet, Nosana, Render, Grass, Natix)
+ * - TypeScript interfaces for type safety
  * - Factory pattern for easy instantiation
- * - Comprehensive error handling
+ * - Realistic device metrics and pricing suggestions
  */
 
-// Main interfaces and types
-export * from './interfaces';
+// Core types and interfaces
+export * from './types';
 
-// Core utilities
-export * from './utils';
-
-// Caching system
-export * from './cache';
-
-// Web scraping capabilities
-export * from './scrapers';
+// Base connector class
+export { BaseConnector } from './base';
 
 // All connector implementations
-export * from './connectors';
+export { IoNetConnector } from './connectors/IoNetConnector';
+export { NosanaConnector } from './connectors/NosanaConnector';
+export { RenderConnector } from './connectors/RenderConnector';
+export { GrassConnector } from './connectors/GrassConnector';
+export { NatixConnector } from './connectors/NatixConnector';
 
 // Factory for creating connectors
-export * from './factories';
+export * from './factory';
 
 // Convenience exports for commonly used items
-export { ConnectorFactory } from './factories/ConnectorFactory';
+export { ConnectorFactory, ConnectorNetwork, createConnector, createAllConnectors } from './factory';
 
 // Version info
 export const VERSION = '1.0.0';
 
 // Package metadata
 export const PACKAGE_INFO = {
-  name: '@ai-nodes/connectors',
+  name: '@depinautopilot/connectors',
   version: VERSION,
-  description: 'DePIN node connectors for comprehensive monitoring and optimization',
+  description: 'Complete mock DePIN connectors with deterministic data generation',
   supportedConnectors: [
     'ionet',
     'nosana',
     'render',
     'grass',
-    'natix',
-    'huddle01',
-    'ownai'
+    'natix'
   ],
   features: [
-    'custody-safe read-only access',
-    'rate limiting and retry logic',
-    'comprehensive caching',
-    'playwright scraper fallback',
-    'mock data generation',
+    'deterministic mock data generation',
+    'realistic device metrics',
+    'pricing optimization suggestions',
+    'occupancy tracking',
+    'typescript support',
     'factory pattern',
-    'comprehensive error handling'
+    'network-specific custom metrics'
   ]
 };

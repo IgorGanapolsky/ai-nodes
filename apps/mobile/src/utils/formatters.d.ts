@@ -1,0 +1,12 @@
+export declare const formatCurrency: (amount: number, currency?: string) => string;
+export declare const formatNumber: (num: number, decimals?: number) => string;
+export declare const formatPercentage: (value: number) => string;
+export declare const formatDate: (date: string | Date) => string;
+export declare const formatRelativeTime: (date: string | Date) => string;
+export declare const formatUptime: (uptimeSeconds: number) => string;
+export declare const formatHashRate: (hashRate: number) => string;
+export declare const formatTemperature: (temp: number, unit?: "C" | "F") => string;
+export declare const getStatusColor: (status: string) => string;
+export declare const getPerformanceColor: (performance: number) => string;
+export declare const truncateString: (str: string, maxLength: number) => string;
+//# sourceMappingURL=formatters.d.ts.map

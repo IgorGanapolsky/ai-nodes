@@ -69,9 +69,13 @@ export abstract class BaseConnector implements IConnector {
     const isOnline = this.seededRandomBoolean(externalId, 0.85);
     const versionSeed = this.seededRandom(externalId, 100);
 
+    // Use a fixed base time to ensure deterministic results
+    const baseTime = new Date('2025-09-24T14:00:00.000Z').getTime();
+    const timeOffset = this.seededRandomInRange(externalId, 0, 3600000, 1); // Within last hour
+
     return {
       online: isOnline,
-      lastSeen: new Date(Date.now() - this.seededRandomInRange(externalId, 0, 3600000, 1)), // Within last hour
+      lastSeen: new Date(baseTime - timeOffset),
       version: versionSeed > 0.7 ? `v${Math.floor(this.seededRandomInRange(externalId, 1, 5, 2))}.${Math.floor(this.seededRandomInRange(externalId, 0, 10, 3))}` : undefined
     };
   }

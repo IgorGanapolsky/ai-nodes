@@ -1,24 +1,24 @@
 // Database connection and configuration
-export * from './connection';
+export {
+  createDatabaseConnection,
+  getDatabaseConnection,
+  closeDatabaseConnection,
+  runDatabaseMigrations,
+  database,
+  schema
+} from './client';
 
 // Schema definitions and types
 export * from './schema';
 
-// Repository pattern implementation
-export * from './repositories';
-
 // Utility scripts
-export { seedDatabase } from './scripts/seed';
-export { DatabaseBackup } from './scripts/backup';
-export { DatabaseRestore } from './scripts/restore';
-export { DatabaseInitializer } from './scripts/init';
+export { seedDatabase } from './seed';
 
 // Re-export commonly used types from Drizzle
 export type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 
 // Database utilities
-import { getConnection, createConnection, closeConnection, runMigrations } from './connection';
-import { getRepositories } from './repositories';
+import { getDatabaseConnection, createDatabaseConnection, closeDatabaseConnection, runDatabaseMigrations } from './client';
 
 /**
  * Initialize the database with default configuration
@@ -31,7 +31,7 @@ export async function initializeDatabase(options?: {
   const { url, runMigrations: shouldRunMigrations = true, seedData = false } = options || {};
 
   // Create connection
-  const db = createConnection({
+  const db = createDatabaseConnection({
     url,
     enableWAL: true,
     enableForeignKeys: true,
@@ -39,34 +39,28 @@ export async function initializeDatabase(options?: {
 
   // Run migrations if requested
   if (shouldRunMigrations) {
-    await runMigrations();
+    await runDatabaseMigrations();
   }
 
   // Seed data if requested
   if (seedData) {
-    const { seedDatabase } = await import('./scripts/seed');
+    const { seedDatabase } = await import('./seed');
     await seedDatabase();
   }
 
-  return {
-    db,
-    repositories: getRepositories(),
-  };
+  return { db };
 }
 
 /**
- * Get a configured database instance with repositories
+ * Get a configured database instance
  */
 export function getDatabase() {
-  return {
-    connection: getConnection(),
-    repositories: getRepositories(),
-  };
+  return getDatabaseConnection();
 }
 
 /**
  * Cleanup database connections
  */
 export function cleanup() {
-  closeConnection();
+  closeDatabaseConnection();
 }

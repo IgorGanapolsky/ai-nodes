@@ -2,41 +2,43 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Activity, Server, AlertTriangle, Zap, TrendingUp, Clock } from 'lucide-react';
+import { Search, Users, Filter, Plus } from 'lucide-react';
+import Link from 'next/link';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { MetricsChart } from '@/components/dashboard/metrics-chart';
-import { NodesList } from '@/components/dashboard/nodes-list';
-import { AlertsList } from '@/components/dashboard/alerts-list';
-import { StatsCard } from '@/components/dashboard/stats-card';
-import { apiClient } from '@/lib/api-client';
+import { OwnerCard } from '@/app/components/OwnerCard';
+import { MetricsSummary } from '@/app/components/MetricsSummary';
+import { apiClient } from '@/lib/api';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
-export default function DashboardPage() {
-  const [timeframe, setTimeframe] = useState('24h');
+export default function OwnersPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
 
-  // Fetch dashboard data
-  const { data: summary, isLoading: summaryLoading } = useQuery({
-    queryKey: ['metrics-summary', timeframe],
-    queryFn: () => apiClient.getMetricsSummary(timeframe),
+  // Fetch owners data
+  const { data: owners, isLoading: ownersLoading } = useQuery({
+    queryKey: ['owners', searchQuery, filterStatus],
+    queryFn: () => apiClient.getOwners({
+      search: searchQuery,
+      status: filterStatus === 'all' ? undefined : filterStatus,
+      limit: 50
+    }),
     refetchInterval: 30000 // Refresh every 30 seconds
   });
 
-  const { data: nodes, isLoading: nodesLoading } = useQuery({
-    queryKey: ['nodes'],
-    queryFn: () => apiClient.getNodes({ limit: 10 }),
-    refetchInterval: 30000
+  // Fetch summary metrics
+  const { data: summary, isLoading: summaryLoading } = useQuery({
+    queryKey: ['owners-summary'],
+    queryFn: () => apiClient.getOwnersSummary(),
+    refetchInterval: 60000 // Refresh every minute
   });
 
-  const { data: alerts, isLoading: alertsLoading } = useQuery({
-    queryKey: ['alerts'],
-    queryFn: () => apiClient.getAlerts({ status: 'active', limit: 5 }),
-    refetchInterval: 15000 // More frequent for alerts
-  });
+  const filteredOwners = owners?.owners || [];
 
-  if (summaryLoading || nodesLoading || alertsLoading) {
+  if (ownersLoading && !owners) {
     return (
       <div className="flex items-center justify-center h-full">
         <LoadingSpinner size="lg" />
@@ -49,131 +51,121 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Node Owners</h1>
           <p className="text-muted-foreground">
-            Monitor and manage your DePIN nodes from a single interface
+            Manage and monitor DePIN node owners and their performance
           </p>
         </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant={timeframe === '1h' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setTimeframe('1h')}
-          >
-            1H
-          </Button>
-          <Button
-            variant={timeframe === '24h' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setTimeframe('24h')}
-          >
-            24H
-          </Button>
-          <Button
-            variant={timeframe === '7d' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setTimeframe('7d')}
-          >
-            7D
-          </Button>
-          <Button
-            variant={timeframe === '30d' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setTimeframe('30d')}
-          >
-            30D
-          </Button>
-        </div>
+        <Button asChild>
+          <Link href="/owners/new">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Owner
+          </Link>
+        </Button>
       </div>
 
-      {/* Stats Cards */}
-      {summary && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatsCard
-            title="Total Nodes"
-            value={summary.totalNodes.toString()}
-            description={`${summary.onlineNodes} online, ${summary.offlineNodes} offline`}
-            icon={Server}
-            trend={summary.onlineNodes / summary.totalNodes > 0.9 ? 'up' : 'down'}
-          />
-          <StatsCard
-            title="Total Earnings"
-            value={`${summary.totalEarnings.toFixed(4)} tokens`}
-            description="Last 24 hours"
-            icon={Zap}
-            trend="up"
-            formatAsCurrency
-          />
-          <StatsCard
-            title="Average Uptime"
-            value={`${summary.averageUptime.toFixed(1)}%`}
-            description="Across all nodes"
-            icon={Activity}
-            trend={summary.averageUptime > 95 ? 'up' : 'down'}
-          />
-          <StatsCard
-            title="Performance Score"
-            value={`${summary.performanceScore.toFixed(0)}/100`}
-            description={summary.alertsCount > 0 ? `${summary.alertsCount} active alerts` : 'No alerts'}
-            icon={TrendingUp}
-            trend={summary.performanceScore > 80 ? 'up' : 'down'}
-          />
-        </div>
+      {/* Summary Metrics */}
+      {summary && !summaryLoading && (
+        <MetricsSummary data={summary} />
       )}
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Metrics Chart */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              Performance Metrics
-            </CardTitle>
-            <CardDescription>
-              Real-time performance data for the last {timeframe}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <MetricsChart timeframe={timeframe} />
-          </CardContent>
-        </Card>
-
-        {/* Alerts */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5" />
-              Active Alerts
-              {alerts && alerts.total > 0 && (
-                <Badge variant="destructive" className="ml-auto">
-                  {alerts.total}
-                </Badge>
-              )}
-            </CardTitle>
-            <CardDescription>
-              Recent alerts and notifications
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <AlertsList alerts={alerts?.alerts || []} />
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Nodes List */}
+      {/* Search and Filter */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Server className="h-5 w-5" />
-            Recent Nodes
+            <Users className="h-5 w-5" />
+            Owners Directory
           </CardTitle>
           <CardDescription>
-            Overview of your DePIN nodes and their current status
+            Search and filter through all node owners
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <NodesList nodes={nodes?.nodes || []} />
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search owners by name, email, or wallet address..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant={filterStatus === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilterStatus('all')}
+                className="whitespace-nowrap"
+              >
+                All
+                {owners && (
+                  <Badge variant="secondary" className="ml-2">
+                    {owners.total}
+                  </Badge>
+                )}
+              </Button>
+              <Button
+                variant={filterStatus === 'active' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilterStatus('active')}
+                className="whitespace-nowrap"
+              >
+                Active
+                {owners && (
+                  <Badge variant="secondary" className="ml-2">
+                    {owners.activeCount || 0}
+                  </Badge>
+                )}
+              </Button>
+              <Button
+                variant={filterStatus === 'inactive' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilterStatus('inactive')}
+                className="whitespace-nowrap"
+              >
+                Inactive
+                {owners && (
+                  <Badge variant="secondary" className="ml-2">
+                    {(owners.total || 0) - (owners.activeCount || 0)}
+                  </Badge>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Owners Grid */}
+          {ownersLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <LoadingSpinner />
+            </div>
+          ) : filteredOwners.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredOwners.map((owner) => (
+                <OwnerCard key={owner.id} owner={owner} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Users className="mx-auto h-12 w-12 text-muted-foreground" />
+              <h3 className="mt-2 text-sm font-medium text-foreground">No owners found</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {searchQuery || filterStatus !== 'all'
+                  ? 'Try adjusting your search or filter criteria.'
+                  : 'Get started by adding your first owner.'}
+              </p>
+              {!searchQuery && filterStatus === 'all' && (
+                <div className="mt-6">
+                  <Button asChild>
+                    <Link href="/owners/new">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Owner
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{subject}}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 300;
+        }
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .greeting {
+            font-size: 20px;
+            margin-bottom: 25px;
+            color: #333;
+            text-align: center;
+        }
+        .welcome-message {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature-item {
+            padding: 20px;
+            background: #ffffff;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+        .feature-item:hover {
+            border-color: #667eea;
+        }
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .feature-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .feature-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        .stats-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            text-align: center;
+        }
+        .stat-item {
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .cta-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin: 10px;
+        }
+        .cta-button-secondary {
+            background: #6c757d;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 25px 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #e9ecef;
+        }
+        .getting-started {
+            background: #e7f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .getting-started h3 {
+            color: #004085;
+            margin-top: 0;
+        }
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+        .step-list li {
+            padding: 8px 0;
+            color: #004085;
+        }
+        .step-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Welcome to DePIN Autopilot!</h1>
+            <div class="subtitle">Your automated node management system is ready</div>
+        </div>
+
+        <div class="content">
+            <div class="greeting">
+                Hello {{ownerName}}! 👋
+            </div>
+
+            <div class="welcome-message">
+                <p style="font-size: 18px; margin: 0;">
+                    Thank you for joining DePIN Autopilot! We're excited to help you maximize your decentralized infrastructure earnings with automated monitoring and management.
+                </p>
+            </div>
+
+            {{#if hasNodes}}
+            <div class="stats-section">
+                <h3 style="text-align: center; margin-top: 0; color: #333;">Your Current Setup</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">{{nodeCount}}</div>
+                        <div class="stat-label">Active Nodes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">100%</div>
+                        <div class="stat-label">Monitoring</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">24/7</div>
+                        <div class="stat-label">Support</div>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Real-time Monitoring</div>
+                    <div class="feature-desc">Track your node performance, uptime, and earnings in real-time</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🚨</div>
+                    <div class="feature-title">Smart Alerts</div>
+                    <div class="feature-desc">Get notified instantly when your nodes need attention</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-title">Earnings Reports</div>
+                    <div class="feature-desc">Detailed statements and revenue tracking for tax purposes</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Auto-optimization</div>
+                    <div class="feature-desc">Automated adjustments to maximize your earnings potential</div>
+                </div>
+            </div>
+
+            <div class="getting-started">
+                <h3>🚀 Getting Started</h3>
+                <p>Your notification system is now active! Here's what happens next:</p>
+                <ul class="step-list">
+                    <li>We'll monitor your nodes 24/7 for performance and issues</li>
+                    <li>You'll receive alerts via email{{#if owner.discordWebhook}} and Discord{{/if}} when attention is needed</li>
+                    <li>Monthly earnings statements will be delivered automatically</li>
+                    <li>Access your dashboard anytime to view detailed metrics</li>
+                </ul>
+            </div>
+
+            <div class="cta-section">
+                <a href="#" class="cta-button">View Dashboard</a>
+                <a href="#" class="cta-button cta-button-secondary">Documentation</a>
+            </div>
+
+            {{#if !hasNodes}}
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 20px; margin: 25px 0; text-align: center;">
+                <h4 style="color: #856404; margin-top: 0;">Ready to add your first node?</h4>
+                <p style="color: #856404; margin-bottom: 15px;">
+                    Connect your nodes to start monitoring and optimizing your DePIN infrastructure.
+                </p>
+                <a href="#" class="cta-button">Add Your First Node</a>
+            </div>
+            {{/if}}
+
+            <p style="color: #666; font-size: 14px; text-align: center; margin-top: 30px;">
+                Need help getting started? Our support team is here to assist you every step of the way.
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>DePIN Autopilot &bull; Automated Node Management</p>
+            <p style="font-size: 12px; margin: 5px 0 0 0;">
+                Welcome email sent on {{timestamp}}
+            </p>
+            <p style="font-size: 12px; margin: 10px 0 0 0;">
+                <a href="#" style="color: #007bff;">Update Preferences</a> |
+                <a href="#" style="color: #007bff;">Contact Support</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

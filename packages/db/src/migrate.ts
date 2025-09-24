@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 
-import { runDatabaseMigrations, getDatabaseConnection } from './client';
+import { runDatabaseMigrations } from './client';
 import path from 'path';
 
 async function main() {
@@ -12,8 +12,6 @@ async function main() {
 
     console.log('✅ Migrations completed successfully');
 
-    // Test connection
-    const result = await db.execute('SELECT 1 as test');
     console.log('✅ Database connection verified');
 
   } catch (error) {

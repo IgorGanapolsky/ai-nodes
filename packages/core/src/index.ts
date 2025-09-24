@@ -1,6 +1,8 @@
 // Core types and interfaces for DePIN Autopilot
 export * from './types/node.js';
-export * from './types/metrics.js';
-export * from './types/alert.js';
-export * from './services/index.js';
-export * from './utils/index.js';
+
+// Business logic modules
+export * from './revenue.js';
+export * from './pricing.js';
+export * from './metrics.js';
+export * from './statements.js';
