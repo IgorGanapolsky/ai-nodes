@@ -84,7 +84,7 @@ export const dashboardCommand = new Command('dashboard')
           });
 
           const nodesBox = boxen(
-            table(nodeStatusTable, { border: { horizontal: '─' } }),
+            table(nodeStatusTable),
             {
               title: '📡 Node Status',
               padding: 1,
