@@ -69,7 +69,7 @@ const metricRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
     },
     async (request, reply) => {
       try {
-        const { deviceId, ownerId, startDate, endDate, granularity, metricType } = request.query;
+        const { deviceId, startDate, endDate, granularity, metricType } = request.query;
 
         // Generate mock data based on query parameters
         const now = new Date();
@@ -107,7 +107,7 @@ const metricRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
         return reply.send(filteredResponse);
       } catch (error) {
-        fastify.log.error('Error fetching metrics:', error);
+        fastify.log.error('Error fetching metrics: ' + (error instanceof Error ? error.message : String(error)));
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to fetch metrics',
@@ -117,7 +117,7 @@ const metricRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
   );
 
   // GET /metrics/live - Get real-time metrics for dashboard
-  fastify.get('/live', async (request, reply) => {
+  fastify.get('/live', async (_request, reply) => {
     try {
       // TODO: Replace with actual real-time data source (Redis, WebSocket, etc.)
       const liveMetrics = {
@@ -146,7 +146,7 @@ const metricRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
       return reply.send(liveMetrics);
     } catch (error) {
-      fastify.log.error('Error fetching live metrics:', error);
+      fastify.log.error('Error fetching live metrics: ' + (error instanceof Error ? error.message : String(error)));
       return reply.status(500).send({
         error: 'Internal server error',
         message: 'Failed to fetch live metrics',
@@ -191,7 +191,7 @@ const metricRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
           return reply.send(exportData);
         }
       } catch (error) {
-        fastify.log.error('Error exporting metrics:', error);
+        fastify.log.error('Error exporting metrics: ' + (error instanceof Error ? error.message : String(error)));
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to export metrics',
