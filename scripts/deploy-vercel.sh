@@ -83,8 +83,11 @@ prepare_deployment() {
     
     # Create a standalone package.json for deployment
     log "INFO" "Creating standalone package.json..."
-    
-    # Read the web app's package.json and modify it
+
+    # Copy the original package.json and modify it
+    cp "$WEB_APP_DIR/package.json" "$TEMP_DEPLOY_DIR/package.json.orig"
+
+    # Create a modified package.json without workspace dependencies
     cat > "$TEMP_DEPLOY_DIR/package.json" << 'EOF'
 {
   "name": "depinautopilot-web",
@@ -133,7 +136,14 @@ prepare_deployment() {
     "@radix-ui/react-tooltip": "^1.0.7",
     "tailwindcss": "^3.4.0",
     "autoprefixer": "^10.4.16",
-    "postcss": "^8.5.6"
+    "postcss": "^8.5.6",
+    "@vercel/speed-insights": "^1.0.0",
+    "@vercel/analytics": "^1.0.0",
+    "@tailwindcss/typography": "^0.5.10",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.6",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18"
   },
   "devDependencies": {
     "@types/node": "^20.10.6",
@@ -141,8 +151,7 @@ prepare_deployment() {
     "@types/react-dom": "^18.2.18",
     "typescript": "^5.3.3",
     "eslint": "^8.56.0",
-    "eslint-config-next": "^14.0.4",
-    "@tailwindcss/typography": "^0.5.10"
+    "eslint-config-next": "^14.0.4"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -190,11 +199,57 @@ EOF
 }
 EOF
 
+    # Create a next.config.js with webpack aliases for path resolution
+    cat > "$TEMP_DEPLOY_DIR/next.config.js" << 'EOF'
+/** @type {import('next').NextConfig} */
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+  experimental: {
+    typedRoutes: true,
+  },
+  images: {
+    domains: [],
+  },
+  env: {
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/v1/:path*',
+        destination: `${process.env.API_URL || 'http://localhost:3001'}/api/v1/:path*`,
+      },
+    ];
+  },
+  transpilePackages: ['@depinautopilot/core', '@depinautopilot/utils'],
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src'),
+      '@/components': path.resolve(__dirname, 'src/components'),
+      '@/lib': path.resolve(__dirname, 'src/lib'),
+      '@/hooks': path.resolve(__dirname, 'src/hooks'),
+      '@/app': path.resolve(__dirname, 'src/app'),
+    };
+    return config;
+  },
+};
+
+export default nextConfig;
+EOF
+
     # Create a standalone tsconfig.json
     cat > "$TEMP_DEPLOY_DIR/tsconfig.json" << 'EOF'
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2015",
     "lib": ["DOM", "DOM.Iterable", "ES6"],
     "allowJs": true,
     "skipLibCheck": true,

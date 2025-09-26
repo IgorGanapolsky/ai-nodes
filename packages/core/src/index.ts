@@ -6,3 +6,6 @@ export * from './revenue.js';
 export * from './pricing.js';
 export * from './metrics.js';
 export * from './statements.js';
+
+// Linear integration
+export * from './linear.js';
