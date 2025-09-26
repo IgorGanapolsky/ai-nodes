@@ -69,7 +69,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers,
-      cache: 'no-store',
+      next: { revalidate: 60 }, // Revalidate every 60 seconds
     });
 
     const data = await response.json();
