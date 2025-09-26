@@ -1,4 +1,5 @@
 import type { FastifyPluginCallback } from 'fastify';
+import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 
 // Validation schemas
@@ -57,11 +58,9 @@ const metricsResponseSchema = z.object({
 type GetMetricsQuery = z.infer<typeof getMetricsQuerySchema>;
 type MetricsResponse = z.infer<typeof metricsResponseSchema>;
 
-const metricRoutes: FastifyPluginCallback = async (fastify) => {
+const metricRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fastify) => {
   // GET /metrics - Get comprehensive metrics data
-  fastify.get<{
-    Querystring: GetMetricsQuery;
-  }>(
+  fastify.get(
     '/',
     {
       schema: {

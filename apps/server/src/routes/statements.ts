@@ -1,4 +1,5 @@
 import type { FastifyPluginCallback } from 'fastify';
+import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 
 // Validation schemas
@@ -56,7 +57,7 @@ type GenerateStatementRequest = z.infer<typeof generateStatementSchema>;
 type StatementResponse = z.infer<typeof statementResponseSchema>;
 type GetStatementsQuery = z.infer<typeof getStatementsQuerySchema>;
 
-const statementRoutes: FastifyPluginCallback = async (fastify) => {
+const statementRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fastify) => {
   // POST /statements/generate - Generate new statement
   fastify.post<{
     Body: GenerateStatementRequest;

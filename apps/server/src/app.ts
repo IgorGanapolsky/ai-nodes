@@ -4,6 +4,11 @@ import helmet from '@fastify/helmet';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import type { FastifyInstance } from 'fastify';
+import {
+  serializerCompiler,
+  validatorCompiler,
+  type ZodTypeProvider,
+} from 'fastify-type-provider-zod';
 
 // Import route modules
 import healthRoutes from './routes/health.js';
@@ -19,7 +24,11 @@ export async function buildApp(): Promise<FastifyInstance> {
     logger: {
       level: process.env.LOG_LEVEL || 'info',
     },
-  });
+  }).withTypeProvider<ZodTypeProvider>();
+
+  // Set validator and serializer
+  app.setValidatorCompiler(validatorCompiler);
+  app.setSerializerCompiler(serializerCompiler);
 
   // Register security plugins
   await app.register(cors, {

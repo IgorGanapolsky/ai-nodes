@@ -1,4 +1,5 @@
 import type { FastifyPluginCallback } from 'fastify';
+import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 
 // Validation schemas
@@ -77,11 +78,9 @@ type CreateDeviceBody = z.infer<typeof createDeviceSchema>;
 type DeviceResponse = z.infer<typeof deviceResponseSchema>;
 type GetDevicesQuery = z.infer<typeof getDevicesQuerySchema>;
 
-const deviceRoutes: FastifyPluginCallback = async (fastify) => {
+const deviceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fastify) => {
   // GET /devices - List devices with pagination and filtering
-  fastify.get<{
-    Querystring: GetDevicesQuery;
-  }>(
+  fastify.get(
     '/',
     {
       schema: {
@@ -218,9 +217,7 @@ const deviceRoutes: FastifyPluginCallback = async (fastify) => {
   );
 
   // GET /devices/:id - Get specific device
-  fastify.get<{
-    Params: { id: string };
-  }>('/:id', async (request, reply) => {
+  fastify.get('/:id', async (request, reply) => {
     try {
       const { id } = request.params;
 
@@ -272,9 +269,7 @@ const deviceRoutes: FastifyPluginCallback = async (fastify) => {
   });
 
   // POST /devices - Create new device
-  fastify.post<{
-    Body: CreateDeviceBody;
-  }>(
+  fastify.post(
     '/',
     {
       schema: {
@@ -322,10 +317,7 @@ const deviceRoutes: FastifyPluginCallback = async (fastify) => {
   );
 
   // PUT /devices/:id - Update existing device
-  fastify.put<{
-    Params: { id: string };
-    Body: Partial<CreateDeviceBody>;
-  }>(
+  fastify.put(
     '/:id',
     {
       schema: {
@@ -388,9 +380,7 @@ const deviceRoutes: FastifyPluginCallback = async (fastify) => {
   );
 
   // DELETE /devices/:id - Delete device
-  fastify.delete<{
-    Params: { id: string };
-  }>('/:id', async (request, reply) => {
+  fastify.delete('/:id', async (request, reply) => {
     try {
       const { id } = request.params;
 

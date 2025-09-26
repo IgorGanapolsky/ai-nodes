@@ -1,4 +1,5 @@
 import type { FastifyPluginCallback } from 'fastify';
+import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 
 // Validation schemas
@@ -58,11 +59,9 @@ type CreateOwnerBody = z.infer<typeof createOwnerSchema>;
 type OwnerResponse = z.infer<typeof ownerResponseSchema>;
 type GetOwnersQuery = z.infer<typeof getOwnersQuerySchema>;
 
-const ownerRoutes: FastifyPluginCallback = async (fastify) => {
+const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fastify) => {
   // GET /owners - List owners with pagination and filtering
-  fastify.get<{
-    Querystring: GetOwnersQuery;
-  }>(
+  fastify.get(
     '/',
     {
       schema: {
@@ -117,9 +116,7 @@ const ownerRoutes: FastifyPluginCallback = async (fastify) => {
   );
 
   // GET /owners/:id - Get specific owner
-  fastify.get<{
-    Params: { id: string };
-  }>('/:id', async (request, reply) => {
+  fastify.get('/:id', async (request, reply) => {
     try {
       const { id } = request.params;
 
@@ -149,9 +146,7 @@ const ownerRoutes: FastifyPluginCallback = async (fastify) => {
   });
 
   // POST /owners - Create new owner
-  fastify.post<{
-    Body: CreateOwnerBody;
-  }>(
+  fastify.post(
     '/',
     {
       schema: {
@@ -184,10 +179,7 @@ const ownerRoutes: FastifyPluginCallback = async (fastify) => {
   );
 
   // PUT /owners/:id - Update existing owner
-  fastify.put<{
-    Params: { id: string };
-    Body: Partial<CreateOwnerBody>;
-  }>(
+  fastify.put(
     '/:id',
     {
       schema: {
@@ -228,9 +220,7 @@ const ownerRoutes: FastifyPluginCallback = async (fastify) => {
   );
 
   // DELETE /owners/:id - Delete owner
-  fastify.delete<{
-    Params: { id: string };
-  }>('/:id', async (request, reply) => {
+  fastify.delete('/:id', async (request, reply) => {
     try {
       const { id } = request.params;
 

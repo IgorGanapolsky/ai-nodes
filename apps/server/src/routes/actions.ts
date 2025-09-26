@@ -1,4 +1,5 @@
 import type { FastifyPluginCallback } from 'fastify';
+import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 
 // Validation schemas
@@ -83,11 +84,9 @@ type RepriceResponse = z.infer<typeof repriceResponseSchema>;
 type MaintenanceRequest = z.infer<typeof maintenanceRequestSchema>;
 type OptimizationRequest = z.infer<typeof optimizationRequestSchema>;
 
-const actionRoutes: FastifyPluginCallback = async (fastify) => {
+const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fastify) => {
   // POST /actions/reprice - Dynamic pricing adjustment
-  fastify.post<{
-    Body: RepriceRequest;
-  }>(
+  fastify.post(
     '/reprice',
     {
       schema: {
@@ -170,9 +169,7 @@ const actionRoutes: FastifyPluginCallback = async (fastify) => {
   );
 
   // POST /actions/maintenance - Device maintenance operations
-  fastify.post<{
-    Body: MaintenanceRequest;
-  }>(
+  fastify.post(
     '/maintenance',
     {
       schema: {
@@ -223,9 +220,7 @@ const actionRoutes: FastifyPluginCallback = async (fastify) => {
   );
 
   // POST /actions/optimize - Performance optimization
-  fastify.post<{
-    Body: OptimizationRequest;
-  }>(
+  fastify.post(
     '/optimize',
     {
       schema: {
@@ -283,9 +278,7 @@ const actionRoutes: FastifyPluginCallback = async (fastify) => {
   );
 
   // GET /actions/jobs/:jobId - Get job status
-  fastify.get<{
-    Params: { jobId: string };
-  }>('/jobs/:jobId', async (request, reply) => {
+  fastify.get('/jobs/:jobId', async (request, reply) => {
     try {
       const { jobId } = request.params;
 
@@ -320,14 +313,7 @@ const actionRoutes: FastifyPluginCallback = async (fastify) => {
   });
 
   // GET /actions/jobs - List all jobs
-  fastify.get<{
-    Querystring: {
-      status?: 'queued' | 'processing' | 'completed' | 'failed';
-      type?: 'repricing' | 'maintenance' | 'optimization';
-      limit?: number;
-      page?: number;
-    };
-  }>('/jobs', async (request, reply) => {
+  fastify.get('/jobs', async (request, reply) => {
     try {
       const { status, type, limit = 10, page = 1 } = request.query;
 
