@@ -76,8 +76,8 @@ importers:
         specifier: ^3.2.0
         version: 3.6.2
       tsx:
-        specifier: ^4.7.0
-        version: 4.20.5
+        specifier: ^4.20.6
+        version: 4.20.6
       turbo:
         specifier: ^1.13.4
         version: 1.13.4
@@ -164,8 +164,8 @@ importers:
         specifier: ^8.56.0
         version: 8.57.1
       tsx:
-        specifier: ^4.6.2
-        version: 4.20.5
+        specifier: ^4.20.6
+        version: 4.20.6
       typescript:
         specifier: ^5.3.3
         version: 5.9.2
@@ -370,8 +370,8 @@ importers:
         specifier: ^8.56.0
         version: 8.57.1
       tsx:
-        specifier: ^4.6.2
-        version: 4.20.5
+        specifier: ^4.20.6
+        version: 4.20.6
       typescript:
         specifier: ^5.3.3
         version: 5.9.2
@@ -623,7 +623,7 @@ importers:
         version: 5.9.2
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@20.19.17)(tsx@4.20.5)
+        version: 3.2.4(@types/node@20.19.17)(tsx@4.20.6)
 
   packages/db:
     dependencies:
@@ -653,8 +653,8 @@ importers:
         specifier: ^8.56.0
         version: 8.57.1
       tsx:
-        specifier: ^4.6.2
-        version: 4.20.5
+        specifier: ^4.20.6
+        version: 4.20.6
       typescript:
         specifier: ^5.3.3
         version: 5.9.2
@@ -7178,7 +7178,7 @@ packages:
       std-env: 3.9.0
       test-exclude: 7.0.1
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/node@20.19.17)(tsx@4.20.5)
+      vitest: 3.2.4(@types/node@20.19.17)(tsx@4.20.6)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -7215,7 +7215,7 @@ packages:
       '@vitest/spy': 3.2.4
       estree-walker: 3.0.3
       magic-string: 0.30.19
-      vite: 7.1.7(@types/node@20.19.17)(tsx@4.20.5)
+      vite: 7.1.7(@types/node@20.19.17)(tsx@4.20.6)
     dev: true
 
   /@vitest/pretty-format@3.2.4:
@@ -17124,8 +17124,8 @@ packages:
   /tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
-  /tsx@4.20.5:
-    resolution: {integrity: sha512-+wKjMNU9w/EaQayHXb7WA7ZaHY6hN8WgfvHNQ3t1PnU91/7O8TcTnIhCDYTZwnt8JsO9IBqZ30Ln1r7pPF52Aw==}
+  /tsx@4.20.6:
+    resolution: {integrity: sha512-ytQKuwgmrrkDTFP4LjR0ToE2nqgy886GpvRSpU0JAnrdBYppuY5rLkRUYPU1yCryb24SsKBTL/hlDQAEFVwtZg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:
@@ -17621,7 +17621,7 @@ packages:
       - terser
     dev: true
 
-  /vite-node@3.2.4(@types/node@20.19.17)(tsx@4.20.5):
+  /vite-node@3.2.4(@types/node@20.19.17)(tsx@4.20.6):
     resolution: {integrity: sha512-EbKSKh+bh1E1IFxeO0pg1n4dvoOTt0UDiXMd/qn++r98+jPO1xtJilvXldeuQ8giIB5IkpjCgMleHMNEsGH6pg==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
@@ -17630,7 +17630,7 @@ packages:
       debug: 4.4.3
       es-module-lexer: 1.7.0
       pathe: 2.0.3
-      vite: 7.1.7(@types/node@20.19.17)(tsx@4.20.5)
+      vite: 7.1.7(@types/node@20.19.17)(tsx@4.20.6)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -17685,7 +17685,7 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /vite@7.1.7(@types/node@20.19.17)(tsx@4.20.5):
+  /vite@7.1.7(@types/node@20.19.17)(tsx@4.20.6):
     resolution: {integrity: sha512-VbA8ScMvAISJNJVbRDTJdCwqQoAareR/wutevKanhR2/1EkoXVZVkkORaYm/tNVCjP/UDTKtcw3bAkwOUdedmA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
@@ -17732,7 +17732,7 @@ packages:
       postcss: 8.5.6
       rollup: 4.52.2
       tinyglobby: 0.2.15
-      tsx: 4.20.5
+      tsx: 4.20.6
     optionalDependencies:
       fsevents: 2.3.3
     dev: true
@@ -17794,7 +17794,7 @@ packages:
       - terser
     dev: true
 
-  /vitest@3.2.4(@types/node@20.19.17)(tsx@4.20.5):
+  /vitest@3.2.4(@types/node@20.19.17)(tsx@4.20.6):
     resolution: {integrity: sha512-LUCP5ev3GURDysTWiP47wRRUpLKMOfPh+yKTx3kVIEiu5KOMeqzpnYNsKyOoVrULivR8tLcks4+lga33Whn90A==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
@@ -17843,8 +17843,8 @@ packages:
       tinyglobby: 0.2.15
       tinypool: 1.1.1
       tinyrainbow: 2.0.0
-      vite: 7.1.7(@types/node@20.19.17)(tsx@4.20.5)
-      vite-node: 3.2.4(@types/node@20.19.17)(tsx@4.20.5)
+      vite: 7.1.7(@types/node@20.19.17)(tsx@4.20.6)
+      vite-node: 3.2.4(@types/node@20.19.17)(tsx@4.20.6)
       why-is-node-running: 2.3.0
     transitivePeerDependencies:
       - jiti
