@@ -62,3 +62,14 @@
 - Run one-shot assignment: `node scripts/linear-agent-coordination.js revenue-loop [limit]`.
   - Finds issues labeled `opportunity`, sorts by priority, assigns “Outreach: …” agent tasks to the least-busy agent with labels `agent-task,outreach`.
 - Monitor and resume via the dashboard’s Workflow Status card.
+
+### Scheduler Jobs
+
+- Prospecting (every 15m): pulls candidates from GitHub/Reddit and creates `[OPP/SOURCE]` Linear issues labeled `opportunity` (deduped by title/url). Trigger manually via `POST /admin/scheduler/trigger {"jobName":"prospecting"}`.
+- Revenue Loop (every 10m): converts `opportunity` issues into `Outreach:` tasks (labels `agent-task,outreach`). Trigger manually via `POST /admin/scheduler/trigger {"jobName":"revenue-loop"}`.
+
+### Env Vars
+
+- Linear: `LINEAR_API_KEY`, `LINEAR_TEAM_ID`
+- Prospecting: `GITHUB_TOKEN` (optional), `GITHUB_SEARCH_QUERY`, `REDDIT_SUBREDDIT`
+- Email: `RESEND_API_KEY` or SMTP (SES) — `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_SECURE`, plus `FROM_EMAIL`, `REPLY_TO_EMAIL`

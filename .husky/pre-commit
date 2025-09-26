@@ -1,6 +1,45 @@
 #!/usr/bin/env sh
 . "$(dirname "$0")/_/h"
 
-echo "Running pre-commit checks (lint-staged)"
-pnpm -w exec lint-staged
+echo "🚀 Running pre-commit validation..."
+
+# Check if we're in a git repository
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+  echo "❌ Not in a git repository"
+  exit 1
+fi
+
+# Get the list of staged files
+STAGED_FILES=$(git diff --cached --name-only)
+
+if [ -z "$STAGED_FILES" ]; then
+  echo "⚠️  No staged files found"
+  exit 0
+fi
+
+echo "📁 Found staged files:"
+echo "$STAGED_FILES" | sed 's/^/  - /'
+
+# Run trunk check on staged files if trunk is available
+if command -v trunk >/dev/null 2>&1; then
+  echo "🔍 Running Trunk checks..."
+  if ! trunk check --upstream; then
+    echo "❌ Trunk checks failed"
+    exit 1
+  fi
+  echo "✅ Trunk checks passed"
+else
+  echo "⚠️  Trunk CLI not found, skipping trunk checks"
+fi
+
+# Run lint-staged for comprehensive linting and formatting
+echo "🔧 Running lint-staged checks..."
+if ! pnpm -w exec lint-staged; then
+  echo "❌ lint-staged checks failed"
+  echo "💡 Try running 'pnpm lint' and 'pnpm format' to fix issues"
+  exit 1
+fi
+
+echo "✅ All pre-commit checks passed!"
+echo "🎉 Ready to commit!"
 

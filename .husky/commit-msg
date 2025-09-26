@@ -1,6 +1,30 @@
 #!/usr/bin/env sh
 . "$(dirname "$0")/_/h"
 
-echo "Validating commit message with commitlint"
-pnpm -w exec commitlint --edit "$1"
+echo "📝 Validating commit message..."
+
+# Check if commitlint is available
+if ! pnpm -w exec commitlint --version >/dev/null 2>&1; then
+  echo "⚠️  commitlint not available, skipping commit message validation"
+  exit 0
+fi
+
+# Run commitlint validation
+if ! pnpm -w exec commitlint --edit "$1"; then
+  echo "❌ Commit message validation failed"
+  echo ""
+  echo "💡 Commit message should follow conventional commits format:"
+  echo "   <type>[optional scope]: <description>"
+  echo ""
+  echo "   Examples:"
+  echo "   feat: add new user authentication"
+  echo "   fix(api): resolve database connection issue"
+  echo "   docs: update README with installation steps"
+  echo "   refactor(core): simplify data processing logic"
+  echo ""
+  echo "   Types: feat, fix, docs, style, refactor, test, chore"
+  exit 1
+fi
+
+echo "✅ Commit message is valid!"
 

@@ -28,6 +28,42 @@ cp -r "$WEB_APP_DIR"/* "$TEMP_DEPLOY_DIR/"
 cp "$PROJECT_ROOT/package.json" "$TEMP_DEPLOY_DIR/package.json.root"
 cp "$PROJECT_ROOT/pnpm-lock.yaml" "$TEMP_DEPLOY_DIR/" 2>/dev/null || echo "No pnpm-lock.yaml found"
 
+# Copy TypeScript configuration
+if [[ -f "$WEB_APP_DIR/tsconfig.json" ]]; then
+    cp "$WEB_APP_DIR/tsconfig.json" "$TEMP_DEPLOY_DIR/"
+else
+    # Create a basic tsconfig.json if it doesn't exist
+    cat > "$TEMP_DEPLOY_DIR/tsconfig.json" << 'TSCONFIG_EOF'
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "es6"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+TSCONFIG_EOF
+fi
+
 echo "⚙️  Step 3: Creating standalone package.json..."
 
 # Create a standalone package.json for the web app
@@ -86,7 +122,7 @@ cat > "$TEMP_DEPLOY_DIR/package.json" << 'EOF'
     "@types/node": "^20.10.6",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
-    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.16.0",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.56.0",

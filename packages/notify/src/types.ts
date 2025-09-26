@@ -204,6 +204,12 @@ export interface EmailConfig {
   fromEmail?: string;
   fromName?: string;
   replyTo?: string;
+  // SMTP fallback (e.g., SES SMTP creds)
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpUser?: string;
+  smtpPass?: string;
+  smtpSecure?: boolean;
 }
 
 // SMS configuration

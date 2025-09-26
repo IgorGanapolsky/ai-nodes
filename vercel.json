@@ -6,7 +6,7 @@
   },
   "ignoreCommand": "git diff HEAD^ HEAD --quiet -- apps/web packages/core packages/db packages/utils package.json pnpm-lock.yaml",
   "functions": {
-    "apps/web/src/app/api/**/*": {
+    "apps/web/app/api/**/*": {
       "maxDuration": 30
     }
   },

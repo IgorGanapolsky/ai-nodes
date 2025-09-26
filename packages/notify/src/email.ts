@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -13,6 +14,7 @@ const __dirname = dirname(__filename);
 
 export class EmailNotifier {
   private resend: Resend | null = null;
+  private smtp: nodemailer.Transporter | null = null;
   private config: EmailConfig;
 
   constructor(apiKey?: string, config: EmailConfig = {}) {
@@ -21,10 +23,22 @@ export class EmailNotifier {
       fromEmail: config.fromEmail || process.env.FROM_EMAIL || 'noreply@depinautopilot.com',
       fromName: config.fromName || 'DePIN Autopilot',
       replyTo: config.replyTo || process.env.REPLY_TO_EMAIL,
+      smtpHost: config.smtpHost || process.env.SMTP_HOST,
+      smtpPort: config.smtpPort || (process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : undefined),
+      smtpUser: config.smtpUser || process.env.SMTP_USER,
+      smtpPass: config.smtpPass || process.env.SMTP_PASS,
+      smtpSecure: config.smtpSecure ?? (process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : undefined),
     };
 
     if (this.config.resendApiKey) {
       this.resend = new Resend(this.config.resendApiKey);
+    } else if (this.config.smtpHost && this.config.smtpPort && this.config.smtpUser && this.config.smtpPass) {
+      this.smtp = nodemailer.createTransport({
+        host: this.config.smtpHost,
+        port: this.config.smtpPort,
+        secure: this.config.smtpSecure ?? (this.config.smtpPort === 465),
+        auth: { user: this.config.smtpUser, pass: this.config.smtpPass },
+      });
     }
   }
 
@@ -32,35 +46,49 @@ export class EmailNotifier {
    * Check if email notifications are configured and available
    */
   public isAvailable(): boolean {
-    return this.resend !== null && !!this.config.fromEmail;
+    return (this.resend !== null || this.smtp !== null) && !!this.config.fromEmail;
   }
 
   /**
    * Send a basic email
    */
   public async send(to: string, subject: string, html: string): Promise<void> {
-    if (!this.resend) {
-      throw new EmailNotificationError('Email service not configured');
+    if (this.resend) {
+      try {
+        const result = await this.resend.emails.send({
+          from: `${this.config.fromName} <${this.config.fromEmail}>`,
+          to: [to],
+          subject,
+          html,
+          replyTo: this.config.replyTo,
+        });
+        if (result.error) {
+          throw new EmailNotificationError(`Resend API error: ${result.error.message}`);
+        }
+        return;
+      } catch (error) {
+        if (error instanceof EmailNotificationError) throw error;
+        throw new EmailNotificationError('Failed to send email', error as Error);
+      }
     }
 
-    try {
-      const result = await this.resend.emails.send({
-        from: `${this.config.fromName} <${this.config.fromEmail}>`,
-        to: [to],
-        subject,
-        html,
-        replyTo: this.config.replyTo,
-      });
-
-      if (result.error) {
-        throw new EmailNotificationError(`Resend API error: ${result.error.message}`);
+    if (this.smtp) {
+      try {
+        await this.smtp.sendMail({
+          from: `${this.config.fromName} <${this.config.fromEmail}>`,
+          to,
+          subject,
+          html,
+          replyTo: this.config.replyTo,
+        });
+        return;
+      } catch (error) {
+        if (error instanceof EmailNotificationError) throw error;
+        throw new EmailNotificationError('Failed to send email via SMTP', error as Error);
       }
-    } catch (error) {
-      if (error instanceof EmailNotificationError) {
-        throw error;
-      }
-      throw new EmailNotificationError('Failed to send email', error as Error);
     }
+
+    throw new EmailNotificationError('Email service not configured');
   }
 
   /**
