@@ -144,11 +144,14 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
         if (!dryRun && !scheduledFor) {
           // TODO: Queue the repricing job for immediate execution
-          fastify.log.info({
-            jobId,
-            strategy,
-            devicesAffected: response.devicesAffected,
-          }, 'Queued repricing job');
+          fastify.log.info(
+            {
+              jobId,
+              strategy,
+              devicesAffected: response.devicesAffected,
+            },
+            'Queued repricing job',
+          );
         } else if (scheduledFor) {
           // TODO: Schedule the repricing job for later execution
           fastify.log.info({ jobId, scheduledFor }, 'Scheduled repricing job');
@@ -198,12 +201,15 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
           })),
         };
 
-        fastify.log.info({
-          jobId,
-          action,
-          devicesAffected: deviceIds.length,
-          scheduledFor: response.scheduledFor,
-        }, 'Queued maintenance job');
+        fastify.log.info(
+          {
+            jobId,
+            action,
+            devicesAffected: deviceIds.length,
+            scheduledFor: response.scheduledFor,
+          },
+          'Queued maintenance job',
+        );
 
         return reply.status(202).send(response);
       } catch (error) {
@@ -257,11 +263,14 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
           ],
         };
 
-        fastify.log.info({
-          jobId,
-          optimizationType,
-          devicesAffected: response.devicesAffected,
-        }, 'Queued optimization job');
+        fastify.log.info(
+          {
+            jobId,
+            optimizationType,
+            devicesAffected: response.devicesAffected,
+          },
+          'Queued optimization job',
+        );
 
         return reply.status(202).send(response);
       } catch (error) {
@@ -301,7 +310,10 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
       return reply.send(jobStatus);
     } catch (error) {
-      fastify.log.error(error, `Error fetching job status for ${(request.params as { jobId: string }).jobId}`);
+      fastify.log.error(
+        error,
+        `Error fetching job status for ${(request.params as { jobId: string }).jobId}`,
+      );
       return reply.status(404).send({
         error: 'Not found',
         message: 'Job not found',
@@ -312,7 +324,12 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
   // GET /actions/jobs - List all jobs
   fastify.get('/jobs', async (request, reply) => {
     try {
-      const { status: _status, type: _type, limit = 10, page = 1 } = request.query as { status?: string; type?: string; limit?: number; page?: number };
+      const {
+        status: _status,
+        type: _type,
+        limit = 10,
+        page = 1,
+      } = request.query as { status?: string; type?: string; limit?: number; page?: number };
 
       // TODO: Replace with actual job listing logic
       const mockJobs = [

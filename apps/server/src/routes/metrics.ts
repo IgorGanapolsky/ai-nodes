@@ -69,7 +69,14 @@ const metricRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
     },
     async (request, reply) => {
       try {
-        const { deviceId, ownerId: _ownerId, startDate, endDate, granularity, metricType } = request.query;
+        const {
+          deviceId,
+          ownerId: _ownerId,
+          startDate,
+          endDate,
+          granularity,
+          metricType,
+        } = request.query;
 
         // Generate mock data based on query parameters
         const now = new Date();

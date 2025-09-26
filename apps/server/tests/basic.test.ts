@@ -31,4 +31,3 @@ describe('API basics', () => {
     expect(body).toHaveProperty('pagination');
   });
 });
-

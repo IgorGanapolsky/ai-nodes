@@ -11,7 +11,7 @@ export async function basicAuth(fastify: FastifyInstance) {
   const config: AuthConfig = {
     username: process.env.ADMIN_USERNAME || 'admin',
     password: process.env.ADMIN_PASSWORD || crypto.randomBytes(16).toString('hex'),
-    realm: 'DePIN Autopilot Admin'
+    realm: 'DePIN Autopilot Admin',
   };
 
   // Log credentials on startup (only in dev)
@@ -26,7 +26,11 @@ export async function basicAuth(fastify: FastifyInstance) {
 
   fastify.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
     // Skip auth for health checks
-    if (request.url === '/health' || request.url === '/health/live' || request.url === '/health/ready') {
+    if (
+      request.url === '/health' ||
+      request.url === '/health/live' ||
+      request.url === '/health/ready'
+    ) {
       return;
     }
 
@@ -77,7 +81,7 @@ export async function rateLimitActions(fastify: FastifyInstance) {
     if (!limit || now > limit.resetTime) {
       limits.set(clientId, {
         count: 1,
-        resetTime: now + WINDOW_MS
+        resetTime: now + WINDOW_MS,
       });
       return;
     }
@@ -89,7 +93,7 @@ export async function rateLimitActions(fastify: FastifyInstance) {
         .header('Retry-After', String(retryAfter))
         .send({
           error: 'Too Many Requests',
-          message: `Rate limit exceeded. Try again in ${retryAfter} seconds.`
+          message: `Rate limit exceeded. Try again in ${retryAfter} seconds.`,
         });
       return;
     }

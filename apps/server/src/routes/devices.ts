@@ -300,11 +300,14 @@ const deviceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
           updatedAt: new Date().toISOString(),
         };
 
-        fastify.log.info({
-          deviceId: newDevice.id,
-          ownerId: newDevice.ownerId,
-          type: newDevice.type,
-        }, 'Created new device');
+        fastify.log.info(
+          {
+            deviceId: newDevice.id,
+            ownerId: newDevice.ownerId,
+            type: newDevice.type,
+          },
+          'Created new device',
+        );
 
         return reply.status(201).send(newDevice);
       } catch (error) {

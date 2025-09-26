@@ -4,7 +4,7 @@ import { z } from 'zod';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-11-20.acacia'
+  apiVersion: '2024-11-20.acacia',
 });
 
 const createInvoiceSchema = z.object({
@@ -87,7 +87,7 @@ const invoiceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fa
           message: 'Could not generate payment link',
         });
       }
-    }
+    },
   );
 
   // GET /invoices/:statementId - Get invoice for statement
@@ -99,7 +99,7 @@ const invoiceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fa
       const mockInvoice = {
         id: `inv_${statementId}`,
         statementId,
-        amount: 150.00,
+        amount: 150.0,
         currency: 'USD',
         status: 'pending',
         paymentUrl: `https://buy.stripe.com/test_${statementId}`,
@@ -126,11 +126,7 @@ const invoiceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fa
     }
 
     try {
-      const event = stripe.webhooks.constructEvent(
-        request.body as string,
-        sig,
-        webhookSecret
-      );
+      const event = stripe.webhooks.constructEvent(request.body as string, sig, webhookSecret);
 
       switch (event.type) {
         case 'payment_intent.succeeded':

@@ -43,7 +43,11 @@ describe('Owners CRUD (mock)', () => {
   });
 
   it('PUT /owners/:id updates an owner (mocked)', async () => {
-    const res = await app.inject({ method: 'PUT', url: `/owners/${createdId}`, payload: { name: 'Alice Updated' } });
+    const res = await app.inject({
+      method: 'PUT',
+      url: `/owners/${createdId}`,
+      payload: { name: 'Alice Updated' },
+    });
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body).toHaveProperty('id', createdId);
@@ -85,7 +89,11 @@ describe('Devices CRUD (mock)', () => {
   });
 
   it('PUT /devices/:id updates a device pricing (mocked)', async () => {
-    const res = await app.inject({ method: 'PUT', url: `/devices/${createdId}`, payload: { pricing: { hourlyRate: 2.75 } } });
+    const res = await app.inject({
+      method: 'PUT',
+      url: `/devices/${createdId}`,
+      payload: { pricing: { hourlyRate: 2.75 } },
+    });
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body).toHaveProperty('id', createdId);
@@ -96,4 +104,3 @@ describe('Devices CRUD (mock)', () => {
     expect(res.statusCode).toBe(204);
   });
 });
-

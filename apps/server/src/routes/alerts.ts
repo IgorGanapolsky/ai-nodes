@@ -357,12 +357,15 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
 
         // TODO: Save to database, send notifications, etc.
 
-        fastify.log.info({
-          alertId,
-          ownerId: alertData.ownerId,
-          type: alertData.type,
-          severity: alertData.severity,
-        }, 'Created new alert');
+        fastify.log.info(
+          {
+            alertId,
+            ownerId: alertData.ownerId,
+            type: alertData.type,
+            severity: alertData.severity,
+          },
+          'Created new alert',
+        );
 
         return reply.status(201).send(newAlert);
       } catch (error) {
@@ -534,11 +537,14 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
           updatedAt: new Date().toISOString(),
         }));
 
-        fastify.log.info({
-          action,
-          alertCount: alertIds.length,
-          performer: resolvedBy,
-        }, 'Bulk alert operation');
+        fastify.log.info(
+          {
+            action,
+            alertCount: alertIds.length,
+            performer: resolvedBy,
+          },
+          'Bulk alert operation',
+        );
 
         return reply.send({
           results,
