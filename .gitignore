@@ -8,6 +8,10 @@ build
 .next
 .expo
 *.tsbuildinfo
+tsconfig.tsbuildinfo
+*.d.ts
+*.d.ts.map
+*.js.map
 
 # Database
 *.db
@@ -34,6 +38,7 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+logs/
 
 # Testing
 coverage
@@ -47,3 +52,7 @@ coverage
 tmp
 temp
 .vercel
+.env.vercel.local
+gitpod
+*.backup
+*_backup.*

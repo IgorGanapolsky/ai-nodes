@@ -36,7 +36,7 @@
     "pino": "^8.17.2",
     "playwright": "^1.55.1",
     "stripe": "^18.5.0",
-    "zod": "^4.1.11"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.10.6",

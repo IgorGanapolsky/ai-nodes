@@ -7,9 +7,29 @@
  * by creating and managing tasks in Linear.
  */
 
-// Linear integration is dynamically imported only when needed
 import fs from 'fs';
 import path from 'path';
+// Try to load .env manually if not already loaded
+(() => {
+  if (!process.env.LINEAR_API_KEY) {
+    try {
+      const envPath = path.join(process.cwd(), '.env');
+      if (fs.existsSync(envPath)) {
+        const raw = fs.readFileSync(envPath, 'utf8');
+        raw.split(/\r?\n/).forEach((line) => {
+          const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
+          if (!m) return;
+          const key = m[1];
+          let val = m[2];
+          if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+            val = val.slice(1, -1);
+          }
+          if (!process.env[key]) process.env[key] = val;
+        });
+      }
+    } catch {}
+  }
+})();
 
 // Configuration
 const LINEAR_API_KEY = process.env.LINEAR_API_KEY;
@@ -19,7 +39,7 @@ const LINEAR_TEAM_ID = process.env.LINEAR_TEAM_ID;
 let _agentCoordination = null;
 async function getAgentCoordination() {
   if (_agentCoordination) return _agentCoordination;
-  const mod = await import('../packages/core/dist/linear/index.js');
+  const mod = await import('../packages/core/dist/linear.js');
   const linearService = new mod.LinearService({
     apiKey: LINEAR_API_KEY || '',
     teamId: LINEAR_TEAM_ID,
@@ -31,7 +51,7 @@ async function getAgentCoordination() {
 let _linearService = null;
 async function getLinearService() {
   if (_linearService) return _linearService;
-  const mod = await import('../packages/core/dist/linear/index.js');
+  const mod = await import('../packages/core/dist/linear.js');
   _linearService = new mod.LinearService({
     apiKey: LINEAR_API_KEY || '',
     teamId: LINEAR_TEAM_ID,
@@ -497,7 +517,7 @@ async function main() {
           process.exit(1);
         }
         // Dynamically import to avoid ESM resolution at top-level
-        const mod = await import('../packages/core/dist/linear/index.js');
+        const mod = await import('../packages/core/dist/linear.js');
         const linear = new mod.LinearService({
           apiKey: LINEAR_API_KEY || '',
           teamId: LINEAR_TEAM_ID,

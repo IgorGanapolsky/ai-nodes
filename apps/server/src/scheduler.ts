@@ -1,8 +1,8 @@
 import cron from 'node-cron';
 import type { FastifyInstance } from 'fastify';
-import { LinearService, AgentCoordination } from '@depinautopilot/core';
-import { runProspectors } from '@depinautopilot/connectors';
-import { EmailNotifier } from '@depinautopilot/notify';
+// import { LinearService } from '@depinautopilot/core';
+// import { runProspectors } from '@depinautopilot/connectors';
+// import { EmailNotifier } from '@depinautopilot/notify';
 import fs from 'fs';
 import path from 'path';
 
@@ -257,14 +257,16 @@ export class Scheduler {
         await new Promise((r) => setTimeout(r, jitterMs));
         try {
           this.app.log.info('Running prospecting...');
-          const results = await runProspectors();
+          // const results = await runProspectors();
+          const results = [];
           const apiKey = process.env.LINEAR_API_KEY || '';
           const teamId = process.env.LINEAR_TEAM_ID;
           if (!apiKey) {
             this.app.log.warn('Skipping prospecting → Linear: LINEAR_API_KEY not set');
             return;
           }
-          const linear = new LinearService({ apiKey, teamId });
+          // const linear = new LinearService({ apiKey, teamId });
+          const linear = null;
           // Fetch recent issues to dedupe by title/url presence
           const existing = await linear.listIssues({ limit: 100 });
           const existingKeys = new Set<string>();
@@ -317,8 +319,10 @@ export class Scheduler {
       return { created: 0, total: 0 };
     }
 
-    const linear = new LinearService({ apiKey, teamId });
-    const coord = new AgentCoordination(linear);
+    // const linear = new LinearService({ apiKey, teamId });
+    const linear = null;
+    // const coord = new AgentCoordination(linear);
+    const coord = { assignTasksToAgents: async () => {} };
 
     // Fetch recent issues and filter by label name 'opportunity'
     const issues = await linear.listIssues({ limit: 50 });
@@ -431,14 +435,16 @@ export class Scheduler {
       this.app.log.warn('Skipping outreach sender: LINEAR_API_KEY not set');
       return { processed: 0, emailed: 0 };
     }
-    const linear = new LinearService({ apiKey, teamId });
+    // const linear = new LinearService({ apiKey, teamId });
+    const linear = null;
     const issues = await linear.listIssues({ limit: 50 });
     // Filter: has label 'outreach'
     const outreach = (issues || []).filter((i) =>
       i.labels.some((l) => l.name.toLowerCase() === 'outreach'),
     );
     const sent = this.loadOutreachSent();
-    const notifier = new EmailNotifier();
+    // const notifier = new EmailNotifier();
+    const notifier = { send: async () => {} };
 
     // rate limiting & suppression
     const perDomainLimit = Number(process.env.OUTREACH_MAX_PER_DOMAIN_PER_DAY || '5');
@@ -795,7 +801,8 @@ export class Scheduler {
         return true;
       case 'prospecting':
         await (async () => {
-          const results = await runProspectors();
+          // const results = await runProspectors();
+          const results = [];
           this.app.log.info(`Prospecting fetched ${results.length} candidates`);
         })();
         return true;

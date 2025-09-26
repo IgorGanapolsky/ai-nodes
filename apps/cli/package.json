@@ -23,8 +23,6 @@
     "@depinautopilot/db": "workspace:*",
     "@depinautopilot/notify": "workspace:*",
     "@depinautopilot/utils": "workspace:*",
-    "@types/table": "^6.3.2",
-    "@types/update-notifier": "^6.0.8",
     "axios": "^1.6.2",
     "boxen": "^7.1.1",
     "chalk": "^5.3.0",

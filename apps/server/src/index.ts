@@ -2,9 +2,15 @@ import { buildApp } from './app.js';
 import { Scheduler } from './scheduler.js';
 import { basicAuth, rateLimitActions } from './middleware/auth.js';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
 
-// Load environment variables
-dotenv.config();
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from root directory
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // Environment configuration
 const config = {

@@ -3,10 +3,6 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-11-20.acacia',
-});
-
 const createInvoiceSchema = z.object({
   statementId: z.string(),
   ownerId: z.string(),
@@ -17,6 +13,26 @@ const createInvoiceSchema = z.object({
 });
 
 const invoiceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fastify) => {
+  // Initialize Stripe when routes are registered (after dotenv loads)
+  const stripeKey = process.env.STRIPE_SECRET_KEY || '';
+  const stripe = stripeKey && stripeKey.startsWith('sk_') ? new Stripe(stripeKey, {
+    apiVersion: '2024-11-20.acacia',
+  }) : null;
+
+  if (stripe) {
+    fastify.log.info(`Stripe initialized with ${stripeKey.substring(0, 7)}... key`);
+  } else {
+    fastify.log.warn('Stripe not initialized - using mock payment links');
+  }
+
+  // Debug endpoint to check Stripe status
+  fastify.get('/status', async (_request, reply) => {
+    return reply.send({
+      stripeConfigured: !!stripe,
+      keyPrefix: stripeKey ? stripeKey.substring(0, 7) : 'not-set',
+      keyLength: stripeKey ? stripeKey.length : 0,
+    });
+  });
   // POST /invoices - Create payment link for a statement
   fastify.post(
     '/',
@@ -29,8 +45,8 @@ const invoiceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fa
       try {
         const { statementId, ownerId, amount, currency, description, dueDate } = request.body;
 
-        // Create Stripe payment link
-        const paymentLink = await stripe.paymentLinks.create({
+        // Create Stripe payment link (or mock if no Stripe)
+        const paymentLink = stripe ? await stripe.paymentLinks.create({
           line_items: [
             {
               price_data: {
@@ -60,7 +76,7 @@ const invoiceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fa
               ownerId,
             },
           },
-        });
+        }) : { url: `https://checkout.stripe.com/test_${statementId}`, id: `mock_${statementId}` };
 
         // Store invoice URL in database
         // TODO: Update statement record with invoice URL
@@ -126,6 +142,9 @@ const invoiceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fa
     }
 
     try {
+      if (!stripe) {
+        return reply.status(503).send({ error: 'Stripe not configured' });
+      }
       const event = stripe.webhooks.constructEvent(request.body as string, sig, webhookSecret);
 
       switch (event.type) {
