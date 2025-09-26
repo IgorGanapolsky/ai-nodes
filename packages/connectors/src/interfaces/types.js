@@ -13,7 +13,7 @@ export class ConnectorError extends Error {
     this.retryable = retryable;
   }
 }
-export var ConnectorType;
+export let ConnectorType;
 (function (ConnectorType) {
   ConnectorType['IONET'] = 'ionet';
   ConnectorType['NOSANA'] = 'nosana';

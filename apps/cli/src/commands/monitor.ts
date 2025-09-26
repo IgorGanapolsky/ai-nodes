@@ -17,7 +17,7 @@ export const monitorCommand = new Command('monitor')
           ? options.nodes.split(',').map((id: string) => id.trim())
           : null;
         let running = true;
-        let lastStates = new Map();
+        const lastStates = new Map();
 
         console.log(chalk.cyan('🔍 Starting DePIN node monitoring...'));
         if (nodeIds) {

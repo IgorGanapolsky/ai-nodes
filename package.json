@@ -2,6 +2,7 @@
   "name": "depinautopilot",
   "version": "1.0.0",
   "description": "Zero-capex DePIN Ops-as-a-Service platform for managing AI/blockchain nodes",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "turbo run dev",
@@ -25,6 +26,7 @@
     "@commitlint/config-conventional": "^19.2.0",
     "@eslint/js": "^8.57.1",
     "@types/node": "^20.11.0",
+    "@types/node-cron": "^3.0.11",
     "@typescript-eslint/eslint-plugin": "^8.44.1",
     "@typescript-eslint/parser": "^8.44.1",
     "eslint": "^8.56.0",
@@ -68,6 +70,7 @@
     "better-sqlite3": "^12.4.1",
     "chalk": "^5.6.2",
     "date-fns": "^3.0.6",
+    "dotenv": "^17.2.2",
     "drizzle-orm": "^0.44.5",
     "zod": "^4.1.11"
   }

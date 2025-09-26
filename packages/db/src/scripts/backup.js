@@ -164,8 +164,8 @@ class DatabaseBackup {
     const insertStatements = rows.map((row) => {
       const values = columnNames.map((col) => {
         const value = row[col];
-        if (value === null) return 'NULL';
-        if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
+        if (value === null) {return 'NULL';}
+        if (typeof value === 'string') {return `'${value.replace(/'/g, "''")}'`;}
         return value;
       });
       return `INSERT INTO ${tableName} (${columnNames.join(', ')}) VALUES (${values.join(', ')});`;
@@ -189,7 +189,7 @@ class DatabaseBackup {
     });
   }
   formatBytes(bytes) {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) {return '0 Bytes';}
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));

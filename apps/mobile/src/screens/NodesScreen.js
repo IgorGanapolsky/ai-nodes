@@ -97,7 +97,7 @@ const NodesScreen = () => {
     );
   };
   const filteredNodes = nodes.filter((node) => {
-    if (filterStatus === 'all') return true;
+    if (filterStatus === 'all') {return true;}
     return node.status === filterStatus;
   });
   const maintenanceNodes = nodes.filter((node) => node.status === 'maintenance').length;

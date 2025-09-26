@@ -206,8 +206,8 @@ function getSeverityColor(severity: string) {
 }
 
 function getPerformanceColor(score: number) {
-  if (score >= 90) return chalk.green;
-  if (score >= 70) return chalk.yellow;
+  if (score >= 90) {return chalk.green;}
+  if (score >= 70) {return chalk.yellow;}
   return chalk.red;
 }
 
@@ -218,8 +218,8 @@ function getTimeAgo(date: Date): string {
   const diffHours = Math.floor(diffMins / 60);
   const diffDays = Math.floor(diffHours / 24);
 
-  if (diffDays > 0) return `${diffDays}d ago`;
-  if (diffHours > 0) return `${diffHours}h ago`;
-  if (diffMins > 0) return `${diffMins}m ago`;
+  if (diffDays > 0) {return `${diffDays}d ago`;}
+  if (diffHours > 0) {return `${diffHours}h ago`;}
+  if (diffMins > 0) {return `${diffMins}m ago`;}
   return 'Just now';
 }

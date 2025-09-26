@@ -4,7 +4,7 @@
  */
 
 // Configuration utilities
-export * from './config.js';
+export * from './config';
 export {
   loadConfig,
   getConfigValue,
@@ -16,10 +16,10 @@ export {
   getCorsOrigins,
   configSchema,
   type Config,
-} from './config.js';
+} from './config';
 
 // Logging utilities
-export * from './logger.js';
+export * from './logger';
 export {
   Logger,
   getLogger,
@@ -27,10 +27,10 @@ export {
   createLoggerMiddleware,
   type LoggerOptions,
   type LogContext,
-} from './logger.js';
+} from './logger';
 
 // Error classes and utilities
-export * from './errors.js';
+export * from './errors';
 export {
   BaseError,
   BadRequestError,
@@ -52,13 +52,13 @@ export {
   isOperationalError,
   createHttpError,
   handleAsyncError,
-} from './errors.js';
+} from './errors';
 
 // Import TimeoutError separately for use in functions
-import { TimeoutError } from './errors.js';
+import { TimeoutError } from './errors';
 
 // Validation utilities
-export * from './validators.js';
+export * from './validators';
 export {
   // Schemas
   emailSchema,
@@ -105,10 +105,10 @@ export {
   type PaginationParams,
   type DateRange,
   type ValidationResult,
-} from './validators.js';
+} from './validators';
 
 // Formatting utilities
-export * from './formatters.js';
+export * from './formatters';
 export {
   formatCurrency,
   formatCrypto,
@@ -136,17 +136,17 @@ export {
   type FormatCurrencyOptions,
   type FormatNumberOptions,
   type FormatDateOptions,
-} from './formatters.js';
+} from './formatters';
 
 // Cryptographic utilities
-export * from './crypto.js';
+export * from './crypto';
 export {
   // ID generation
   generateUuid,
   generateId,
   generateToken,
   generateUrlSafeToken,
-  generateOtp,
+generateOtp,
   generateSecureRandomNumber,
   generateShortId,
   generateTimeBasedId,
@@ -186,7 +186,7 @@ export {
 
   // Types
   type IdGenerator,
-} from './crypto.js';
+} from './crypto';
 
 // Common constants
 export const COMMON_CONSTANTS = {
@@ -315,9 +315,9 @@ export function throttle<T extends (...args: any[]) => any>(
  * Deep clone an object
  */
 export function deepClone<T>(obj: T): T {
-  if (obj === null || typeof obj !== 'object') return obj;
-  if (obj instanceof Date) return new Date(obj.getTime()) as unknown as T;
-  if (obj instanceof Array) return obj.map((item) => deepClone(item)) as unknown as T;
+  if (obj === null || typeof obj !== 'object') {return obj;}
+  if (obj instanceof Date) {return new Date(obj.getTime()) as unknown as T;}
+  if (obj instanceof Array) {return obj.map((item) => deepClone(item)) as unknown as T;}
   if (typeof obj === 'object') {
     const copy: any = {};
     Object.keys(obj).forEach((key) => {
@@ -332,10 +332,10 @@ export function deepClone<T>(obj: T): T {
  * Check if object is empty
  */
 export function isEmpty(obj: any): boolean {
-  if (obj == null) return true;
-  if (Array.isArray(obj) || typeof obj === 'string') return obj.length === 0;
-  if (obj instanceof Map || obj instanceof Set) return obj.size === 0;
-  if (typeof obj === 'object') return Object.keys(obj).length === 0;
+  if (obj == null) {return true;}
+  if (Array.isArray(obj) || typeof obj === 'string') {return obj.length === 0;}
+  if (obj instanceof Map || obj instanceof Set) {return obj.size === 0;}
+  if (typeof obj === 'object') {return Object.keys(obj).length === 0;}
   return false;
 }
 

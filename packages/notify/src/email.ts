@@ -183,7 +183,7 @@ export class EmailNotifier {
         /\{\{#each (\w+)\}\}(.*?)\{\{\/each\}\}/gs,
         (match, arrayKey, content) => {
           const array = this.getNestedValue(data, arrayKey) as any[];
-          if (!Array.isArray(array)) return '';
+          if (!Array.isArray(array)) {return '';}
 
           return array
             .map((item, index) => {

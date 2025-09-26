@@ -135,7 +135,7 @@ export class RevenueShareRepository extends BaseRepository<
       }
 
       const result = await this.update(shareId, updateData);
-      if (result) paidCount++;
+      if (result) {paidCount++;}
     }
 
     return paidCount;
@@ -203,7 +203,7 @@ export class RevenueShareRepository extends BaseRepository<
     filters: RevenueShareFilters = {},
     dateRange?: { start: Date; end: Date },
   ): Promise<RevenueShareReport> {
-    let whereConditions = [];
+    const whereConditions = [];
 
     // Apply filters
     if (filters.nodeId) {

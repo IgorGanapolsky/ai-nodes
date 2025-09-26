@@ -128,12 +128,12 @@ export function formatLargeNumber(value: number, options: FormatNumberOptions = 
  * Format numbers with custom suffixes (K, M, B, T)
  */
 export function formatNumberWithSuffix(value: number, decimals: number = 2): string {
-  if (value === 0) return '0';
+  if (value === 0) {return '0';}
 
   const suffixes = ['', 'K', 'M', 'B', 'T', 'P', 'E'];
   const tier = Math.floor(Math.log10(Math.abs(value)) / 3);
 
-  if (tier === 0) return value.toFixed(decimals);
+  if (tier === 0) {return value.toFixed(decimals);}
 
   const suffix = suffixes[tier] || `e${tier * 3}`;
   const scaled = value / Math.pow(1000, tier);
@@ -213,7 +213,7 @@ export function formatDurationFromSeconds(seconds: number): string {
  * Format file size in bytes to human readable format
  */
 export function formatFileSize(bytes: number, decimals: number = 2): string {
-  if (bytes === 0) return '0 B';
+  if (bytes === 0) {return '0 B';}
 
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
@@ -252,7 +252,7 @@ export function formatPhoneNumber(phoneNumber: string, countryCode: string = 'US
  * Truncate string with ellipsis
  */
 export function truncateString(str: string, maxLength: number, ellipsis: string = '...'): string {
-  if (str.length <= maxLength) return str;
+  if (str.length <= maxLength) {return str;}
   return str.slice(0, maxLength - ellipsis.length) + ellipsis;
 }
 
@@ -265,7 +265,7 @@ export function truncateMiddle(
   endLength: number = 4,
   ellipsis: string = '...',
 ): string {
-  if (str.length <= startLength + endLength + ellipsis.length) return str;
+  if (str.length <= startLength + endLength + ellipsis.length) {return str;}
   return str.slice(0, startLength) + ellipsis + str.slice(-endLength);
 }
 

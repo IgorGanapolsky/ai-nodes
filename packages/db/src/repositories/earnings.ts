@@ -114,7 +114,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     let updatedCount = 0;
     for (const earningId of earningIds) {
       const result = await this.update(earningId, updateData);
-      if (result) updatedCount++;
+      if (result) {updatedCount++;}
     }
 
     return updatedCount;
@@ -125,7 +125,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     filters: EarningsFilters = {},
     dateRange?: { start: Date; end: Date },
   ): Promise<EarningsReport> {
-    let whereConditions = [];
+    const whereConditions = [];
 
     // Apply filters
     if (filters.nodeId) {
@@ -265,7 +265,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     endDate: Date,
     filters: EarningsFilters = {},
   ): Promise<TimeSeriesPoint[]> {
-    let whereConditions = [];
+    const whereConditions = [];
 
     // Apply date range
     const startTimestamp = Math.floor(startDate.getTime() / 1000);
@@ -358,7 +358,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     const startTimestamp = Math.floor(startDate.getTime() / 1000);
     const endTimestamp = Math.floor(endDate.getTime() / 1000);
 
-    let whereConditions = [
+    const whereConditions = [
       and(gte(this.table.timestamp, startTimestamp), lte(this.table.timestamp, endTimestamp)),
       eq(this.table.currency, currency),
     ];
@@ -409,7 +409,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
   ): Promise<
     Array<{ nodeId: string; totalEarnings: number; earningsCount: number; averageEarning: number }>
   > {
-    let whereConditions = [eq(this.table.currency, currency)];
+    const whereConditions = [eq(this.table.currency, currency)];
 
     if (dateRange) {
       const startTimestamp = Math.floor(dateRange.start.getTime() / 1000);

@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "linear": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.linear.app/sse"],
+      "env": {
+        "LINEAR_API_KEY": "${LINEAR_API_KEY}"
+      }
+    }
+  },
+  "agents": {
+    "ona": {
+      "enabled": true,
+      "servers": ["linear"],
+      "capabilities": [
+        "issue_management",
+        "project_tracking",
+        "workflow_automation",
+        "team_collaboration"
+      ],
+      "config": {
+        "autoProcess": true,
+        "agentName": "Ona Linear Agent",
+        "pollInterval": 5000
+      }
+    }
+  }
+}

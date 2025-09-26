@@ -93,7 +93,7 @@ export class UserRepository extends BaseRepository {
   // Search users
   async searchUsers(query, options = {}) {
     const searchTerm = `%${query.toLowerCase()}%`;
-    let whereConditions = [sql`lower(${this.table.email}) LIKE ${searchTerm}`];
+    const whereConditions = [sql`lower(${this.table.email}) LIKE ${searchTerm}`];
     // Add additional filters
     if (options.filters?.role) {
       if (Array.isArray(options.filters.role)) {
@@ -130,7 +130,7 @@ export class UserRepository extends BaseRepository {
     const { pagination = {}, filters = {} } = options;
     const limit = pagination.limit || 50;
     const offset = pagination.offset || 0;
-    let whereConditions = [];
+    const whereConditions = [];
     if (filters.role) {
       if (Array.isArray(filters.role)) {
         whereConditions.push(or(...filters.role.map((r) => eq(this.table.role, r))));

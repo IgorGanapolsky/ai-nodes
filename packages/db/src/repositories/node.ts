@@ -151,7 +151,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
   // Get node statistics
   async getStats(filters: NodeFilters = {}): Promise<NodeStats> {
     // Base query with filters
-    let whereConditions = [];
+    const whereConditions = [];
 
     if (filters.ownerId) {
       whereConditions.push(eq(this.table.ownerId, filters.ownerId));
@@ -239,7 +239,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
   ): Promise<QueryResult<Node>> {
     const searchTerm = `%${query.toLowerCase()}%`;
 
-    let whereConditions = [
+    const whereConditions = [
       or(
         sql`lower(${this.table.name}) LIKE ${searchTerm}`,
         sql`lower(${this.table.description}) LIKE ${searchTerm}`,
@@ -304,7 +304,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     const limit = pagination.limit || 50;
     const offset = pagination.offset || 0;
 
-    let whereConditions = [];
+    const whereConditions = [];
 
     if (filters.ownerId) {
       whereConditions.push(eq(this.table.ownerId, filters.ownerId));

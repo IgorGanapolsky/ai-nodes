@@ -320,7 +320,7 @@ export class Huddle01Connector extends BaseConnector {
   }
 
   private calculateAverageSessionDuration(sessions: any[]): number {
-    if (sessions.length === 0) return 0;
+    if (sessions.length === 0) {return 0;}
 
     const totalDuration = sessions.reduce((sum, session) => {
       return sum + (session.duration_seconds || 0);

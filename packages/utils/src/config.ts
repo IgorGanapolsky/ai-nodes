@@ -159,7 +159,7 @@ export function getRedisConfig(): {
  */
 export function getCorsOrigins(): string[] {
   const origins = getConfigValue('CORS_ORIGINS');
-  if (!origins) return ['*'];
+  if (!origins) {return ['*'];}
   return origins.split(',').map((origin) => origin.trim());
 }
 

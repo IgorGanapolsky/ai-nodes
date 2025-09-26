@@ -346,9 +346,9 @@ function createScenarioCommand(): Command {
 
           scenarioParams = answers;
         } else {
-          if (options.devices) scenarioParams.devices = parseInt(options.devices);
-          if (options.utilization) scenarioParams.utilization = parseFloat(options.utilization);
-          if (options.price) scenarioParams.pricePerDevice = parseFloat(options.price);
+          if (options.devices) {scenarioParams.devices = parseInt(options.devices);}
+          if (options.utilization) {scenarioParams.utilization = parseFloat(options.utilization);}
+          if (options.price) {scenarioParams.pricePerDevice = parseFloat(options.price);}
         }
 
         const spinner = ora('Running scenario simulation...').start();

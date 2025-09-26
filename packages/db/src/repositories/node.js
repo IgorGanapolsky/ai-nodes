@@ -90,7 +90,7 @@ export class NodeRepository extends BaseRepository {
   // Get node statistics
   async getStats(filters = {}) {
     // Base query with filters
-    let whereConditions = [];
+    const whereConditions = [];
     if (filters.ownerId) {
       whereConditions.push(eq(this.table.ownerId, filters.ownerId));
     }
@@ -156,7 +156,7 @@ export class NodeRepository extends BaseRepository {
   // Search nodes by name or description
   async search(query, options = {}) {
     const searchTerm = `%${query.toLowerCase()}%`;
-    let whereConditions = [
+    const whereConditions = [
       or(
         sql`lower(${this.table.name}) LIKE ${searchTerm}`,
         sql`lower(${this.table.description}) LIKE ${searchTerm}`,
@@ -208,7 +208,7 @@ export class NodeRepository extends BaseRepository {
     const { pagination = {}, filters = {} } = options;
     const limit = pagination.limit || 50;
     const offset = pagination.offset || 0;
-    let whereConditions = [];
+    const whereConditions = [];
     if (filters.ownerId) {
       whereConditions.push(eq(this.table.ownerId, filters.ownerId));
     }

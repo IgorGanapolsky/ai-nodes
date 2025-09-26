@@ -47,3 +47,10 @@
 
 - Prefer `pnpm --filter` for targeted work to speed feedback loops.
 - When editing shared packages, run an app in watch mode to verify integration (`pnpm --filter @depinautopilot/server dev`).
+
+## Agent Resume Flow
+
+- Use `node scripts/linear-agent-coordination.js create-workflow` to scaffold agent tasks and coordination. The script checkpoints progress to `logs/agents/linear-coordination-state.json` so it can resume after crashes.
+- Resume at any time with `node scripts/linear-agent-coordination.js resume`.
+- Inspect progress with `node scripts/linear-agent-coordination.js status`.
+- Reset local checkpoints with `node scripts/linear-agent-coordination.js reset-state` (does not delete Linear issues).

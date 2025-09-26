@@ -84,8 +84,8 @@ export const NotificationUtils = {
   validatePreferences(preferences: any): boolean {
     try {
       // Basic validation - could be enhanced with Zod schemas
-      if (!preferences || typeof preferences !== 'object') return false;
-      if (!preferences.channels || !preferences.types) return false;
+      if (!preferences || typeof preferences !== 'object') {return false;}
+      if (!preferences.channels || !preferences.types) {return false;}
       return true;
     } catch {
       return false;

@@ -242,8 +242,8 @@ class DatabaseBackup {
     const insertStatements = rows.map((row: any) => {
       const values = columnNames.map((col) => {
         const value = row[col];
-        if (value === null) return 'NULL';
-        if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
+        if (value === null) {return 'NULL';}
+        if (typeof value === 'string') {return `'${value.replace(/'/g, "''")}'`;}
         return value;
       });
 
@@ -275,7 +275,7 @@ class DatabaseBackup {
   }
 
   private formatBytes(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) {return '0 Bytes';}
 
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];

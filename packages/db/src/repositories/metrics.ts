@@ -423,7 +423,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
       const change = newValue - oldValue;
       const changePercent = oldValue > 0 ? (change / oldValue) * 100 : 0;
 
-      if (Math.abs(changePercent) < 5) return { trend: 'stable' as const, change: changePercent };
+      if (Math.abs(changePercent) < 5) {return { trend: 'stable' as const, change: changePercent };}
       return {
         trend: changePercent > 0 ? ('increasing' as const) : ('decreasing' as const),
         change: changePercent,

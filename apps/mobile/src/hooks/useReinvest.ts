@@ -17,7 +17,7 @@ export const useReinvest = () => {
   const { settings } = useSettings();
 
   const triggerReinvest = useCallback(async () => {
-    if (isReinvesting) return { success: false, error: 'Reinvest already in progress' };
+    if (isReinvesting) {return { success: false, error: 'Reinvest already in progress' };}
 
     setIsReinvesting(true);
 
@@ -73,7 +73,7 @@ export const useReinvest = () => {
 
   const checkAutoReinvest = useCallback(
     async (currentEarnings: number) => {
-      if (!settings.autoReinvest || isReinvesting) return;
+      if (!settings.autoReinvest || isReinvesting) {return;}
 
       if (currentEarnings >= settings.reinvestThreshold) {
         console.log(

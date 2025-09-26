@@ -123,7 +123,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
 
     for (const alertId of alertIds) {
       const result = await this.resolveAlert(alertId, resolvedBy);
-      if (result) resolvedCount++;
+      if (result) {resolvedCount++;}
     }
 
     return resolvedCount;
@@ -140,7 +140,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
 
   // Get alert statistics
   async getAlertStats(filters: Omit<AlertFilters, 'resolved'> = {}): Promise<AlertStats> {
-    let whereConditions = [];
+    const whereConditions = [];
 
     // Apply filters
     if (filters.nodeId) {
@@ -262,7 +262,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
 
     const { filters: _, pagination } = options;
 
-    let whereConditions = [sql`${this.table.timestamp} >= ${cutoffTimestamp}`];
+    const whereConditions = [sql`${this.table.timestamp} >= ${cutoffTimestamp}`];
 
     // Apply additional filters
     if (options.filters?.nodeId) {

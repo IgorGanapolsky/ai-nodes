@@ -44,7 +44,7 @@ export class CacheManager {
    */
   private simpleHash(str: string): string {
     let hash = 0;
-    if (str.length === 0) return hash.toString();
+    if (str.length === 0) {return hash.toString();}
 
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
@@ -188,14 +188,9 @@ export class CacheManager {
     }
 
     // Cache miss - fetch data and cache it
-    try {
-      const data = await fetchFunction();
-      await this.set(connectorType, method, data, ttl, params);
-      return data;
-    } catch (error) {
-      // Don't cache errors, but re-throw them
-      throw error;
-    }
+    const data = await fetchFunction();
+    await this.set(connectorType, method, data, ttl, params);
+    return data;
   }
 
   /**

@@ -332,10 +332,10 @@ function createUpdateCommand(): Command {
 
           updateData = answers;
         } else {
-          if (options.name) updateData.name = options.name;
-          if (options.type) updateData.type = options.type;
+          if (options.name) {updateData.name = options.name;}
+          if (options.type) {updateData.type = options.type;}
           if (options.status)
-            updateData.status = options.status as 'online' | 'offline' | 'maintenance';
+            {updateData.status = options.status as 'online' | 'offline' | 'maintenance';}
 
           if (Object.keys(updateData).length === 0) {
             console.log(chalk.yellow('No updates provided. Use --interactive for guided update.'));

@@ -9,7 +9,7 @@ export const useReinvest = () => {
   const [reinvestHistory, setReinvestHistory] = useState([]);
   const { settings } = useSettings();
   const triggerReinvest = useCallback(async () => {
-    if (isReinvesting) return { success: false, error: 'Reinvest already in progress' };
+    if (isReinvesting) {return { success: false, error: 'Reinvest already in progress' };}
     setIsReinvesting(true);
     try {
       const response = await apiClient.triggerReinvest();
@@ -56,7 +56,7 @@ export const useReinvest = () => {
   }, [isReinvesting]);
   const checkAutoReinvest = useCallback(
     async (currentEarnings) => {
-      if (!settings.autoReinvest || isReinvesting) return;
+      if (!settings.autoReinvest || isReinvesting) {return;}
       if (currentEarnings >= settings.reinvestThreshold) {
         console.log(
           `Auto-reinvest triggered: $${currentEarnings} >= $${settings.reinvestThreshold}`,

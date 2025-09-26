@@ -54,8 +54,8 @@ class ApiClient {
   }
   async getEarnings(nodeId, timeRange) {
     const params = new URLSearchParams();
-    if (nodeId) params.append('nodeId', nodeId);
-    if (timeRange) params.append('timeRange', timeRange);
+    if (nodeId) {params.append('nodeId', nodeId);}
+    if (timeRange) {params.append('timeRange', timeRange);}
     return this.request(`/earnings?${params.toString()}`);
   }
   async triggerReinvest() {

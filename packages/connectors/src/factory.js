@@ -6,7 +6,7 @@ import { NatixConnector } from './connectors/NatixConnector';
 /**
  * Supported DePIN networks
  */
-export var ConnectorNetwork;
+export let ConnectorNetwork;
 (function (ConnectorNetwork) {
   ConnectorNetwork['IONET'] = 'ionet';
   ConnectorNetwork['NOSANA'] = 'nosana';

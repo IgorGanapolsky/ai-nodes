@@ -51,13 +51,13 @@ export class EarningsRepository extends BaseRepository {
     let updatedCount = 0;
     for (const earningId of earningIds) {
       const result = await this.update(earningId, updateData);
-      if (result) updatedCount++;
+      if (result) {updatedCount++;}
     }
     return updatedCount;
   }
   // Get earnings statistics
   async getEarningsReport(filters = {}, dateRange) {
-    let whereConditions = [];
+    const whereConditions = [];
     // Apply filters
     if (filters.nodeId) {
       if (Array.isArray(filters.nodeId)) {
@@ -174,7 +174,7 @@ export class EarningsRepository extends BaseRepository {
   }
   // Get time series data for earnings
   async getTimeSeries(interval, startDate, endDate, filters = {}) {
-    let whereConditions = [];
+    const whereConditions = [];
     // Apply date range
     const startTimestamp = Math.floor(startDate.getTime() / 1000);
     const endTimestamp = Math.floor(endDate.getTime() / 1000);
@@ -252,7 +252,7 @@ export class EarningsRepository extends BaseRepository {
     const endDate = now;
     const startTimestamp = Math.floor(startDate.getTime() / 1000);
     const endTimestamp = Math.floor(endDate.getTime() / 1000);
-    let whereConditions = [
+    const whereConditions = [
       and(gte(this.table.timestamp, startTimestamp), lte(this.table.timestamp, endTimestamp)),
       eq(this.table.currency, currency),
     ];
@@ -292,7 +292,7 @@ export class EarningsRepository extends BaseRepository {
   }
   // Get top earning nodes
   async getTopEarningNodes(limit = 10, dateRange, currency = 'USD') {
-    let whereConditions = [eq(this.table.currency, currency)];
+    const whereConditions = [eq(this.table.currency, currency)];
     if (dateRange) {
       const startTimestamp = Math.floor(dateRange.start.getTime() / 1000);
       const endTimestamp = Math.floor(dateRange.end.getTime() / 1000);

@@ -73,7 +73,7 @@ export class RevenueShareRepository extends BaseRepository {
         updateData.transactionHash = transactionHash;
       }
       const result = await this.update(shareId, updateData);
-      if (result) paidCount++;
+      if (result) {paidCount++;}
     }
     return paidCount;
   }
@@ -117,7 +117,7 @@ export class RevenueShareRepository extends BaseRepository {
   }
   // Get revenue share report
   async getRevenueShareReport(filters = {}, dateRange) {
-    let whereConditions = [];
+    const whereConditions = [];
     // Apply filters
     if (filters.nodeId) {
       if (Array.isArray(filters.nodeId)) {

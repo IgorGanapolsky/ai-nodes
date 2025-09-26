@@ -68,8 +68,8 @@ class ApiClient {
 
   async getEarnings(nodeId?: string, timeRange?: string): Promise<ApiResponse<EarningsData[]>> {
     const params = new URLSearchParams();
-    if (nodeId) params.append('nodeId', nodeId);
-    if (timeRange) params.append('timeRange', timeRange);
+    if (nodeId) {params.append('nodeId', nodeId);}
+    if (timeRange) {params.append('timeRange', timeRange);}
 
     return this.request<EarningsData[]>(`/earnings?${params.toString()}`);
   }

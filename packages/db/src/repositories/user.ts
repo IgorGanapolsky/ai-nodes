@@ -140,7 +140,7 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
   ): Promise<QueryResult<User>> {
     const searchTerm = `%${query.toLowerCase()}%`;
 
-    let whereConditions = [sql`lower(${this.table.email}) LIKE ${searchTerm}`];
+    const whereConditions = [sql`lower(${this.table.email}) LIKE ${searchTerm}`];
 
     // Add additional filters
     if (options.filters?.role) {
@@ -190,7 +190,7 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
     const limit = pagination.limit || 50;
     const offset = pagination.offset || 0;
 
-    let whereConditions = [];
+    const whereConditions = [];
 
     if (filters.role) {
       if (Array.isArray(filters.role)) {

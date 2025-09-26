@@ -133,7 +133,7 @@ export function getRedisConfig() {
  */
 export function getCorsOrigins() {
   const origins = getConfigValue('CORS_ORIGINS');
-  if (!origins) return ['*'];
+  if (!origins) {return ['*'];}
   return origins.split(',').map((origin) => origin.trim());
 }
 // Export the config schema for external validation

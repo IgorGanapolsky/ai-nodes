@@ -102,7 +102,7 @@ export class ErrorHandler {
   static wrapScraperError(error: any, context?: string): ConnectorError {
     let code = 'SCRAPER_ERROR';
     let message = 'Web scraping failed';
-    let retryable = true; // Most scraper errors are retryable
+    const retryable = true; // Most scraper errors are retryable
 
     if (error.message) {
       if (error.message.includes('timeout')) {
