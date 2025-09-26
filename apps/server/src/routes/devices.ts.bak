@@ -1,4 +1,4 @@
-import type { FastifyPluginCallback } from 'fastify';
+import type { FastifyPluginCallback, FastifyRequest } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 
@@ -74,10 +74,9 @@ const getDevicesQuerySchema = z.object({
   search: z.string().optional(),
 });
 
-// Types for future use
-// type CreateDeviceBody = z.infer<typeof createDeviceSchema>;
+type CreateDeviceBody = z.infer<typeof createDeviceSchema>;
 type DeviceResponse = z.infer<typeof deviceResponseSchema>;
-// type GetDevicesQuery = z.infer<typeof getDevicesQuerySchema>;
+type GetDevicesQuery = z.infer<typeof getDevicesQuerySchema>;
 
 const deviceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fastify) => {
   // GET /devices - List devices with pagination and filtering
@@ -218,9 +217,9 @@ const deviceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
   );
 
   // GET /devices/:id - Get specific device
-  fastify.get('/:id', async (request, reply) => {
+  fastify.get('/:id', async (request: FastifyRequest<{ Params: { id: string } }>, reply) => {
     try {
-      const { id } = request.params as { id: string };
+      const { id } = request.params;
 
       // TODO: Replace with actual database query
       const mockDevice: DeviceResponse = {
@@ -261,7 +260,7 @@ const deviceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
       return reply.send(mockDevice);
     } catch (error) {
-      fastify.log.error(error, `Error fetching device ${(request.params as { id: string }).id}`);
+      fastify.log.error(error, `Error fetching device ${request.params.id}`);
       return reply.status(404).send({
         error: 'Not found',
         message: 'Device not found',
@@ -325,11 +324,10 @@ const deviceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
         body: createDeviceSchema.partial(),
       },
     },
-    async (request, reply) => {
+    async (request: FastifyRequest<{ Params: { id: string }; Body: Partial<z.infer<typeof createDeviceSchema>> }>, reply) => {
       try {
-        const { id } = request.params as { id: string };
-        const _updates = request.body;
-        // Updates are currently unused as this is a mock implementation
+        const { id } = request.params;
+        const updates = request.body;
 
         // TODO: Replace with actual database update
         const updatedDevice: DeviceResponse = {
@@ -372,7 +370,7 @@ const deviceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
         return reply.send(updatedDevice);
       } catch (error) {
-        fastify.log.error(error, `Error updating device ${(request.params as { id: string }).id}`);
+        fastify.log.error(error, `Error updating device ${request.params.id}`);
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to update device',
@@ -382,9 +380,9 @@ const deviceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
   );
 
   // DELETE /devices/:id - Delete device
-  fastify.delete('/:id', async (request, reply) => {
+  fastify.delete('/:id', async (request: FastifyRequest<{ Params: { id: string } }>, reply) => {
     try {
-      const { id } = request.params as { id: string };
+      const { id } = request.params;
 
       // TODO: Replace with actual database deletion
       // Check if device is currently in use first
@@ -394,7 +392,7 @@ const deviceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
       return reply.status(204).send();
     } catch (error) {
-      fastify.log.error(error, `Error deleting device ${(request.params as { id: string }).id}`);
+      fastify.log.error(error, `Error deleting device ${request.params.id}`);
       return reply.status(500).send({
         error: 'Internal server error',
         message: 'Failed to delete device',

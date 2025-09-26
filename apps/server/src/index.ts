@@ -27,7 +27,7 @@ async function start() {
 
     // Add scheduler routes for management
     if (scheduler) {
-      app.get('/admin/scheduler/status', async (request, reply) => {
+      app.get('/admin/scheduler/status', async (_request, reply) => {
         const status = scheduler!.getJobStatus();
         return reply.send({
           enabled: true,
@@ -119,7 +119,7 @@ async function start() {
         app.log.info('Server shut down successfully');
         process.exit(0);
       } catch (error) {
-        app.log.error('Error during shutdown:', error);
+        app.log.error(error, 'Error during shutdown');
         process.exit(1);
       }
     };
@@ -130,13 +130,13 @@ async function start() {
 
     // Handle uncaught exceptions
     process.on('uncaughtException', (error) => {
-      app.log.fatal('Uncaught Exception:', error);
+      app.log.fatal(error, 'Uncaught Exception');
       process.exit(1);
     });
 
     // Handle unhandled promise rejections
-    process.on('unhandledRejection', (reason, promise) => {
-      app.log.fatal('Unhandled Rejection at:', promise, 'reason:', reason);
+    process.on('unhandledRejection', (reason, _promise) => {
+      app.log.fatal({ reason }, 'Unhandled Rejection');
       process.exit(1);
     });
 

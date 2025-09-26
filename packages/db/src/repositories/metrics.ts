@@ -1,4 +1,4 @@
-import { eq, and, or, desc, asc, count, sum, avg, max, min, gte, lte, sql } from 'drizzle-orm';
+import { eq, and, or, desc, asc, count, avg, max, gte, lte, sql } from 'drizzle-orm';
 import { BaseRepository, QueryResult, FilterOptions, PaginationOptions } from './base';
 import { metrics, type Metric, type NewMetric } from '../schema/metrics';
 
@@ -149,8 +149,8 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
 
     const whereClause = and(
       or(...nodeIdArray.map((nodeId) => eq(this.table.nodeId, nodeId))),
-      gte(this.table.timestamp, startTimestamp),
-      lte(this.table.timestamp, endTimestamp),
+      sql`${this.table.timestamp} >= ${startTimestamp}`,
+      sql`${this.table.timestamp} <= ${endTimestamp}`,
     );
 
     const results = await this.db
@@ -173,12 +173,12 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
     return results.map(({ period, timestamp, ...metrics }) => ({
       timestamp: parseInt(timestamp as string),
       date: period as string,
-      avgCpuUsage: metrics.avgCpuUsage || 0,
-      avgMemoryUsage: metrics.avgMemoryUsage || 0,
-      avgStorageUsage: metrics.avgStorageUsage || 0,
-      avgBandwidthUp: metrics.avgBandwidthUp || 0,
-      avgBandwidthDown: metrics.avgBandwidthDown || 0,
-      avgNetworkLatency: metrics.avgNetworkLatency || 0,
+      avgCpuUsage: Number(metrics.avgCpuUsage) || 0,
+      avgMemoryUsage: Number(metrics.avgMemoryUsage) || 0,
+      avgStorageUsage: Number(metrics.avgStorageUsage) || 0,
+      avgBandwidthUp: Number(metrics.avgBandwidthUp) || 0,
+      avgBandwidthDown: Number(metrics.avgBandwidthDown) || 0,
+      avgNetworkLatency: Number(metrics.avgNetworkLatency) || 0,
       count: metrics.count || 0,
     }));
   }
@@ -195,8 +195,8 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
 
     const whereClause = and(
       or(...nodeIdArray.map((nodeId) => eq(this.table.nodeId, nodeId))),
-      gte(this.table.timestamp, startTimestamp),
-      lte(this.table.timestamp, endTimestamp),
+      sql`${this.table.timestamp} >= ${startTimestamp}`,
+      sql`${this.table.timestamp} <= ${endTimestamp}`,
     );
 
     const results = await this.db
@@ -220,15 +220,15 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
 
     return results.map((result) => ({
       nodeId: result.nodeId,
-      avgCpuUsage: result.avgCpuUsage || 0,
+      avgCpuUsage: Number(result.avgCpuUsage) || 0,
       maxCpuUsage: result.maxCpuUsage || 0,
-      avgMemoryUsage: result.avgMemoryUsage || 0,
+      avgMemoryUsage: Number(result.avgMemoryUsage) || 0,
       maxMemoryUsage: result.maxMemoryUsage || 0,
-      avgStorageUsage: result.avgStorageUsage || 0,
+      avgStorageUsage: Number(result.avgStorageUsage) || 0,
       maxStorageUsage: result.maxStorageUsage || 0,
-      avgBandwidthUp: result.avgBandwidthUp || 0,
-      avgBandwidthDown: result.avgBandwidthDown || 0,
-      avgNetworkLatency: result.avgNetworkLatency || 0,
+      avgBandwidthUp: Number(result.avgBandwidthUp) || 0,
+      avgBandwidthDown: Number(result.avgBandwidthDown) || 0,
+      avgNetworkLatency: Number(result.avgNetworkLatency) || 0,
       uptime: result.maxUptime || 0,
       dataPoints: result.dataPoints || 0,
     }));
@@ -266,7 +266,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
           currentValue: metric.cpuUsage,
           threshold: defaultThresholds.cpuUsage,
           severity: metric.cpuUsage > defaultThresholds.cpuUsage * 1.1 ? 'critical' : 'warning',
-          timestamp: metric.timestamp,
+          timestamp: Math.floor(metric.timestamp.getTime() / 1000),
         });
       }
 
@@ -279,7 +279,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
           threshold: defaultThresholds.memoryUsage,
           severity:
             metric.memoryUsage > defaultThresholds.memoryUsage * 1.1 ? 'critical' : 'warning',
-          timestamp: metric.timestamp,
+          timestamp: Math.floor(metric.timestamp.getTime() / 1000),
         });
       }
 
@@ -292,7 +292,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
           threshold: defaultThresholds.storageUsage,
           severity:
             metric.storageUsage > defaultThresholds.storageUsage * 1.05 ? 'critical' : 'warning',
-          timestamp: metric.timestamp,
+          timestamp: Math.floor(metric.timestamp.getTime() / 1000),
         });
       }
 
@@ -305,7 +305,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
           threshold: defaultThresholds.networkLatency,
           severity:
             metric.networkLatency > defaultThresholds.networkLatency * 2 ? 'critical' : 'warning',
-          timestamp: metric.timestamp,
+          timestamp: Math.floor(metric.timestamp.getTime() / 1000),
         });
       }
 
@@ -317,7 +317,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
           currentValue: metric.uptime,
           threshold: defaultThresholds.uptimeMin,
           severity: metric.uptime < defaultThresholds.uptimeMin * 0.5 ? 'critical' : 'warning',
-          timestamp: metric.timestamp,
+          timestamp: Math.floor(metric.timestamp.getTime() / 1000),
         });
       }
     }
@@ -393,7 +393,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
         storageScore: Math.round(storageScore),
         networkScore: Math.round(networkScore),
         uptimeScore: Math.round(uptimeScore),
-        lastUpdated: latestMetric.timestamp,
+        lastUpdated: Math.floor(latestMetric.timestamp.getTime() / 1000),
       });
     }
 

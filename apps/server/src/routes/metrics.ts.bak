@@ -69,7 +69,7 @@ const metricRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
     },
     async (request, reply) => {
       try {
-        const { deviceId, ownerId: _ownerId, startDate, endDate, granularity, metricType } = request.query;
+        const { deviceId, ownerId, startDate, endDate, granularity, metricType } = request.query;
 
         // Generate mock data based on query parameters
         const now = new Date();
@@ -117,7 +117,7 @@ const metricRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
   );
 
   // GET /metrics/live - Get real-time metrics for dashboard
-  fastify.get('/live', async (_request, reply) => {
+  fastify.get('/live', async (request, reply) => {
     try {
       // TODO: Replace with actual real-time data source (Redis, WebSocket, etc.)
       const liveMetrics = {

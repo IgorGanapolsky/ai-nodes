@@ -72,10 +72,9 @@ const getOwnersQuerySchema = z.object({
   search: z.string().optional(),
 });
 
-// Types for future use
-// type CreateOwnerBody = z.infer<typeof createOwnerSchema>;
+type CreateOwnerBody = z.infer<typeof createOwnerSchema>;
 type OwnerResponse = z.infer<typeof ownerResponseSchema>;
-// type GetOwnersQuery = z.infer<typeof getOwnersQuerySchema>;
+type GetOwnersQuery = z.infer<typeof getOwnersQuerySchema>;
 
 const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fastify) => {
   // GET /owners - List owners with pagination and filtering
@@ -88,7 +87,7 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
     },
     async (request, reply) => {
       try {
-        const { page, limit, tier: _tier, search: _search } = request.query;
+        const { page, limit, tier, search } = request.query;
 
         // TODO: Replace with actual database query
         const mockOwners: OwnerResponse[] = [
@@ -134,9 +133,9 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
   );
 
   // GET /owners/:id - Get specific owner
-  fastify.get('/:id', async (request, reply) => {
+  fastify.get('/:id', async (request: FastifyRequest<{ Params: { id: string } }>, reply) => {
     try {
-      const { id } = request.params as { id: string };
+      const { id } = request.params;
 
       // TODO: Replace with actual database query
       const mockOwner: OwnerResponse = {
@@ -204,10 +203,10 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
         body: createOwnerSchema.partial(),
       },
     },
-    async (request, reply) => {
+    async (request: FastifyRequest<{ Params: { id: string }; Body: Partial<z.infer<typeof createOwnerSchema>> }>, reply) => {
       try {
-        const { id } = request.params as { id: string };
-        const _updates = request.body;
+        const { id } = request.params;
+        const updates = request.body;
 
         // TODO: Replace with actual database update
         const updatedOwner: OwnerResponse = {
@@ -238,9 +237,9 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
   );
 
   // DELETE /owners/:id - Delete owner
-  fastify.delete('/:id', async (request, reply) => {
+  fastify.delete('/:id', async (request: FastifyRequest<{ Params: { id: string } }>, reply) => {
     try {
-      const { id } = request.params as { id: string };
+      const { id } = request.params;
 
       // TODO: Replace with actual database deletion
       // Check if owner has devices first

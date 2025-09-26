@@ -1,4 +1,4 @@
-import type { FastifyPluginCallback } from 'fastify';
+import type { FastifyPluginCallback, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 // Validation schemas
@@ -392,7 +392,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
     async (request, reply) => {
       try {
         const { id } = request.params;
-        const { resolvedBy, notes: _notes } = request.body;
+        const { resolvedBy, notes } = request.body;
 
         // TODO: Replace with actual database update
         const resolvedAlert: Alert = {
@@ -413,7 +413,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
             currentUtilization: 23,
             threshold: 30,
             duration: '4 hours',
-            resolutionNotes: _notes,
+            resolutionNotes: notes,
           },
         };
 
@@ -524,7 +524,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
     },
     async (request, reply) => {
       try {
-        const { alertIds, action, resolvedBy, notes: _notes } = request.body;
+        const { alertIds, action, resolvedBy, notes } = request.body;
 
         // TODO: Replace with actual bulk operations
         const results = alertIds.map((id) => ({
@@ -559,7 +559,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
   );
 
   // GET /alerts/stats - Get alert statistics
-  fastify.get('/stats', async (_request, reply) => {
+  fastify.get('/stats', async (request: FastifyRequest, reply) => {
     try {
       // TODO: Replace with actual database queries
       const stats = {

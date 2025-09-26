@@ -225,28 +225,28 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
       .groupBy(this.table.nodeId);
 
     return {
-      totalEarnings: totalStats[0]?.total || 0,
-      totalUnpaid: unpaidStats[0]?.total || 0,
-      totalPaid: paidStats[0]?.total || 0,
-      earningsCount: totalStats[0]?.count || 0,
-      averageEarning: totalStats[0]?.average || 0,
+      totalEarnings: Number(totalStats[0]?.total) || 0,
+      totalUnpaid: Number(unpaidStats[0]?.total) || 0,
+      totalPaid: Number(paidStats[0]?.total) || 0,
+      earningsCount: Number(totalStats[0]?.count) || 0,
+      averageEarning: Number(totalStats[0]?.average) || 0,
       byCurrency: currencyStats.reduce(
         (acc, { currency, total, count, average }) => {
-          acc[currency] = { total: total || 0, count: count || 0, average: average || 0 };
+          acc[currency] = { total: Number(total) || 0, count: Number(count) || 0, average: Number(average) || 0 };
           return acc;
         },
         {} as Record<string, { total: number; count: number; average: number }>,
       ),
       byType: typeStats.reduce(
         (acc, { type, total, count, average }) => {
-          acc[type] = { total: total || 0, count: count || 0, average: average || 0 };
+          acc[type] = { total: Number(total) || 0, count: Number(count) || 0, average: Number(average) || 0 };
           return acc;
         },
         {} as Record<string, { total: number; count: number; average: number }>,
       ),
       byNode: nodeStats.reduce(
         (acc, { nodeId, total, count, average }) => {
-          acc[nodeId] = { total: total || 0, count: count || 0, average: average || 0 };
+          acc[nodeId] = { total: Number(total) || 0, count: Number(count) || 0, average: Number(average) || 0 };
           return acc;
         },
         {} as Record<string, { total: number; count: number; average: number }>,
@@ -313,9 +313,9 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     return results.map(({ period, timestamp, totalEarnings, count, averageEarning }) => ({
       timestamp: parseInt(timestamp as string),
       date: period as string,
-      totalEarnings: totalEarnings || 0,
+      totalEarnings: Number(totalEarnings) || 0,
       count: count || 0,
-      averageEarning: averageEarning || 0,
+      averageEarning: Number(averageEarning) || 0,
     }));
   }
 
@@ -386,9 +386,9 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
 
     return {
       period: periodLabel,
-      totalAmount: result[0]?.totalAmount || 0,
-      transactionCount: result[0]?.transactionCount || 0,
-      averageAmount: result[0]?.averageAmount || 0,
+      totalAmount: Number(result[0]?.totalAmount) || 0,
+      transactionCount: Number(result[0]?.transactionCount) || 0,
+      averageAmount: Number(result[0]?.averageAmount) || 0,
       currency,
     };
   }
@@ -401,15 +401,14 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
   ): Promise<
     Array<{ nodeId: string; totalEarnings: number; earningsCount: number; averageEarning: number }>
   > {
-    const whereConditions = [eq(this.table.currency, currency)];
+    const whereConditions: any[] = [eq(this.table.currency, currency)];
 
     if (dateRange) {
-      whereConditions.push(
-        and(gte(this.table.timestamp, dateRange.start), lte(this.table.timestamp, dateRange.end)),
-      );
+      whereConditions.push(gte(this.table.timestamp, dateRange.start));
+      whereConditions.push(lte(this.table.timestamp, dateRange.end));
     }
 
-    const whereClause = and(...whereConditions);
+    const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
     const results = await this.db
       .select({
@@ -426,9 +425,9 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
 
     return results.map(({ nodeId, totalEarnings, earningsCount, averageEarning }) => ({
       nodeId,
-      totalEarnings: totalEarnings || 0,
+      totalEarnings: Number(totalEarnings) || 0,
       earningsCount: earningsCount || 0,
-      averageEarning: averageEarning || 0,
+      averageEarning: Number(averageEarning) || 0,
     }));
   }
 
@@ -456,7 +455,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     // Simple confidence calculation based on data consistency
     const dailyEarnings = new Map<string, number>();
     historicalData.data.forEach((earning) => {
-      const date = new Date(earning.timestamp * 1000).toDateString();
+      const date = new Date(earning.timestamp).toDateString();
       dailyEarnings.set(date, (dailyEarnings.get(date) || 0) + earning.amount);
     });
 
