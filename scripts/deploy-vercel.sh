@@ -33,9 +33,11 @@ log() {
 
 # Cleanup function
 cleanup() {
-    if [[ -d "$TEMP_DEPLOY_DIR" ]]; then
+    if [[ -d "$TEMP_DEPLOY_DIR" ]] && [[ "${KEEP_TEMP_DIR:-}" != "1" ]]; then
         log "INFO" "Cleaning up temporary deployment directory..."
         rm -rf "$TEMP_DEPLOY_DIR"
+    elif [[ -d "$TEMP_DEPLOY_DIR" ]]; then
+        log "INFO" "Keeping temporary deployment directory for debugging: $TEMP_DEPLOY_DIR"
     fi
 }
 
