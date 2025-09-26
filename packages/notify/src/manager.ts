@@ -402,7 +402,7 @@ export class NotificationManager {
     const discordNotifier = new DiscordNotifier(webhook, this.config.discord);
 
     switch (type) {
-      case 'statement':
+      case 'statement': {
         const statementData = data as StatementNotificationData;
         await discordNotifier.sendStatement(
           owner,
@@ -411,8 +411,9 @@ export class NotificationManager {
           statementData.nodeCount,
         );
         break;
+      }
 
-      case 'alert':
+      case 'alert': {
         const alertData = data as AlertNotificationData;
         await discordNotifier.sendAlert(
           owner,
@@ -423,9 +424,10 @@ export class NotificationManager {
           alertData.nodeType,
         );
         break;
+      }
 
       case 'node_online':
-      case 'node_offline':
+      case 'node_offline': {
         const statusData = data as NodeStatusNotificationData;
         await discordNotifier.sendNodeStatus(
           owner,
@@ -435,11 +437,13 @@ export class NotificationManager {
           statusData.newStatus,
         );
         break;
+      }
 
-      case 'welcome':
+      case 'welcome': {
         const welcomeData = data as WelcomeNotificationData;
         await discordNotifier.sendWelcome(owner, welcomeData.nodeCount);
         break;
+      }
 
       default:
         await discordNotifier.send({
@@ -462,18 +466,20 @@ export class NotificationManager {
     }
 
     switch (type) {
-      case 'statement':
+      case 'statement': {
         const statementData = data as StatementNotificationData;
         await this.email.sendStatement(owner, statementData.statement);
         break;
+      }
 
-      case 'alert':
+      case 'alert': {
         const alertData = data as AlertNotificationData;
         await this.email.sendAlert(owner, alertData.alert, alertData.nodeName);
         break;
+      }
 
       case 'node_online':
-      case 'node_offline':
+      case 'node_offline': {
         const statusData = data as NodeStatusNotificationData;
         await this.email.sendNodeStatusChange(
           owner,
@@ -483,11 +489,13 @@ export class NotificationManager {
           statusData.newStatus,
         );
         break;
+      }
 
-      case 'welcome':
+      case 'welcome': {
         const welcomeData = data as WelcomeNotificationData;
         await this.email.sendWelcome(owner, welcomeData.nodeCount);
         break;
+      }
 
       default:
         await this.email.send(
