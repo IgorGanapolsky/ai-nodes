@@ -18,6 +18,7 @@ import metricRoutes from './routes/metrics.js';
 import actionRoutes from './routes/actions.js';
 import statementRoutes from './routes/statements.js';
 import alertRoutes from './routes/alerts.js';
+import invoiceRoutes from './routes/invoices.js';
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({
@@ -63,6 +64,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(actionRoutes, { prefix: '/actions' });
   await app.register(statementRoutes, { prefix: '/statements' });
   await app.register(alertRoutes, { prefix: '/alerts' });
+  await app.register(invoiceRoutes, { prefix: '/invoices' });
 
   return app;
 }

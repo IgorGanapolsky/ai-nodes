@@ -1,5 +1,6 @@
 import { buildApp } from './app.js';
 import { Scheduler } from './scheduler.js';
+import { basicAuth, rateLimitActions } from './middleware/auth.js';
 import * as dotenv from 'dotenv';
 
 // Load environment variables
@@ -12,12 +13,19 @@ const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   logLevel: process.env.LOG_LEVEL || 'info',
   enableScheduler: process.env.ENABLE_SCHEDULER !== 'false',
+  enableAuth: process.env.ENABLE_AUTH !== 'false',
 };
 
 async function start() {
   try {
     // Build the Fastify application
     const app = await buildApp();
+
+    // Register auth and rate limiting middleware
+    if (config.enableAuth) {
+      await app.register(basicAuth);
+      await app.register(rateLimitActions);
+    }
 
     // Initialize scheduler if enabled
     let scheduler: Scheduler | null = null;
