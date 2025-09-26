@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
 
 import './globals.css';
 import { AppProviders } from '@/components/providers/app-providers';
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           />
           <SpeedInsights />
+          <Analytics />
         </AppProviders>
       </body>
     </html>
