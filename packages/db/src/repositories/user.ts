@@ -53,7 +53,7 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
     userId: string,
     userData: Partial<Omit<NewUser, 'id' | 'createdAt'>>,
   ): Promise<User | null> {
-    const updateData = {
+    const updateData: any = {
       ...userData,
       updatedAt: new Date(),
     };
@@ -75,16 +75,16 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
 
   // Check if email exists
   async emailExists(email: string, excludeUserId?: string): Promise<boolean> {
-    let query = this.db
-      .select({ id: this.table.id })
-      .from(this.table)
-      .where(eq(this.table.email, email.toLowerCase()));
+    const conditions = [eq(this.table.email, email.toLowerCase())];
 
     if (excludeUserId) {
-      query = query.where(
-        and(eq(this.table.email, email.toLowerCase()), sql`${this.table.id} != ${excludeUserId}`),
-      );
+      conditions.push(sql`${this.table.id} != ${excludeUserId}`);
     }
+
+    const query = this.db
+      .select({ id: this.table.id })
+      .from(this.table)
+      .where(and(...conditions));
 
     const result = await query.limit(1);
     return result.length > 0;
@@ -190,7 +190,7 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
     const limit = pagination.limit || 50;
     const offset = pagination.offset || 0;
 
-    const whereConditions = [];
+    const whereConditions: any[] = [];
 
     if (filters.role) {
       if (Array.isArray(filters.role)) {

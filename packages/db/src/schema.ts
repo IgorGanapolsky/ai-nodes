@@ -1,4 +1,3 @@
-import { sql } from 'drizzle-orm';
 import { text, integer, real, sqliteTable, index } from 'drizzle-orm/sqlite-core';
 
 // Owner table

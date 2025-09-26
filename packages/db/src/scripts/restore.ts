@@ -51,10 +51,10 @@ class DatabaseRestore {
         const metadataContent = await fs.readFile(metadataPath, 'utf8');
         metadata = JSON.parse(metadataContent);
         console.log(`📊 Backup metadata loaded:`);
-        console.log(`   Created: ${metadata.timestamp}`);
-        console.log(`   Tables: ${metadata.tables?.join(', ') || 'unknown'}`);
+        console.log(`   Created: ${metadata?.timestamp}`);
+        console.log(`   Tables: ${metadata?.tables?.join(', ') || 'unknown'}`);
         console.log(
-          `   Records: ${Object.values(metadata.recordCounts || {}).reduce((sum: number, count: number) => sum + count, 0)}`,
+          `   Records: ${Object.values(metadata?.recordCounts || {}).reduce((sum: number, count: number) => sum + count, 0)}`,
         );
       } catch (error) {
         console.warn('⚠️  Could not load backup metadata');
@@ -288,9 +288,7 @@ class DatabaseRestore {
 
     for (const [tableName, expectedCount] of Object.entries(metadata.recordCounts)) {
       try {
-        const result = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(sql.identifier(tableName));
+        const result = await db.all(`SELECT COUNT(*) as count FROM ${tableName}`);
         const actualCount = result[0]?.count || 0;
 
         if (actualCount === expectedCount) {

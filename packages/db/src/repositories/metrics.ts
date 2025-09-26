@@ -1,4 +1,4 @@
-import { eq, and, or, desc, asc, count, avg, max, gte, lte, sql } from 'drizzle-orm';
+import { eq, and, or, desc, asc, count, avg, max, sql } from 'drizzle-orm';
 import { BaseRepository, QueryResult, FilterOptions, PaginationOptions } from './base';
 import { metrics, type Metric, type NewMetric } from '../schema/metrics';
 
@@ -471,7 +471,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
     const highMemoryNodes = latestMetrics.filter((m) => (m.memoryUsage || 0) > 85).length;
     const highStorageNodes = latestMetrics.filter((m) => (m.storageUsage || 0) > 90).length;
 
-    const lastUpdated = Math.max(...latestMetrics.map((m) => m.timestamp));
+    const lastUpdated = Math.max(...latestMetrics.map((m) => Math.floor(m.timestamp.getTime() / 1000)));
 
     return {
       totalNodes: latestMetrics.length,

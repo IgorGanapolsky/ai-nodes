@@ -4,7 +4,7 @@ import { revenueShares, type RevenueShare, type NewRevenueShare } from '../schem
 
 export interface RevenueShareFilters extends FilterOptions {
   nodeId?: string | string[];
-  shareType?: string | string[];
+  shareType?: ('owner' | 'platform' | 'referral' | 'maintenance' | 'hosting' | 'custom') | ('owner' | 'platform' | 'referral' | 'maintenance' | 'hosting' | 'custom')[];
   paidOut?: boolean;
   period?: string;
   recipientId?: string;
@@ -148,7 +148,7 @@ export class RevenueShareRepository extends BaseRepository<
     periodEnd: Date,
     shareConfigs: Array<{
       nodeId: string;
-      shareType: string;
+      shareType: 'owner' | 'platform' | 'referral' | 'maintenance' | 'hosting' | 'custom';
       percentage: number;
       recipientId?: string;
       recipientAddress?: string;
@@ -173,7 +173,7 @@ export class RevenueShareRepository extends BaseRepository<
             ),
           );
 
-        nodeEarnings.set(config.nodeId, earningsResult[0]?.total || 0);
+        nodeEarnings.set(config.nodeId, Number(earningsResult[0]?.total) || 0);
       }
 
       const totalEarnings = nodeEarnings.get(config.nodeId) || 0;
@@ -203,7 +203,7 @@ export class RevenueShareRepository extends BaseRepository<
     filters: RevenueShareFilters = {},
     dateRange?: { start: Date; end: Date },
   ): Promise<RevenueShareReport> {
-    const whereConditions = [];
+    const whereConditions: any[] = [];
 
     // Apply filters
     if (filters.nodeId) {

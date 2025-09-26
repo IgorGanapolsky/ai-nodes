@@ -67,7 +67,7 @@ class DatabaseInitializer {
 
       // Initialize connection
       console.log('🔗 Establishing database connection...');
-      const db = createConnection({
+      createConnection({
         url: dbPath,
         enableWAL: true,
         enableForeignKeys: true,
@@ -169,7 +169,7 @@ class DatabaseInitializer {
     const db = createConnection();
 
     // Test basic operations
-    const testResults = [];
+    const testResults: Array<{ table: string; status: string; error?: any; value?: any }> = [];
 
     // Test users table
     try {
@@ -198,7 +198,7 @@ class DatabaseInitializer {
     // Test WAL mode
     try {
       const result = await db.all('PRAGMA journal_mode');
-      const mode = result[0]?.journal_mode;
+      const mode = (result[0] as any)?.journal_mode;
       testResults.push({
         table: 'journal_mode',
         status: mode === 'wal' ? 'OK' : 'WARNING',

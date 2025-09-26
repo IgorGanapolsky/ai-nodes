@@ -1,6 +1,5 @@
 #!/usr/bin/env tsx
 
-import { getConnection } from '../connection';
 import { getRepositories } from '../repositories';
 import crypto from 'crypto';
 

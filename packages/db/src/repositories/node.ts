@@ -1,11 +1,11 @@
 import { eq, and, or, desc, count, sql } from 'drizzle-orm';
 import { BaseRepository, QueryResult, FilterOptions, PaginationOptions } from './base';
-import { nodes, type Node, type NewNode } from '../schema/nodes';
+import { nodes, type Node, type NewNode } from '../schema/devices';
 
 export interface NodeFilters extends FilterOptions {
   ownerId?: string;
-  type?: string | string[];
-  status?: string | string[];
+  type?: ('storj' | 'filecoin' | 'chia' | 'akash' | 'theta' | 'livepeer' | 'helium' | 'arweave' | 'sia' | 'custom') | ('storj' | 'filecoin' | 'chia' | 'akash' | 'theta' | 'livepeer' | 'helium' | 'arweave' | 'sia' | 'custom')[];
+  status?: ('active' | 'inactive' | 'error' | 'maintenance' | 'pending') | ('active' | 'inactive' | 'error' | 'maintenance' | 'pending')[];
   isOnline?: boolean;
   location?: string;
 }
@@ -91,7 +91,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
       .select()
       .from(this.table)
       .where(
-        and(or(eq(this.table.lastSeen, null), sql`${this.table.lastSeen} < ${thresholdTimestamp}`)),
+        and(or(sql`${this.table.lastSeen} IS NULL`, sql`${this.table.lastSeen} < ${thresholdTimestamp}`)),
       )
       .orderBy(desc(this.table.lastSeen))
       .limit(options.pagination?.limit || 50)
@@ -101,7 +101,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
       .select({ count: count() })
       .from(this.table)
       .where(
-        and(or(eq(this.table.lastSeen, null), sql`${this.table.lastSeen} < ${thresholdTimestamp}`)),
+        and(or(sql`${this.table.lastSeen} IS NULL`, sql`${this.table.lastSeen} < ${thresholdTimestamp}`)),
       );
 
     const total = totalResult[0]?.count || 0;
@@ -117,7 +117,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
   }
 
   // Update node status
-  async updateStatus(nodeId: string, status: string): Promise<Node | null> {
+  async updateStatus(nodeId: string, status: 'active' | 'inactive' | 'error' | 'maintenance' | 'pending'): Promise<Node | null> {
     return this.update(nodeId, {
       status,
       updatedAt: new Date(),
@@ -151,7 +151,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
   // Get node statistics
   async getStats(filters: NodeFilters = {}): Promise<NodeStats> {
     // Base query with filters
-    const whereConditions = [];
+    const whereConditions: any[] = [];
 
     if (filters.ownerId) {
       whereConditions.push(eq(this.table.ownerId, filters.ownerId));
@@ -304,7 +304,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     const limit = pagination.limit || 50;
     const offset = pagination.offset || 0;
 
-    const whereConditions = [];
+    const whereConditions: any[] = [];
 
     if (filters.ownerId) {
       whereConditions.push(eq(this.table.ownerId, filters.ownerId));
