@@ -1,45 +1,61 @@
-# Vercel ignore file - Prevent deployment of non-web directories
-# Only deploy the web app and essential config files
+# Ignore all non-web apps to prevent unnecessary builds
+apps/cli
+apps/mobile
+apps/server
 
-# Ignore packages (except when needed by web app)
-packages/
-scripts/
-docs/
-logs/
-test-*.js
-create-*.js
-setup-*.js
-check-*.js
-update-*.js
-
-# Ignore log files
-*.log
-
-# Ignore markdown files except README
-*.md
-!README.md
-
-# Ignore environment files except example
-.env*
+# Ignore test and development files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+**/__tests__
+**/*.md
+.env
+.env.*
 !.env.example
+scripts
+docs
+logs
 
-# Ignore development files
-node_modules/
-.git/
-.github/
-.vscode/
-.idea/
-.DS_Store
+# Ignore setup and test scripts
+test-*.ts
+test-*.js
+fix-*.ts
+fix-*.js
+monitor-*.ts
+setup-*.ts
+setup-*.js
+get-*.ts
+create-*.js
+update-*.js
+check-*.js
 
-# Ignore temporary files
-tmp/
-temp/
-*.tmp
-*.temp
+# Ignore Linear integration test files
+packages/core/src/linear/example.ts
+test-linear-integration.ts
+fix-vercel-deployment.ts
+get-linear-team.ts
+monitor-vercel.ts
 
-# Only deploy essential files for web app
-!apps/web/
-!vercel.json
-!package.json
-!pnpm-lock.yaml
-!turbo.json
+# Ignore disabled configs
+**/*.disabled
+.github/workflows/renovate.yml.disabled
+renovate.json.disabled
+
+# Ignore git files
+.git
+.gitignore
+.github
+
+# Ignore IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Ignore package manager files (except what Vercel needs)
+node_modules
+.pnpm-store
+.npm
+.yarn

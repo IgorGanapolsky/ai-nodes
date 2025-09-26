@@ -1,9 +1,10 @@
 {
   "version": 2,
   "github": {
-    "silent": false,
+    "silent": true,
     "autoJobCancelation": true
   },
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- apps/web packages/core packages/db packages/utils package.json pnpm-lock.yaml",
   "functions": {
     "apps/web/src/app/api/**/*": {
       "maxDuration": 30

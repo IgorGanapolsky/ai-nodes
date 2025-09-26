@@ -474,20 +474,20 @@ async function main() {
         const mod = await import('../packages/core/dist/linear/index.js');
         const linear = new mod.LinearService({ apiKey: LINEAR_API_KEY || '', teamId: LINEAR_TEAM_ID });
         const recommended = [
-          { name: 'agent-task' },
-          { name: 'coordination' },
-          { name: 'opportunity' },
-          { name: 'outreach' },
-          { name: 'negotiation' },
-          { name: 'deal' },
-          { name: 'won' },
-          { name: 'lost' },
-          { name: 'invoice' },
-          { name: 'follow-up' },
-          { name: 'blocked' },
-          { name: 'hot' },
-          { name: 'automation' },
-          { name: 'experiment' },
+          { name: 'agent-task', color: '#6E56CF' },
+          { name: 'coordination', color: '#36B37E' },
+          { name: 'opportunity', color: '#FFAB00' },
+          { name: 'outreach', color: '#2684FF' },
+          { name: 'negotiation', color: '#6554C0' },
+          { name: 'deal', color: '#00C7E6' },
+          { name: 'won', color: '#22C55E' },
+          { name: 'lost', color: '#FF5630' },
+          { name: 'invoice', color: '#14B8A6' },
+          { name: 'follow-up', color: '#8777D9' },
+          { name: 'blocked', color: '#EF4444' },
+          { name: 'hot', color: '#F97316' },
+          { name: 'automation', color: '#00B8D9' },
+          { name: 'experiment', color: '#7C3AED' },
         ];
         const result = await linear.ensureLabels(recommended);
         console.log(`✅ Labels ensured. Created: ${result.created}, Existing: ${result.existing}`);
