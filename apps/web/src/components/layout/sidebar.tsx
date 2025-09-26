@@ -14,6 +14,9 @@ export function Sidebar(): JSX.Element {
         <Link href="/alerts" className="block rounded px-2 py-1 hover:bg-accent">
           Alerts
         </Link>
+        <Link href="/linear" className="block rounded px-2 py-1 hover:bg-accent">
+          Linear
+        </Link>
       </nav>
     </aside>
   );

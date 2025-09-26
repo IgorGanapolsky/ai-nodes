@@ -17,6 +17,7 @@
     "@depinautopilot/core": "workspace:*",
     "@depinautopilot/utils": "workspace:*",
     "@hookform/resolvers": "^5.2.2",
+    "@linear/sdk": "^60.0.0",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-dialog": "^1.0.5",
