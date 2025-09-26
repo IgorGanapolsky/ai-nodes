@@ -1,4 +1,4 @@
-import type { FastifyPluginCallback, FastifyRequest } from 'fastify';
+import type { FastifyPluginCallback } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 
@@ -90,7 +90,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
         body: repriceRequestSchema,
       },
     },
-    async (request: FastifyRequest<{ Body: z.infer<typeof repriceRequestSchema> }>, reply) => {
+    async (request, reply) => {
       try {
         const { deviceIds, strategy, parameters: _parameters, scheduledFor, dryRun } = request.body;
 
@@ -173,7 +173,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
         body: maintenanceRequestSchema,
       },
     },
-    async (request: FastifyRequest<{ Body: z.infer<typeof maintenanceRequestSchema> }>, reply) => {
+    async (request, reply) => {
       try {
         const { deviceIds, action, scheduledFor, estimatedDuration, reason, notifyUsers } =
           request.body;
@@ -224,7 +224,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
         body: optimizationRequestSchema,
       },
     },
-    async (request: FastifyRequest<{ Body: z.infer<typeof optimizationRequestSchema> }>, reply) => {
+    async (request, reply) => {
       try {
         const { deviceIds, optimizationType, parameters } = request.body;
 
@@ -275,9 +275,13 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
   );
 
   // GET /actions/jobs/:jobId - Get job status
-  fastify.get('/jobs/:jobId', async (request: FastifyRequest<{ Params: { jobId: string } }>, reply) => {
+  fastify.get('/jobs/:jobId', async (request, reply) => {
+    const paramsSchema = z.object({
+      jobId: z.string()
+    });
+    
     try {
-      const { jobId } = request.params;
+      const { jobId } = paramsSchema.parse(request.params);
 
       // TODO: Replace with actual job status lookup
       const jobStatus = {
@@ -301,7 +305,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
       return reply.send(jobStatus);
     } catch (error) {
-      fastify.log.error(error, `Error fetching job status for ${request.params.jobId}`);
+      fastify.log.error(`Error fetching job status: ${(error as Error).message || String(error)}`);
       return reply.status(404).send({
         error: 'Not found',
         message: 'Job not found',
@@ -310,9 +314,15 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
   });
 
   // GET /actions/jobs - List all jobs
-  fastify.get('/jobs', async (request: FastifyRequest<{ Querystring: { status?: string; type?: string; limit?: number; page?: number } }>, reply) => {
+  fastify.get('/jobs', async (request, reply) => {
     try {
-      const { status, type, limit = 10, page = 1 } = request.query;
+      const querySchema = z.object({
+        status: z.string().optional(),
+        type: z.string().optional(),
+        limit: z.coerce.number().default(10),
+        page: z.coerce.number().default(1)
+      });
+      const { limit, page } = querySchema.parse(request.query);
 
       // TODO: Replace with actual job listing logic
       const mockJobs = [

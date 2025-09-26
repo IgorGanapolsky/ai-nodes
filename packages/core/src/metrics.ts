@@ -211,7 +211,7 @@ export function analyzeTrend(
   const sumYY = values.reduce((sum, y) => sum + y * y, 0);
 
   const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-  const intercept = (sumY - slope * sumX) / n;
+  // const intercept = (sumY - slope * sumX) / n;
 
   // Calculate correlation coefficient
   const correlation =

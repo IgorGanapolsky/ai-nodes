@@ -16,15 +16,32 @@ const createOwnerSchema = z.object({
           sms: z.boolean().default(false),
           push: z.boolean().default(true),
         })
-        .default({}),
+        .default(() => ({
+          email: true,
+          sms: false,
+          push: false
+        })),
       alertThresholds: z
         .object({
           utilizationLow: z.number().min(0).max(100).default(20),
           utilizationHigh: z.number().min(0).max(100).default(90),
         })
-        .default({}),
+        .default(() => ({
+          utilizationLow: 20,
+          utilizationHigh: 80
+        })),
     })
-    .default({}),
+    .default(() => ({
+      notifications: {
+        email: true,
+        sms: false,
+        push: false
+      },
+      alertThresholds: {
+        utilizationLow: 20,
+        utilizationHigh: 80
+      }
+    })),
 });
 
 const ownerResponseSchema = z.object({
@@ -55,9 +72,7 @@ const getOwnersQuerySchema = z.object({
   search: z.string().optional(),
 });
 
-type CreateOwnerBody = z.infer<typeof createOwnerSchema>;
 type OwnerResponse = z.infer<typeof ownerResponseSchema>;
-type GetOwnersQuery = z.infer<typeof getOwnersQuerySchema>;
 
 const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fastify) => {
   // GET /owners - List owners with pagination and filtering
@@ -70,7 +85,7 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
     },
     async (request, reply) => {
       try {
-        const { page, limit, tier, search } = request.query;
+        const { page, limit } = request.query;
 
         // TODO: Replace with actual database query
         const mockOwners: OwnerResponse[] = [
@@ -106,7 +121,7 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
 
         return reply.send(response);
       } catch (error) {
-        fastify.log.error('Error fetching owners:', error);
+        fastify.log.error(`Error fetching owners: ${(error as Error).message || String(error)}`);
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to fetch owners',
@@ -118,7 +133,8 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
   // GET /owners/:id - Get specific owner
   fastify.get('/:id', async (request, reply) => {
     try {
-      const { id } = request.params;
+      const paramsSchema = z.object({ id: z.string() });
+      const { id } = paramsSchema.parse(request.params);
 
       // TODO: Replace with actual database query
       const mockOwner: OwnerResponse = {
@@ -137,7 +153,9 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
 
       return reply.send(mockOwner);
     } catch (error) {
-      fastify.log.error(`Error fetching owner ${request.params.id}:`, error);
+      const paramsSchema = z.object({ id: z.string() });
+      const { id } = paramsSchema.parse(request.params);
+      fastify.log.error(`Error fetching owner ${id}: ${(error as Error).message || String(error)}`);
       return reply.status(404).send({
         error: 'Not found',
         message: 'Owner not found',
@@ -165,11 +183,11 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
           updatedAt: new Date().toISOString(),
         };
 
-        fastify.log.info('Created new owner:', { ownerId: newOwner.id, email: newOwner.email });
+        fastify.log.info(`Created new owner: ${JSON.stringify({ ownerId: newOwner.id, email: newOwner.email })}`);
 
         return reply.status(201).send(newOwner);
       } catch (error) {
-        fastify.log.error('Error creating owner:', error);
+        fastify.log.error(`Error creating owner: ${(error as Error).message || String(error)}`);
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to create owner',
@@ -188,8 +206,9 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
     },
     async (request, reply) => {
       try {
-        const { id } = request.params;
-        const updates = request.body;
+        const paramsSchema = z.object({ id: z.string() });
+        const { id } = paramsSchema.parse(request.params);
+        request.body;
 
         // TODO: Replace with actual database update
         const updatedOwner: OwnerResponse = {
@@ -206,11 +225,13 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
           updatedAt: new Date().toISOString(),
         };
 
-        fastify.log.info('Updated owner:', { ownerId: id });
+        fastify.log.info(`Updated owner: ${JSON.stringify({ ownerId: id })}`);
 
         return reply.send(updatedOwner);
       } catch (error) {
-        fastify.log.error(`Error updating owner ${request.params.id}:`, error);
+        const paramsSchema = z.object({ id: z.string() });
+        const { id } = paramsSchema.parse(request.params);
+        fastify.log.error(`Error updating owner ${id}: ${(error as Error).message || String(error)}`);
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to update owner',
@@ -222,17 +243,20 @@ const ownerRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fast
   // DELETE /owners/:id - Delete owner
   fastify.delete('/:id', async (request, reply) => {
     try {
-      const { id } = request.params;
+      const paramsSchema = z.object({ id: z.string() });
+      const { id } = paramsSchema.parse(request.params);
 
       // TODO: Replace with actual database deletion
       // Check if owner has devices first
       // await db.owner.delete({ where: { id } });
 
-      fastify.log.info('Deleted owner:', { ownerId: id });
+      fastify.log.info(`Deleted owner: ${JSON.stringify({ ownerId: id })}`);
 
       return reply.status(204).send();
     } catch (error) {
-      fastify.log.error(`Error deleting owner ${request.params.id}:`, error);
+      const paramsSchema = z.object({ id: z.string() });
+      const { id } = paramsSchema.parse(request.params);
+      fastify.log.error(`Error deleting owner ${id}: ${(error as Error).message || String(error)}`);
       return reply.status(500).send({
         error: 'Internal server error',
         message: 'Failed to delete owner',

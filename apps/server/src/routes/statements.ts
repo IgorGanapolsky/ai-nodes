@@ -100,23 +100,23 @@ const statementRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (
           response.downloadUrl = `/api/statements/${statementId}/download`;
           response.emailSent = statementRequest.sendEmail;
 
-          fastify.log.info('Statement generation completed:', {
+          fastify.log.info(`Statement generation completed: ${JSON.stringify({
             statementId,
             ownerId: statementRequest.ownerId,
             type: statementRequest.type,
-          });
+          })}`);
         }, 1000);
 
-        fastify.log.info('Statement generation started:', {
+        fastify.log.info(`Statement generation started: ${JSON.stringify({
           statementId,
           ownerId: statementRequest.ownerId,
           type: statementRequest.type,
           period: statementRequest.period,
-        });
+        })}`);
 
         return reply.status(202).send(response); // 202 Accepted for async operation
       } catch (error) {
-        fastify.log.error('Error generating statement:', error);
+        fastify.log.error(`Error generating statement: ${(error as Error).message || String(error)}`);
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to generate statement',
@@ -137,7 +137,7 @@ const statementRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (
     },
     async (request, reply) => {
       try {
-        const { ownerId, startDate, endDate, type, status, page, limit } = request.query;
+        const { ownerId, type, status, page, limit } = request.query;
 
         // TODO: Replace with actual database query
         const mockStatements: StatementResponse[] = [
@@ -219,7 +219,7 @@ const statementRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (
 
         return reply.send(response);
       } catch (error) {
-        fastify.log.error('Error fetching statements:', error);
+        fastify.log.error(`Error fetching statements: ${(error as Error).message || String(error)}`);
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to fetch statements',
@@ -260,7 +260,7 @@ const statementRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (
 
       return reply.send(mockStatement);
     } catch (error) {
-      fastify.log.error(`Error fetching statement ${request.params.id}:`, error);
+      fastify.log.error(`Error fetching statement: ${(error as Error).message || String(error)}`);
       return reply.status(404).send({
         error: 'Not found',
         message: 'Statement not found',
@@ -293,7 +293,9 @@ const statementRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (
 
       return reply.send(pdfContent);
     } catch (error) {
-      fastify.log.error(`Error downloading statement ${request.params.id}:`, error);
+      const paramsSchema = z.object({ id: z.string() });
+      const { id } = paramsSchema.parse(request.params);
+      fastify.log.error(`Error downloading statement ${id}: ${(error as Error).message || String(error)}`);
       return reply.status(404).send({
         error: 'Not found',
         message: 'Statement file not found',
@@ -320,10 +322,10 @@ const statementRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (
         const { emailAddress } = request.body;
 
         // TODO: Replace with actual email sending logic
-        fastify.log.info('Resending statement via email:', {
+        fastify.log.info(`Resending statement via email: ${JSON.stringify({
           statementId: id,
           emailAddress,
-        });
+        })}`);
 
         return reply.send({
           success: true,
@@ -331,7 +333,9 @@ const statementRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (
           sentAt: new Date().toISOString(),
         });
       } catch (error) {
-        fastify.log.error(`Error resending statement ${request.params.id}:`, error);
+        const paramsSchema = z.object({ id: z.string() });
+        const { id } = paramsSchema.parse(request.params);
+        fastify.log.error(`Error resending statement ${id}: ${(error as Error).message || String(error)}`);
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to resend statement',
@@ -350,11 +354,13 @@ const statementRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (
       // TODO: Replace with actual deletion logic
       // Check permissions, delete from database and file system
 
-      fastify.log.info('Deleted statement:', { statementId: id });
+      fastify.log.info(`Deleted statement: ${JSON.stringify({ statementId: id })}`);
 
       return reply.status(204).send();
     } catch (error) {
-      fastify.log.error(`Error deleting statement ${request.params.id}:`, error);
+      const paramsSchema = z.object({ id: z.string() });
+      const { id } = paramsSchema.parse(request.params);
+      fastify.log.error(`Error deleting statement ${id}: ${(error as Error).message || String(error)}`);
       return reply.status(500).send({
         error: 'Internal server error',
         message: 'Failed to delete statement',
@@ -363,7 +369,7 @@ const statementRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (
   });
 
   // GET /statements/templates - Get available statement templates
-  fastify.get('/templates', async (request, reply) => {
+  fastify.get('/templates', async (_, reply) => {
     try {
       const templates = [
         {
@@ -402,7 +408,7 @@ const statementRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (
 
       return reply.send({ templates });
     } catch (error) {
-      fastify.log.error('Error fetching statement templates:', error);
+      fastify.log.error(`Error fetching statement templates: ${(error as Error).message || String(error)}`);
       return reply.status(500).send({
         error: 'Internal server error',
         message: 'Failed to fetch templates',

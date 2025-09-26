@@ -1,7 +1,7 @@
-import { OnaLinearAgent } from './ona-agent';
-import { LinearConfig, LinearIssue } from './types';
+import { OnaLinearAgent, OnaAgentConfig } from './ona-agent';
+import { LinearIssue } from './types';
 
-export interface SmartAgentConfig extends LinearConfig {
+export interface SmartAgentConfig extends OnaAgentConfig {
   autoLabeling?: boolean;
   autoPriority?: boolean;
 }

@@ -424,8 +424,8 @@ export class LinearService {
 
     const data = await response.json();
     
-    if (data.errors) {
-      throw new Error(`GraphQL errors: ${data.errors.map((e: any) => e.message).join(', ')}`);
+    if ((data as any).errors) {
+      throw new Error(`GraphQL errors: ${(data as any).errors.map((e: any) => e.message).join(', ')}`);
     }
 
     return data;
@@ -508,7 +508,7 @@ export class AgentCoordination {
   /**
    * Get tasks for a specific agent
    */
-  async getAgentTasks(agentName: string): Promise<LinearIssue[]> {
+  async getAgentTasks(_agentName: string): Promise<LinearIssue[]> {
     return this.linearService.listIssues({
       labelIds: ['agent-task'],
       limit: 100,
