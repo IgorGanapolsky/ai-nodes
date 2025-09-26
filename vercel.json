@@ -4,41 +4,23 @@
     "silent": true,
     "autoJobCancelation": true
   },
-  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- apps/web packages/core packages/db packages/utils package.json pnpm-lock.yaml",
-  "functions": {
-    "apps/web/app/api/**/*": {
-      "maxDuration": 30
-    }
-  },
-  "crons": [],
-  "redirects": [],
-  "headers": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        }
-      ]
+      "src": "apps/web/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "apps/web/.next"
+      }
     }
   ],
-  "buildCommand": "pnpm install --frozen-lockfile && pnpm --filter @depinautopilot/web build",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "devCommand": "pnpm --filter @depinautopilot/web dev",
-  "outputDirectory": "apps/web/.next",
-  "framework": "nextjs",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/apps/web/$1"
+    }
+  ],
   "env": {
     "NODE_ENV": "production",
-    "CI": "true",
     "NEXT_TELEMETRY_DISABLED": "1"
   }
 }
