@@ -1,0 +1,18 @@
+
+Vercel Usage Report - 9/26/2025
+
+Credits:
+  Used: 75/100 (75%)
+
+Functions:
+  Invocations: 15,000
+  Duration: 45,000 seconds
+
+Bandwidth:
+  Used: 500GB/1000GB
+
+Recommendations:
+  - Monitor function execution times
+  - Implement aggressive caching
+  - Consider reducing middleware execution
+  - Review API proxy usage patterns

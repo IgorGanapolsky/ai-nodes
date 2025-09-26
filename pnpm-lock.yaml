@@ -18,8 +18,8 @@ importers:
         specifier: ^5.6.2
         version: 5.6.2
       date-fns:
-        specifier: ^4.1.0
-        version: 4.1.0
+        specifier: ^3.0.6
+        version: 3.6.0
       drizzle-orm:
         specifier: ^0.44.5
         version: 0.44.5(better-sqlite3@12.4.1)
@@ -51,6 +51,12 @@ importers:
       eslint-config-prettier:
         specifier: ^10.1.8
         version: 10.1.8(eslint@8.57.1)
+      eslint-plugin-react:
+        specifier: ^7.37.5
+        version: 7.37.5(eslint@8.57.1)
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@8.57.1)
       husky:
         specifier: ^9.0.11
         version: 9.1.7
@@ -188,7 +194,7 @@ importers:
         specifier: ^1.6.2
         version: 1.12.2
       date-fns:
-        specifier: ^3.0.6
+        specifier: 3.6.0
         version: 3.6.0
       expo:
         specifier: ~52.0.0
@@ -427,7 +433,7 @@ importers:
         specifier: ^2.0.0
         version: 2.1.1
       date-fns:
-        specifier: ^3.0.6
+        specifier: 3.6.0
         version: 3.6.0
       framer-motion:
         specifier: ^10.16.16
@@ -570,7 +576,7 @@ importers:
   packages/core:
     dependencies:
       date-fns:
-        specifier: ^3.0.6
+        specifier: 3.6.0
         version: 3.6.0
       zod:
         specifier: ^3.22.4
@@ -690,7 +696,7 @@ importers:
   packages/utils:
     dependencies:
       date-fns:
-        specifier: ^3.0.6
+        specifier: 3.6.0
         version: 3.6.0
       dotenv:
         specifier: ^16.3.1
@@ -9037,10 +9043,6 @@ packages:
     resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
     dev: false
 
-  /date-fns@4.1.0:
-    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
-    dev: false
-
   /dateformat@4.6.3:
     resolution: {integrity: sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==}
     dev: false
@@ -10251,6 +10253,15 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
+    dependencies:
+      eslint: 8.57.1
+    dev: true
+
+  /eslint-plugin-react-hooks@5.2.0(eslint@8.57.1):
+    resolution: {integrity: sha512-+f15FfK64YQwZdJNELETdn5ibXEUQmW1DZL6KXhNnc2heoy/sg9VJJeT7n8TlMWouzWqSWavFkIhHyIbIAEapg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
     dependencies:
       eslint: 8.57.1
     dev: true
