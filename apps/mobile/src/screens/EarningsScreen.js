@@ -14,7 +14,9 @@ import { useEarnings } from '../hooks/useEarnings';
 import { useReinvest } from '../hooks/useReinvest';
 import { useSettings } from '../hooks/useSettings';
 import { formatCurrency, formatPercentage, formatDate } from '../utils/formatters';
-const { width } = Dimensions.get('window');
+import { getLogger } from '@depinautopilot/utils';
+
+const logger = getLogger('mobile-earnings');
 const timeRanges = [
   { key: '24h', label: '24H' },
   { key: '7d', label: '7D' },
@@ -30,7 +32,6 @@ const EarningsScreen = () => {
     loading,
     totalEarnings,
     todayEarnings,
-    yesterdayEarnings,
     earningsGrowth,
     refreshEarnings,
   } = useEarnings(undefined, selectedTimeRange);
@@ -42,7 +43,7 @@ const EarningsScreen = () => {
     try {
       await refreshEarnings();
     } catch (error) {
-      console.error('Refresh failed:', error);
+      logger.error('Refresh failed', error);
     } finally {
       setRefreshing(false);
     }
@@ -51,7 +52,7 @@ const EarningsScreen = () => {
     const result = await triggerReinvest();
     if (!result.success) {
       // Show error alert
-      console.error('Reinvest failed:', result.error);
+      logger.error('Reinvest failed', { error: result.error });
     }
   };
   if (loading.isLoading && !chartData) {

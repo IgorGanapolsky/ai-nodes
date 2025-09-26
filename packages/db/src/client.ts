@@ -4,6 +4,9 @@ import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 import * as schema from './schema';
 import path from 'path';
 import fs from 'fs';
+import { getLogger } from '@depinautopilot/utils';
+
+const logger = getLogger('db-client');
 
 export interface DatabaseConfig {
   url?: string;
@@ -40,7 +43,9 @@ export function createDatabaseConnection(config: DatabaseConfig = {}) {
 
   // Create SQLite connection
   sqlite = new Database(dbPath, {
-    verbose: mergedConfig.verbose ? console.log : undefined,
+    verbose: mergedConfig.verbose
+      ? (message: string) => logger.debug('SQLite operation', { message })
+      : undefined,
     fileMustExist: false,
     timeout: mergedConfig.busyTimeout,
     readonly: mergedConfig.readOnly,

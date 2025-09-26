@@ -1,5 +1,6 @@
 import React, { Component, ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { getLogger } from '@depinautopilot/utils';
 
 interface Props {
   children: ReactNode;
@@ -12,6 +13,8 @@ interface State {
 }
 
 class ErrorBoundary extends Component<Props, State> {
+  private logger = getLogger('mobile-error-boundary');
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -30,7 +33,10 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    this.logger.error('ErrorBoundary caught an error', error, {
+      componentStack: errorInfo.componentStack,
+      stack: error.stack,
+    });
     this.setState({
       error,
       errorInfo: errorInfo.componentStack || null,

@@ -374,7 +374,7 @@ export class DiscordNotifier {
         severity: 'low',
       });
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

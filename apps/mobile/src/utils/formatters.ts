@@ -94,12 +94,18 @@ export const getStatusColor = (status: string): string => {
 };
 
 export const getPerformanceColor = (performance: number): string => {
-  if (performance >= 90) {return '#10B981';}
-  if (performance >= 70) {return '#F59E0B';}
+  if (performance >= 90) {
+    return '#10B981';
+  }
+  if (performance >= 70) {
+    return '#F59E0B';
+  }
   return '#EF4444';
 };
 
 export const truncateString = (str: string, maxLength: number): string => {
-  if (str.length <= maxLength) {return str;}
+  if (str.length <= maxLength) {
+    return str;
+  }
   return str.substring(0, maxLength - 3) + '...';
 };

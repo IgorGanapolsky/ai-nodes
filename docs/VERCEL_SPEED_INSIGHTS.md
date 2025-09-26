@@ -7,12 +7,14 @@ Vercel Speed Insights has been successfully integrated into the DePIN Autopilot 
 ## What's Included
 
 ### 1. Speed Insights (`@vercel/speed-insights`)
+
 - **Core Web Vitals Monitoring**: Tracks LCP, FID, CLS, and other performance metrics
 - **Real User Monitoring**: Collects performance data from actual users
 - **Performance Analytics**: Provides insights into page load times and user experience
 - **Automatic Reporting**: Sends data to Vercel dashboard automatically
 
 ### 2. Analytics (`@vercel/analytics`)
+
 - **Page Views**: Tracks page visits and navigation patterns
 - **User Interactions**: Monitors clicks, form submissions, and other events
 - **Custom Events**: Allows tracking of specific user actions
@@ -21,11 +23,13 @@ Vercel Speed Insights has been successfully integrated into the DePIN Autopilot 
 ## Implementation Details
 
 ### Packages Installed
+
 ```bash
 pnpm add @vercel/speed-insights @vercel/analytics
 ```
 
 ### Components Added
+
 ```tsx
 // In apps/web/src/app/layout.tsx
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -49,12 +53,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ## Features Enabled
 
 ### Performance Monitoring
+
 - **Largest Contentful Paint (LCP)**: Measures loading performance
 - **First Input Delay (FID)**: Measures interactivity
 - **Cumulative Layout Shift (CLS)**: Measures visual stability
 - **Time to First Byte (TTFB)**: Measures server response time
 
 ### Analytics Tracking
+
 - **Page Views**: Automatic tracking of all page visits
 - **User Sessions**: Session duration and behavior analysis
 - **Custom Events**: Track specific user interactions
@@ -63,12 +69,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ## Dashboard Access
 
 ### Speed Insights Dashboard
+
 - **URL**: https://vercel.com/igorganapolskys-projects/ai-nodes/speed-insights
 - **Features**: Performance metrics, Core Web Vitals, user experience data
 - **Real-time Data**: Live performance monitoring
 - **Historical Trends**: Performance over time analysis
 
 ### Analytics Dashboard
+
 - **URL**: https://vercel.com/igorganapolskys-projects/ai-nodes/analytics
 - **Features**: Page views, user behavior, custom events
 - **Audience Insights**: User demographics and behavior patterns
@@ -77,9 +85,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ## Configuration
 
 ### Environment Variables
+
 No additional environment variables are required. The packages automatically detect the Vercel environment and configure themselves.
 
 ### Custom Events (Optional)
+
 ```tsx
 import { track } from '@vercel/analytics';
 
@@ -89,7 +99,9 @@ track('page_view', { page: 'dashboard' });
 ```
 
 ### Performance Thresholds
+
 Speed Insights automatically tracks performance against Google's recommended thresholds:
+
 - **LCP**: < 2.5s (Good), 2.5-4s (Needs Improvement), > 4s (Poor)
 - **FID**: < 100ms (Good), 100-300ms (Needs Improvement), > 300ms (Poor)
 - **CLS**: < 0.1 (Good), 0.1-0.25 (Needs Improvement), > 0.25 (Poor)
@@ -97,12 +109,14 @@ Speed Insights automatically tracks performance against Google's recommended thr
 ## Benefits
 
 ### For Development
+
 - **Performance Optimization**: Identify slow pages and components
 - **User Experience**: Understand real user performance
 - **Debugging**: Track performance regressions
 - **A/B Testing**: Compare performance across deployments
 
 ### For Business
+
 - **User Retention**: Improve performance to reduce bounce rates
 - **SEO Benefits**: Better Core Web Vitals improve search rankings
 - **Conversion Rates**: Faster sites lead to higher conversions
@@ -111,12 +125,14 @@ Speed Insights automatically tracks performance against Google's recommended thr
 ## Privacy & Compliance
 
 ### Data Collection
+
 - **Anonymized**: No personally identifiable information collected
 - **Aggregated**: Data is aggregated and anonymized
 - **GDPR Compliant**: Follows privacy regulations
 - **Opt-out Available**: Users can opt out via browser settings
 
 ### Data Retention
+
 - **Performance Data**: Retained for analysis and optimization
 - **Analytics Data**: Used for understanding user behavior
 - **No Personal Data**: No individual user tracking
@@ -124,11 +140,13 @@ Speed Insights automatically tracks performance against Google's recommended thr
 ## Monitoring & Alerts
 
 ### Automatic Monitoring
+
 - **Real-time Alerts**: Performance degradation notifications
 - **Threshold Monitoring**: Alerts when metrics exceed thresholds
 - **Deployment Impact**: Track performance impact of deployments
 
 ### Dashboard Features
+
 - **Performance Trends**: Historical performance data
 - **Geographic Analysis**: Performance by location
 - **Device Analysis**: Performance by device type
@@ -137,11 +155,13 @@ Speed Insights automatically tracks performance against Google's recommended thr
 ## Troubleshooting
 
 ### Common Issues
+
 1. **No Data Appearing**: Wait 24-48 hours for initial data collection
 2. **Missing Metrics**: Ensure components are properly imported
 3. **Build Errors**: Check that packages are correctly installed
 
 ### Verification
+
 ```bash
 # Check if packages are installed
 pnpm list @vercel/speed-insights @vercel/analytics
@@ -156,12 +176,14 @@ grep -r "SpeedInsights\|Analytics" apps/web/src/
 ## Next Steps
 
 ### Optimization Opportunities
+
 1. **Monitor Performance**: Use dashboard to identify slow pages
 2. **Optimize Components**: Focus on components with poor metrics
 3. **A/B Testing**: Test performance improvements
 4. **User Feedback**: Combine with user feedback for optimization
 
 ### Advanced Features
+
 1. **Custom Events**: Track specific user interactions
 2. **Performance Budgets**: Set performance thresholds
 3. **Automated Testing**: Integrate with CI/CD for performance testing
@@ -169,5 +191,5 @@ grep -r "SpeedInsights\|Analytics" apps/web/src/
 
 ---
 
-*Last Updated: September 26, 2025*
-*Integration Status: ✅ Complete and Deployed*
+_Last Updated: September 26, 2025_
+_Integration Status: ✅ Complete and Deployed_

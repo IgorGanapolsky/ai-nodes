@@ -16,15 +16,27 @@ interface Label {
 
 const labels: Label[] = [
   // Priority levels
-  { name: 'Critical', description: 'Urgent production issues requiring immediate attention', color: '#FF0000' },
-  { name: 'High Priority', description: 'Important issues that should be addressed soon', color: '#FF6B6B' },
+  {
+    name: 'Critical',
+    description: 'Urgent production issues requiring immediate attention',
+    color: '#FF0000',
+  },
+  {
+    name: 'High Priority',
+    description: 'Important issues that should be addressed soon',
+    color: '#FF6B6B',
+  },
   { name: 'Low Priority', description: 'Nice-to-have improvements', color: '#95E1D3' },
 
   // Issue types (additional to existing Bug, Feature, Improvement)
   { name: 'CI/CD', description: 'Deployment, build, and pipeline issues', color: '#6C5CE7' },
   { name: 'Performance', description: 'Performance optimization and monitoring', color: '#FDCB6E' },
   { name: 'Security', description: 'Security vulnerabilities and improvements', color: '#D63031' },
-  { name: 'Documentation', description: 'Documentation updates and improvements', color: '#74B9FF' },
+  {
+    name: 'Documentation',
+    description: 'Documentation updates and improvements',
+    color: '#74B9FF',
+  },
   { name: 'Integration', description: 'Third-party service integrations', color: '#A29BFE' },
   { name: 'Infrastructure', description: 'Infrastructure and DevOps related', color: '#636E72' },
   { name: 'Tech Debt', description: 'Technical debt and refactoring', color: '#FAB1A0' },
@@ -45,7 +57,11 @@ const labels: Label[] = [
   // Automation specific
   { name: 'Automated', description: 'Issue created by automation', color: '#B2BEC3' },
   { name: 'Vercel', description: 'Vercel deployment related', color: '#000000' },
-  { name: 'Linear Integration', description: 'Linear API and integration issues', color: '#5E72E4' },
+  {
+    name: 'Linear Integration',
+    description: 'Linear API and integration issues',
+    color: '#5E72E4',
+  },
   { name: 'Ona Agent', description: 'Issues created or managed by Ona agents', color: '#48DBF8' },
 
   // DePIN specific
@@ -73,7 +89,7 @@ async function createLabel(label: Label) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': API_KEY,
+        Authorization: API_KEY,
       },
       body: JSON.stringify({
         query: mutation,
@@ -92,9 +108,9 @@ async function createLabel(label: Label) {
 
     if (data.errors) {
       // Check if it's a duplicate error
-      const isDuplicate = data.errors.some((error: any) =>
-        error.message?.includes('already exists') ||
-        error.extensions?.code === 'DUPLICATE_VALUE'
+      const isDuplicate = data.errors.some(
+        (error: any) =>
+          error.message?.includes('already exists') || error.extensions?.code === 'DUPLICATE_VALUE',
       );
 
       if (isDuplicate) {
@@ -142,7 +158,7 @@ async function setupLabels() {
       failed++;
     }
     // Small delay to avoid rate limiting
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   console.log('\n📊 Summary:');

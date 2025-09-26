@@ -226,8 +226,10 @@ export class NotificationManager {
     byType: Record<NotificationType, number>;
     recentFailures: number;
   }> {
-    // This would typically query a database or cache
+    // This would typically query a database or cache for the specific owner
+    // TODO: Implement actual database query using owner parameter
     // For now, return mock data structure
+    void owner; // Explicitly mark as unused for now
     return {
       totalSent: 0,
       byChannel: {

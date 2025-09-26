@@ -11,23 +11,23 @@ reviews:
 
   # Review scope
   path_filters:
-    - "**/*.ts"
-    - "**/*.tsx"
-    - "**/*.js"
-    - "**/*.jsx"
-    - "**/*.json"
-    - "**/*.md"
-    - "**/*.yml"
-    - "**/*.yaml"
+    - '**/*.ts'
+    - '**/*.tsx'
+    - '**/*.js'
+    - '**/*.jsx'
+    - '**/*.json'
+    - '**/*.md'
+    - '**/*.yml'
+    - '**/*.yaml'
 
   # Ignore patterns
   ignore_patterns:
-    - "node_modules/**"
-    - "dist/**"
-    - "build/**"
-    - "coverage/**"
-    - "*.lock"
-    - "*.log"
+    - 'node_modules/**'
+    - 'dist/**'
+    - 'build/**'
+    - 'coverage/**'
+    - '*.lock'
+    - '*.log'
 
   # Review rules
   rules:

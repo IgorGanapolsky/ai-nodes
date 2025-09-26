@@ -8,5 +8,3 @@ export function Header(): JSX.Element {
     </header>
   );
 }
-
-

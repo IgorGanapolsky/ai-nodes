@@ -24,19 +24,27 @@ export class EmailNotifier {
       fromName: config.fromName || 'DePIN Autopilot',
       replyTo: config.replyTo || process.env.REPLY_TO_EMAIL,
       smtpHost: config.smtpHost || process.env.SMTP_HOST,
-      smtpPort: config.smtpPort || (process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : undefined),
+      smtpPort:
+        config.smtpPort || (process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : undefined),
       smtpUser: config.smtpUser || process.env.SMTP_USER,
       smtpPass: config.smtpPass || process.env.SMTP_PASS,
-      smtpSecure: config.smtpSecure ?? (process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : undefined),
+      smtpSecure:
+        config.smtpSecure ??
+        (process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : undefined),
     };
 
     if (this.config.resendApiKey) {
       this.resend = new Resend(this.config.resendApiKey);
-    } else if (this.config.smtpHost && this.config.smtpPort && this.config.smtpUser && this.config.smtpPass) {
+    } else if (
+      this.config.smtpHost &&
+      this.config.smtpPort &&
+      this.config.smtpUser &&
+      this.config.smtpPass
+    ) {
       this.smtp = nodemailer.createTransport({
         host: this.config.smtpHost,
         port: this.config.smtpPort,
-        secure: this.config.smtpSecure ?? (this.config.smtpPort === 465),
+        secure: this.config.smtpSecure ?? this.config.smtpPort === 465,
         auth: { user: this.config.smtpUser, pass: this.config.smtpPass },
       });
     }
@@ -67,7 +75,9 @@ export class EmailNotifier {
         }
         return;
       } catch (error) {
-        if (error instanceof EmailNotificationError) throw error;
+        if (error instanceof EmailNotificationError) {
+          throw error;
+        }
         throw new EmailNotificationError('Failed to send email', error as Error);
       }
     }
@@ -83,7 +93,9 @@ export class EmailNotifier {
         });
         return;
       } catch (error) {
-        if (error instanceof EmailNotificationError) throw error;
+        if (error instanceof EmailNotificationError) {
+          throw error;
+        }
         throw new EmailNotificationError('Failed to send email via SMTP', error as Error);
       }
     }
@@ -211,7 +223,9 @@ export class EmailNotifier {
         /\{\{#each (\w+)\}\}(.*?)\{\{\/each\}\}/gs,
         (match, arrayKey, content) => {
           const array = this.getNestedValue(data, arrayKey) as any[];
-          if (!Array.isArray(array)) {return '';}
+          if (!Array.isArray(array)) {
+            return '';
+          }
 
           return array
             .map((item, index) => {
@@ -314,7 +328,7 @@ export class EmailNotifier {
         `,
       );
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

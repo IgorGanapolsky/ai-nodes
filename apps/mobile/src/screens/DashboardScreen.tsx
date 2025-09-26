@@ -18,6 +18,9 @@ import { webSocketService } from '../services/websocket';
 import { notificationService } from '../services/notifications';
 import { Alert as AlertType } from '../types';
 import { formatCurrency, formatPercentage } from '../utils/formatters';
+import { getLogger } from '@depinautopilot/utils';
+
+const logger = getLogger('mobile-dashboard');
 
 const DashboardScreen: React.FC = () => {
   const [alerts, setAlerts] = useState<AlertType[]>([]);
@@ -44,7 +47,7 @@ const DashboardScreen: React.FC = () => {
           await webSocketService.connect(settings.apiKey);
           setIsConnected(true);
         } catch (error) {
-          console.error('Failed to connect to WebSocket:', error);
+          logger.error('Failed to connect to WebSocket', error);
           setIsConnected(false);
         }
       }
@@ -113,7 +116,7 @@ const DashboardScreen: React.FC = () => {
       // Clear dismissed alerts on refresh
       setAlerts((prev) => prev.filter((alert) => !alert.dismissed));
     } catch (error) {
-      console.error('Refresh failed:', error);
+      logger.error('Refresh failed', error);
     } finally {
       setRefreshing(false);
     }
@@ -235,7 +238,7 @@ const DashboardScreen: React.FC = () => {
             node={node}
             onPress={() => {
               // Navigation to node details would go here
-              console.log('Navigate to node details:', node.id);
+              logger.debug('Navigate to node details', { nodeId: node.id });
             }}
           />
         ))}

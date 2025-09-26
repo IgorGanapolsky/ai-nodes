@@ -49,7 +49,9 @@ export class BaseError extends Error {
    * Get context with sensitive data removed
    */
   getSafeContext() {
-    if (!this.context) {return undefined;}
+    if (!this.context) {
+      return undefined;
+    }
     const sensitiveKeys = ['password', 'token', 'secret', 'key', 'authorization', 'auth'];
     const safeContext = { ...this.context };
     for (const key of Object.keys(safeContext)) {

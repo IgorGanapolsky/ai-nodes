@@ -127,14 +127,18 @@ class APIClient {
     // Response interceptor
     this.client.interceptors.response.use(
       (response) => {
-        const duration = Date.now() - ((response.config as ExtendedAxiosRequestConfig).metadata?.startTime || Date.now());
+        const duration =
+          Date.now() -
+          ((response.config as ExtendedAxiosRequestConfig).metadata?.startTime || Date.now());
         console.log(
           `[API] ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url} (${duration}ms)`,
         );
         return response;
       },
       (error) => {
-        const duration = Date.now() - ((error.config as ExtendedAxiosRequestConfig)?.metadata?.startTime || Date.now());
+        const duration =
+          Date.now() -
+          ((error.config as ExtendedAxiosRequestConfig)?.metadata?.startTime || Date.now());
         console.error(
           `[API] ${error.response?.status || 'ERROR'} ${error.config?.method?.toUpperCase()} ${error.config?.url} (${duration}ms)`,
           error.message,

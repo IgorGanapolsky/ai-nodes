@@ -4,7 +4,9 @@ import { revenueShares, type RevenueShare, type NewRevenueShare } from '../schem
 
 export interface RevenueShareFilters extends FilterOptions {
   nodeId?: string | string[];
-  shareType?: ('owner' | 'platform' | 'referral' | 'maintenance' | 'hosting' | 'custom') | ('owner' | 'platform' | 'referral' | 'maintenance' | 'hosting' | 'custom')[];
+  shareType?:
+    | ('owner' | 'platform' | 'referral' | 'maintenance' | 'hosting' | 'custom')
+    | ('owner' | 'platform' | 'referral' | 'maintenance' | 'hosting' | 'custom')[];
   paidOut?: boolean;
   period?: string;
   recipientId?: string;
@@ -135,7 +137,9 @@ export class RevenueShareRepository extends BaseRepository<
       }
 
       const result = await this.update(shareId, updateData);
-      if (result) {paidCount++;}
+      if (result) {
+        paidCount++;
+      }
     }
 
     return paidCount;

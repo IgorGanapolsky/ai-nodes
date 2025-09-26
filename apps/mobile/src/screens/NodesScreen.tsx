@@ -109,7 +109,9 @@ const NodesScreen: React.FC = () => {
   };
 
   const filteredNodes = nodes.filter((node) => {
-    if (filterStatus === 'all') {return true;}
+    if (filterStatus === 'all') {
+      return true;
+    }
     return node.status === filterStatus;
   });
 

@@ -1,11 +1,14 @@
 import fetch from 'node-fetch';
 import { Opportunity } from './types';
 
-export async function prospectGitHub(search: string = 'label:help-wanted language:TypeScript', limit: number = 10): Promise<Opportunity[]> {
+export async function prospectGitHub(
+  search: string = 'label:help-wanted language:TypeScript',
+  limit: number = 10,
+): Promise<Opportunity[]> {
   const token = process.env.GITHUB_TOKEN;
   const q = encodeURIComponent(search);
   const url = `https://api.github.com/search/issues?q=${q}&per_page=${Math.min(limit, 50)}`;
-  const headers: any = { 'Accept': 'application/vnd.github+json' };
+  const headers: any = { Accept: 'application/vnd.github+json' };
   if (token) headers.Authorization = `Bearer ${token}`;
 
   try {
@@ -24,4 +27,3 @@ export async function prospectGitHub(search: string = 'label:help-wanted languag
     return [];
   }
 }
-

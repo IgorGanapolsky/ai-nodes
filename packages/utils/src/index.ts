@@ -146,7 +146,7 @@ export {
   generateId,
   generateToken,
   generateUrlSafeToken,
-generateOtp,
+  generateOtp,
   generateSecureRandomNumber,
   generateShortId,
   generateTimeBasedId,
@@ -315,9 +315,15 @@ export function throttle<T extends (...args: any[]) => any>(
  * Deep clone an object
  */
 export function deepClone<T>(obj: T): T {
-  if (obj === null || typeof obj !== 'object') {return obj;}
-  if (obj instanceof Date) {return new Date(obj.getTime()) as unknown as T;}
-  if (obj instanceof Array) {return obj.map((item) => deepClone(item)) as unknown as T;}
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  if (obj instanceof Date) {
+    return new Date(obj.getTime()) as unknown as T;
+  }
+  if (obj instanceof Array) {
+    return obj.map((item) => deepClone(item)) as unknown as T;
+  }
   if (typeof obj === 'object') {
     const copy: any = {};
     Object.keys(obj).forEach((key) => {
@@ -332,10 +338,18 @@ export function deepClone<T>(obj: T): T {
  * Check if object is empty
  */
 export function isEmpty(obj: any): boolean {
-  if (obj == null) {return true;}
-  if (Array.isArray(obj) || typeof obj === 'string') {return obj.length === 0;}
-  if (obj instanceof Map || obj instanceof Set) {return obj.size === 0;}
-  if (typeof obj === 'object') {return Object.keys(obj).length === 0;}
+  if (obj == null) {
+    return true;
+  }
+  if (Array.isArray(obj) || typeof obj === 'string') {
+    return obj.length === 0;
+  }
+  if (obj instanceof Map || obj instanceof Set) {
+    return obj.size === 0;
+  }
+  if (typeof obj === 'object') {
+    return Object.keys(obj).length === 0;
+  }
   return false;
 }
 

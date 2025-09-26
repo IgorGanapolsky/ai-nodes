@@ -2,22 +2,28 @@
 
 import { runDatabaseMigrations } from './client';
 import path from 'path';
+import { getLogger } from '@depinautopilot/utils';
+
+const logger = getLogger('db-migration');
 
 async function main() {
-  console.log('🔄 Running database migrations...');
+  logger.info('Running database migrations');
 
   try {
     const migrationsPath = path.join(__dirname, '../migrations');
     await runDatabaseMigrations(migrationsPath);
 
-    console.log('✅ Migrations completed successfully');
-    console.log('✅ Database connection verified');
+    logger.info('Migrations completed successfully');
+    logger.info('Database connection verified');
   } catch (error) {
-    console.error('❌ Migration failed:', error);
+    logger.error('Migration failed', error);
     process.exit(1);
   }
 }
 
 if (require.main === module) {
-  main().catch(console.error);
+  main().catch((error) => {
+    logger.error('Main process failed', error);
+    process.exit(1);
+  });
 }

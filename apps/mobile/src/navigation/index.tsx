@@ -99,7 +99,7 @@ const TabIcon: React.FC<{ name: string; color: string; size: number }> = ({
     }
   };
 
-  return <Text style={{ fontSize: size, textAlign: 'center' }}>{getIcon()}</Text>;
+  return <Text style={{ fontSize: size, textAlign: 'center', color }}>{getIcon()}</Text>;
 };
 
 export const AppNavigator = () => {

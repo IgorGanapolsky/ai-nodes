@@ -2,14 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import {
-  Download,
-  FileText,
-  DollarSign,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-} from 'lucide-react';
+import { Download, FileText, DollarSign, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

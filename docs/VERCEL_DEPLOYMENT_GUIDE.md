@@ -50,24 +50,30 @@ The `scripts/deployment-health-monitor.js` script:
 ## 🔧 Common Issues and Solutions
 
 ### Issue 1: Lint Errors
+
 **Symptoms**: ESLint errors in CI/CD
-**Solution**: 
+**Solution**:
+
 ```bash
 pnpm run lint --fix
 pnpm run format
 ```
 
 ### Issue 2: TypeScript Errors
+
 **Symptoms**: Type checking failures
-**Solution**: 
+**Solution**:
+
 ```bash
 pnpm run type-check
 # Fix type errors manually
 ```
 
 ### Issue 3: Build Failures
+
 **Symptoms**: Build process fails
-**Solution**: 
+**Solution**:
+
 ```bash
 pnpm run clean
 pnpm install --frozen-lockfile
@@ -75,16 +81,20 @@ pnpm run build
 ```
 
 ### Issue 4: Dependency Issues
+
 **Symptoms**: Package installation failures
-**Solution**: 
+**Solution**:
+
 ```bash
 rm -f pnpm-lock.yaml
 pnpm install
 ```
 
 ### Issue 5: Environment Variables
+
 **Symptoms**: Missing environment variables
-**Solution**: 
+**Solution**:
+
 - Check `.env.example` for required variables
 - Set variables in Vercel dashboard
 - Validate locally with `.env.local`
@@ -106,6 +116,7 @@ Before deploying to Vercel:
 ### GitHub Actions Integration
 
 The system automatically:
+
 - Validates every deployment
 - Fixes common issues
 - Creates GitHub issues for failures
@@ -114,6 +125,7 @@ The system automatically:
 ### Manual Monitoring
 
 Run health checks manually:
+
 ```bash
 pnpm run health:check
 ```
@@ -121,6 +133,7 @@ pnpm run health:check
 ### Log Files
 
 Check logs in:
+
 - `logs/vercel-validation-*.log`
 - `logs/deployment-health.log`
 
@@ -153,6 +166,7 @@ Key settings for reliable deployments:
 ### Package.json Scripts
 
 Available scripts:
+
 - `pnpm run vercel:validate` - Run pre-deployment validation
 - `pnpm run pre-deploy` - Complete pre-deployment check
 - `pnpm run health:check` - Run health monitoring
@@ -168,6 +182,7 @@ Available scripts:
    - Look for specific error messages
 
 2. **Run local validation**
+
    ```bash
    pnpm run pre-deploy
    ```
@@ -178,17 +193,18 @@ Available scripts:
    - Verify domain configuration
 
 4. **Manual fixes**
+
    ```bash
    # Fix lint issues
    pnpm run lint --fix
-   
+
    # Fix formatting
    pnpm run format
-   
+
    # Regenerate dependencies
    rm -f pnpm-lock.yaml
    pnpm install
-   
+
    # Clean and rebuild
    pnpm run clean
    pnpm run build
@@ -199,6 +215,7 @@ Available scripts:
 If all else fails:
 
 1. **Revert to last working commit**
+
    ```bash
    git revert HEAD
    git push
@@ -234,4 +251,4 @@ If all else fails:
 
 ---
 
-*This guide is automatically updated by the deployment system. Last updated: $(date)*
+_This guide is automatically updated by the deployment system. Last updated: $(date)_

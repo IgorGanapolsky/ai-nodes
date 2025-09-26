@@ -10,14 +10,14 @@ updates:
     groups:
       github-actions:
         patterns:
-          - "*"
+          - '*'
     commit-message:
-      prefix: "ci"
-      include: "scope"
+      prefix: 'ci'
+      include: 'scope'
     labels:
-      - "dependencies"
-      - "github-actions"
-      - "auto-merge"
+      - 'dependencies'
+      - 'github-actions'
+      - 'auto-merge'
 
   - package-ecosystem: 'npm'
     directory: '/'
@@ -29,29 +29,29 @@ updates:
     open-pull-requests-limit: 5
     groups:
       production-dependencies:
-        dependency-type: "production"
+        dependency-type: 'production'
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
       development-dependencies:
-        dependency-type: "development"
+        dependency-type: 'development'
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
       major-updates:
         update-types:
-          - "major"
+          - 'major'
     commit-message:
-      prefix: "fix"
-      prefix-development: "chore"
-      include: "scope"
+      prefix: 'fix'
+      prefix-development: 'chore'
+      include: 'scope'
     labels:
-      - "dependencies"
-      - "npm"
-      - "auto-merge"
+      - 'dependencies'
+      - 'npm'
+      - 'auto-merge'
     ignore:
       # Add any packages you want to manually manage
-      - dependency-name: "react"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "next"
-        update-types: ["version-update:semver-major"]
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'next'
+        update-types: ['version-update:semver-major']

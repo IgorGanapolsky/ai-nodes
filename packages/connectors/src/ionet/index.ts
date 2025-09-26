@@ -44,7 +44,7 @@ export class IoNetConnector implements Connector {
   private async validateAuth(): Promise<boolean> {
     try {
       const response = await axios.get('https://api.io.net/v1/workers', {
-        headers: { 'Authorization': `Bearer ${this.authToken}` }
+        headers: { Authorization: `Bearer ${this.authToken}` },
       });
       return response.status === 200;
     } catch {
@@ -55,7 +55,7 @@ export class IoNetConnector implements Connector {
   private async loginViaPlaywright(): Promise<boolean> {
     try {
       this.browser = await playwright.chromium.launch({
-        headless: this.config.useHeadless !== false
+        headless: this.config.useHeadless !== false,
       });
       const page = await this.browser.newPage();
 
@@ -89,7 +89,7 @@ export class IoNetConnector implements Connector {
   async fetchDevices(ownerId: string): Promise<Device[]> {
     try {
       const response = await axios.get('https://api.io.net/v1/workers', {
-        headers: { 'Authorization': `Bearer ${this.authToken}` }
+        headers: { Authorization: `Bearer ${this.authToken}` },
       });
 
       return response.data.workers.map((worker: any) => ({
@@ -114,7 +114,7 @@ export class IoNetConnector implements Connector {
           gpu_model: worker.gpu_model,
           gpu_count: worker.gpu_count,
           block_rewards: worker.block_rewards,
-        }
+        },
       }));
     } catch (error) {
       console.error('Failed to fetch io.net devices:', error);
@@ -130,11 +130,13 @@ export class IoNetConnector implements Connector {
         threads: worker.cpu_threads || 0,
         frequency: worker.cpu_freq || 0,
       },
-      gpu: worker.gpu_model ? {
-        model: worker.gpu_model,
-        memory: worker.gpu_vram || 0,
-        count: worker.gpu_count || 1,
-      } : undefined,
+      gpu: worker.gpu_model
+        ? {
+            model: worker.gpu_model,
+            memory: worker.gpu_vram || 0,
+            count: worker.gpu_count || 1,
+          }
+        : undefined,
       memory: {
         total: worker.ram || 0,
         type: 'DDR4',
@@ -158,7 +160,7 @@ export class IoNetConnector implements Connector {
       const params = since ? `?since=${since.toISOString()}` : '?period=24h';
       const response = await axios.get(
         `https://api.io.net/v1/workers/${deviceId}/metrics${params}`,
-        { headers: { 'Authorization': `Bearer ${this.authToken}` } }
+        { headers: { Authorization: `Bearer ${this.authToken}` } },
       );
 
       return response.data.metrics.map((m: any) => ({
@@ -193,7 +195,7 @@ export class IoNetConnector implements Connector {
     try {
       const response = await axios.get(
         `https://api.io.net/v1/workers/${deviceId}/earnings?period=${period}`,
-        { headers: { 'Authorization': `Bearer ${this.authToken}` } }
+        { headers: { Authorization: `Bearer ${this.authToken}` } },
       );
 
       // Returns IO tokens earned
@@ -212,7 +214,7 @@ export class IoNetConnector implements Connector {
     try {
       // In production, use CoinGecko or similar API
       const response = await axios.get(
-        'https://api.coingecko.com/api/v3/simple/price?ids=io-net&vs_currencies=usd'
+        'https://api.coingecko.com/api/v3/simple/price?ids=io-net&vs_currencies=usd',
       );
       return response.data['io-net']?.usd || 1.5; // Fallback price
     } catch {
@@ -234,8 +236,8 @@ export class IoNetConnector implements Connector {
         // Would need dashboard automation
         return { success: false, message: 'Manual restart required via dashboard' };
       case 'check_health':
-        return this.fetchDevices('').then(devices =>
-          devices.find(d => d.externalId === deviceId)?.status === 'online'
+        return this.fetchDevices('').then(
+          (devices) => devices.find((d) => d.externalId === deviceId)?.status === 'online',
         );
       default:
         throw new Error(`Unsupported action: ${action}`);

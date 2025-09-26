@@ -5,4 +5,3 @@ export interface Opportunity {
   description?: string;
   priority?: number; // 0-3 aligning with Linear mapping
 }
-

@@ -262,9 +262,15 @@ export function throttle(func, limit) {
  * Deep clone an object
  */
 export function deepClone(obj) {
-  if (obj === null || typeof obj !== 'object') {return obj;}
-  if (obj instanceof Date) {return new Date(obj.getTime());}
-  if (obj instanceof Array) {return obj.map((item) => deepClone(item));}
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  if (obj instanceof Date) {
+    return new Date(obj.getTime());
+  }
+  if (obj instanceof Array) {
+    return obj.map((item) => deepClone(item));
+  }
   if (typeof obj === 'object') {
     const copy = {};
     Object.keys(obj).forEach((key) => {
@@ -278,10 +284,18 @@ export function deepClone(obj) {
  * Check if object is empty
  */
 export function isEmpty(obj) {
-  if (obj == null) {return true;}
-  if (Array.isArray(obj) || typeof obj === 'string') {return obj.length === 0;}
-  if (obj instanceof Map || obj instanceof Set) {return obj.size === 0;}
-  if (typeof obj === 'object') {return Object.keys(obj).length === 0;}
+  if (obj == null) {
+    return true;
+  }
+  if (Array.isArray(obj) || typeof obj === 'string') {
+    return obj.length === 0;
+  }
+  if (obj instanceof Map || obj instanceof Set) {
+    return obj.size === 0;
+  }
+  if (typeof obj === 'object') {
+    return Object.keys(obj).length === 0;
+  }
   return false;
 }
 /**

@@ -81,7 +81,11 @@ export class SmartLinearAgent extends OnaLinearAgent {
         labels.push('Bug');
       } else if (text.includes('feature') || text.includes('add') || text.includes('new')) {
         labels.push('Feature');
-      } else if (text.includes('improve') || text.includes('enhance') || text.includes('optimize')) {
+      } else if (
+        text.includes('improve') ||
+        text.includes('enhance') ||
+        text.includes('optimize')
+      ) {
         labels.push('Improvement');
       }
 

@@ -173,7 +173,7 @@ export class OnaLinearAgent {
 
     this.isProcessing = true;
 
-    const pendingTasks = this.taskQueue.filter(t => t.status === 'pending');
+    const pendingTasks = this.taskQueue.filter((t) => t.status === 'pending');
 
     for (const task of pendingTasks) {
       console.log(`Processing task ${task.id}...`);

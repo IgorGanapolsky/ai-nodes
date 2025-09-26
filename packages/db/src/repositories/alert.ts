@@ -4,7 +4,19 @@ import { alerts, type Alert, type NewAlert } from '../schema/alerts';
 
 export interface AlertFilters extends FilterOptions {
   nodeId?: string | string[];
-  type?: 'offline' | 'high_cpu' | 'high_memory' | 'low_storage' | 'network_issues' | 'sync_error' | 'earning_drop' | 'security_warning' | 'maintenance_required' | 'custom' | string | string[];
+  type?:
+    | 'offline'
+    | 'high_cpu'
+    | 'high_memory'
+    | 'low_storage'
+    | 'network_issues'
+    | 'sync_error'
+    | 'earning_drop'
+    | 'security_warning'
+    | 'maintenance_required'
+    | 'custom'
+    | string
+    | string[];
   severity?: 'low' | 'medium' | 'high' | 'critical' | string | string[];
   resolved?: boolean;
 }
@@ -123,7 +135,9 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
 
     for (const alertId of alertIds) {
       const result = await this.resolveAlert(alertId, resolvedBy);
-      if (result) {resolvedCount++;}
+      if (result) {
+        resolvedCount++;
+      }
     }
 
     return resolvedCount;
@@ -166,7 +180,11 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     const unresolvedResult = await this.db
       .select({ count: count() })
       .from(this.table)
-      .where(whereClause ? and(whereClause, eq(this.table.resolved, false)) : eq(this.table.resolved, false));
+      .where(
+        whereClause
+          ? and(whereClause, eq(this.table.resolved, false))
+          : eq(this.table.resolved, false),
+      );
 
     // Get severity breakdown
     const severityResult = await this.db
@@ -175,7 +193,11 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
         count: count(),
       })
       .from(this.table)
-      .where(whereClause ? and(whereClause, eq(this.table.resolved, false)) : eq(this.table.resolved, false))
+      .where(
+        whereClause
+          ? and(whereClause, eq(this.table.resolved, false))
+          : eq(this.table.resolved, false),
+      )
       .groupBy(this.table.severity);
 
     // Get type breakdown
@@ -185,7 +207,11 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
         count: count(),
       })
       .from(this.table)
-      .where(whereClause ? and(whereClause, eq(this.table.resolved, false)) : eq(this.table.resolved, false))
+      .where(
+        whereClause
+          ? and(whereClause, eq(this.table.resolved, false))
+          : eq(this.table.resolved, false),
+      )
       .groupBy(this.table.type);
 
     // Get node breakdown
@@ -195,7 +221,11 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
         count: count(),
       })
       .from(this.table)
-      .where(whereClause ? and(whereClause, eq(this.table.resolved, false)) : eq(this.table.resolved, false))
+      .where(
+        whereClause
+          ? and(whereClause, eq(this.table.resolved, false))
+          : eq(this.table.resolved, false),
+      )
       .groupBy(this.table.nodeId);
 
     const total = totalResult[0]?.count || 0;
@@ -308,12 +338,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
         resolved: sql<number>`SUM(CASE WHEN ${this.table.resolved} = 1 THEN 1 ELSE 0 END)`,
       })
       .from(this.table)
-      .where(
-        and(
-          gte(this.table.timestamp, startDate),
-          lte(this.table.timestamp, endDate),
-        ),
-      )
+      .where(and(gte(this.table.timestamp, startDate), lte(this.table.timestamp, endDate)))
       .groupBy(sql`date(${this.table.timestamp}, 'unixepoch')`)
       .orderBy(sql`date(${this.table.timestamp}, 'unixepoch')`);
 
@@ -337,9 +362,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     const staleAlerts = await this.db
       .select({ id: this.table.id })
       .from(this.table)
-      .where(
-        and(eq(this.table.resolved, false), lte(this.table.timestamp, cutoffDate)),
-      );
+      .where(and(eq(this.table.resolved, false), lte(this.table.timestamp, cutoffDate)));
 
     const alertIds = staleAlerts.map((alert) => alert.id);
     return this.bulkResolveAlerts(alertIds, resolvedBy);

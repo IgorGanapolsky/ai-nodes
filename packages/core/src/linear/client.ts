@@ -13,7 +13,7 @@ export class LinearClient {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': this.config.apiKey,
+        Authorization: this.config.apiKey,
       },
       body: JSON.stringify({
         query,
@@ -25,7 +25,9 @@ export class LinearClient {
 
     if (!response.ok) {
       console.error('Linear API Error:', data);
-      throw new Error(`Linear API request failed: ${response.statusText} - ${JSON.stringify(data)}`);
+      throw new Error(
+        `Linear API request failed: ${response.statusText} - ${JSON.stringify(data)}`,
+      );
     }
 
     if (data.errors) {

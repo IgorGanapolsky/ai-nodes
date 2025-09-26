@@ -4,8 +4,34 @@ import { nodes, type Node, type NewNode } from '../schema/devices';
 
 export interface NodeFilters extends FilterOptions {
   ownerId?: string;
-  type?: ('storj' | 'filecoin' | 'chia' | 'akash' | 'theta' | 'livepeer' | 'helium' | 'arweave' | 'sia' | 'custom') | ('storj' | 'filecoin' | 'chia' | 'akash' | 'theta' | 'livepeer' | 'helium' | 'arweave' | 'sia' | 'custom')[];
-  status?: ('active' | 'inactive' | 'error' | 'maintenance' | 'pending') | ('active' | 'inactive' | 'error' | 'maintenance' | 'pending')[];
+  type?:
+    | (
+        | 'storj'
+        | 'filecoin'
+        | 'chia'
+        | 'akash'
+        | 'theta'
+        | 'livepeer'
+        | 'helium'
+        | 'arweave'
+        | 'sia'
+        | 'custom'
+      )
+    | (
+        | 'storj'
+        | 'filecoin'
+        | 'chia'
+        | 'akash'
+        | 'theta'
+        | 'livepeer'
+        | 'helium'
+        | 'arweave'
+        | 'sia'
+        | 'custom'
+      )[];
+  status?:
+    | ('active' | 'inactive' | 'error' | 'maintenance' | 'pending')
+    | ('active' | 'inactive' | 'error' | 'maintenance' | 'pending')[];
   isOnline?: boolean;
   location?: string;
 }
@@ -91,7 +117,12 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
       .select()
       .from(this.table)
       .where(
-        and(or(sql`${this.table.lastSeen} IS NULL`, sql`${this.table.lastSeen} < ${thresholdTimestamp}`)),
+        and(
+          or(
+            sql`${this.table.lastSeen} IS NULL`,
+            sql`${this.table.lastSeen} < ${thresholdTimestamp}`,
+          ),
+        ),
       )
       .orderBy(desc(this.table.lastSeen))
       .limit(options.pagination?.limit || 50)
@@ -101,7 +132,12 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
       .select({ count: count() })
       .from(this.table)
       .where(
-        and(or(sql`${this.table.lastSeen} IS NULL`, sql`${this.table.lastSeen} < ${thresholdTimestamp}`)),
+        and(
+          or(
+            sql`${this.table.lastSeen} IS NULL`,
+            sql`${this.table.lastSeen} < ${thresholdTimestamp}`,
+          ),
+        ),
       );
 
     const total = totalResult[0]?.count || 0;
@@ -117,7 +153,10 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
   }
 
   // Update node status
-  async updateStatus(nodeId: string, status: 'active' | 'inactive' | 'error' | 'maintenance' | 'pending'): Promise<Node | null> {
+  async updateStatus(
+    nodeId: string,
+    status: 'active' | 'inactive' | 'error' | 'maintenance' | 'pending',
+  ): Promise<Node | null> {
     return this.update(nodeId, {
       status,
       updatedAt: new Date(),

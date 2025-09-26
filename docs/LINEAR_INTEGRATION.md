@@ -7,18 +7,21 @@ This project now includes comprehensive Linear integration for coordinating mult
 ## Features
 
 ### 🎯 **Agent Coordination**
+
 - **Task Creation**: Create specific tasks for individual agents
 - **Multi-Agent Coordination**: Coordinate work between multiple agents
 - **Status Tracking**: Track task progress and completion
 - **Priority Management**: Set task priorities and deadlines
 
 ### 📊 **Dashboard Integration**
+
 - **Real-time Updates**: Live task status updates
 - **Filtering**: Filter tasks by agent, status, and priority
 - **Task Management**: Create, update, and complete tasks
 - **Linear Integration**: Direct links to Linear issues
 
 ### 🔧 **API Integration**
+
 - **Linear SDK**: Full integration with Linear API
 - **RESTful Endpoints**: API routes for task management
 - **Type Safety**: Comprehensive TypeScript types
@@ -99,6 +102,7 @@ The Linear dashboard provides a user-friendly interface for:
 The Linear API provides the following endpoints:
 
 #### GET Endpoints
+
 - `/api/linear?action=get-issue&issueId=<id>` - Get specific issue
 - `/api/linear?action=list-issues` - List all issues
 - `/api/linear?action=get-agent-tasks&agentName=<name>` - Get agent tasks
@@ -106,6 +110,7 @@ The Linear API provides the following endpoints:
 - `/api/linear?action=get-states` - Get available states
 
 #### POST Endpoints
+
 - `/api/linear` with action `create-issue` - Create new issue
 - `/api/linear` with action `update-issue` - Update existing issue
 - `/api/linear` with action `create-agent-task` - Create agent task
@@ -147,23 +152,27 @@ node scripts/linear-agent-coordination.js create-coordination "Feature Implement
 ## Best Practices
 
 ### 1. Agent Registration
+
 - Use descriptive agent names
 - Include relevant capabilities
 - Keep agent list updated
 
 ### 2. Task Creation
+
 - Use clear, actionable task titles
 - Provide detailed descriptions
 - Set appropriate priorities
 - Assign to correct agents
 
 ### 3. Status Updates
+
 - Update status regularly
 - Add meaningful notes
 - Use consistent status names
 - Track dependencies
 
 ### 4. Coordination
+
 - Create coordination issues for complex features
 - Involve all relevant agents
 - Document decisions and progress
@@ -209,18 +218,21 @@ client.teams().then(teams => teams.nodes.forEach(t => console.log(t.name, t.id))
 ## Integration Benefits
 
 ### For Development Teams
+
 - **Centralized Task Management**: All tasks in one place
 - **Clear Accountability**: Know who's responsible for what
 - **Progress Tracking**: Monitor development progress
 - **Coordination**: Better collaboration between team members
 
 ### For AI Agents
+
 - **Task Assignment**: Clear tasks for each agent
 - **Status Communication**: Agents can communicate progress
 - **Dependency Management**: Track task dependencies
 - **Workload Distribution**: Balance work across agents
 
 ### For Project Management
+
 - **Visibility**: See all work in progress
 - **Planning**: Better sprint and release planning
 - **Reporting**: Generate progress reports
@@ -229,6 +241,7 @@ client.teams().then(teams => teams.nodes.forEach(t => console.log(t.name, t.id))
 ## Future Enhancements
 
 ### Planned Features
+
 1. **Automated Task Creation**: Create tasks from code changes
 2. **Agent Communication**: Direct agent-to-agent communication
 3. **Performance Metrics**: Track agent productivity
@@ -237,6 +250,7 @@ client.teams().then(teams => teams.nodes.forEach(t => console.log(t.name, t.id))
 6. **Notifications**: Real-time notifications for task updates
 
 ### Customization Options
+
 1. **Custom Labels**: Create project-specific labels
 2. **Workflow Templates**: Predefined workflow templates
 3. **Agent Profiles**: Detailed agent capability profiles
@@ -244,5 +258,5 @@ client.teams().then(teams => teams.nodes.forEach(t => console.log(t.name, t.id))
 
 ---
 
-*Last Updated: September 26, 2025*
-*Integration Status: ✅ Complete and Ready for Use*
+_Last Updated: September 26, 2025_
+_Integration Status: ✅ Complete and Ready for Use_

@@ -284,7 +284,9 @@ function createAnalyzeCommand() {
           const deviceMetrics = filteredDevices
             .map((device) => {
               const metrics = device.metrics;
-              if (!metrics) {return null;}
+              if (!metrics) {
+                return null;
+              }
               const revenuePerDay = metrics.grossRevenue24h;
               const weeklyRevenue = metrics.grossRevenue7d;
               const utilization = metrics.utilization;
@@ -329,8 +331,12 @@ function createAnalyzeCommand() {
                     title: 'Performance',
                     key: 'performance',
                     color: (value) => {
-                      if (value.includes('High')) {return chalk.green(value);}
-                      if (value.includes('Low')) {return chalk.red(value);}
+                      if (value.includes('High')) {
+                        return chalk.green(value);
+                      }
+                      if (value.includes('Low')) {
+                        return chalk.red(value);
+                      }
                       return chalk.yellow(value);
                     },
                   },

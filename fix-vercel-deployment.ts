@@ -54,7 +54,8 @@ async function createVercelFixWorkflow() {
           action: 'create',
           params: {
             title: 'Task 1: Install pnpm and generate lockfile',
-            description: 'Install pnpm globally and generate pnpm-lock.yaml from existing package-lock.json',
+            description:
+              'Install pnpm globally and generate pnpm-lock.yaml from existing package-lock.json',
             priority: 1,
           },
         },
@@ -91,7 +92,6 @@ async function createVercelFixWorkflow() {
     agent.disconnect();
 
     return { mainIssue, subtasks };
-
   } catch (error) {
     console.error('❌ Failed to create workflow:', error);
     agent.disconnect();

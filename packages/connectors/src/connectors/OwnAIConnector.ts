@@ -347,7 +347,9 @@ export class OwnAIConnector extends BaseConnector {
   }
 
   private calculateAverageJobDuration(jobs: any[]): number {
-    if (jobs.length === 0) {return 0;}
+    if (jobs.length === 0) {
+      return 0;
+    }
 
     const totalDuration = jobs.reduce((sum, job) => {
       const start = new Date(job.start_time).getTime();

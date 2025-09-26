@@ -52,14 +52,10 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     const filters = { ...options.filters, nodeId };
 
     if (options.dateRange) {
-      return this.findByDateRangeForEarnings(
-        options.dateRange.start,
-        options.dateRange.end,
-        {
-          filters,
-          pagination: options.pagination,
-        },
-      );
+      return this.findByDateRangeForEarnings(options.dateRange.start, options.dateRange.end, {
+        filters,
+        pagination: options.pagination,
+      });
     }
 
     return this.findMany({
@@ -112,7 +108,9 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     let updatedCount = 0;
     for (const earningId of earningIds) {
       const result = await this.update(earningId, updateData);
-      if (result) {updatedCount++;}
+      if (result) {
+        updatedCount++;
+      }
     }
 
     return updatedCount;
@@ -232,21 +230,33 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
       averageEarning: Number(totalStats[0]?.average) || 0,
       byCurrency: currencyStats.reduce(
         (acc, { currency, total, count, average }) => {
-          acc[currency] = { total: Number(total) || 0, count: Number(count) || 0, average: Number(average) || 0 };
+          acc[currency] = {
+            total: Number(total) || 0,
+            count: Number(count) || 0,
+            average: Number(average) || 0,
+          };
           return acc;
         },
         {} as Record<string, { total: number; count: number; average: number }>,
       ),
       byType: typeStats.reduce(
         (acc, { type, total, count, average }) => {
-          acc[type] = { total: Number(total) || 0, count: Number(count) || 0, average: Number(average) || 0 };
+          acc[type] = {
+            total: Number(total) || 0,
+            count: Number(count) || 0,
+            average: Number(average) || 0,
+          };
           return acc;
         },
         {} as Record<string, { total: number; count: number; average: number }>,
       ),
       byNode: nodeStats.reduce(
         (acc, { nodeId, total, count, average }) => {
-          acc[nodeId] = { total: Number(total) || 0, count: Number(count) || 0, average: Number(average) || 0 };
+          acc[nodeId] = {
+            total: Number(total) || 0,
+            count: Number(count) || 0,
+            average: Number(average) || 0,
+          };
           return acc;
         },
         {} as Record<string, { total: number; count: number; average: number }>,

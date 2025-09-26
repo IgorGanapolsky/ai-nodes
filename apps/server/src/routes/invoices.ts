@@ -129,7 +129,7 @@ const invoiceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fa
       const event = stripe.webhooks.constructEvent(request.body as string, sig, webhookSecret);
 
       switch (event.type) {
-        case 'payment_intent.succeeded':
+        case 'payment_intent.succeeded': {
           const paymentIntent = event.data.object as Stripe.PaymentIntent;
           const { statementId, ownerId } = paymentIntent.metadata;
 
@@ -138,10 +138,12 @@ const invoiceRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fa
 
           // TODO: Update database, send confirmation email
           break;
+        }
 
-        case 'payment_intent.payment_failed':
+        case 'payment_intent.payment_failed': {
           fastify.log.warn({ event: event.data.object }, 'Payment failed');
           break;
+        }
       }
 
       return reply.send({ received: true });

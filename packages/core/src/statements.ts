@@ -124,7 +124,9 @@ function getCSVHeader(delimiter: string, currency: string): string {
  * Escape CSV value to handle commas, quotes, and newlines
  */
 function escapeCSVValue(value: string): string {
-  if (!value) {return '';}
+  if (!value) {
+    return '';
+  }
 
   // If value contains delimiter, quotes, or newlines, wrap in quotes and escape internal quotes
   if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes('\r')) {

@@ -183,9 +183,15 @@ function createUpdateCommand() {
           ]);
           updateData = answers;
         } else {
-          if (options.name) {updateData.name = options.name;}
-          if (options.email) {updateData.email = options.email;}
-          if (options.wallet) {updateData.walletAddress = options.wallet;}
+          if (options.name) {
+            updateData.name = options.name;
+          }
+          if (options.email) {
+            updateData.email = options.email;
+          }
+          if (options.wallet) {
+            updateData.walletAddress = options.wallet;
+          }
           if (Object.keys(updateData).length === 0) {
             console.log(chalk.yellow('No updates provided. Use --interactive for guided update.'));
             return;

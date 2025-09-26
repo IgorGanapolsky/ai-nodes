@@ -23,20 +23,15 @@ async function fixVercelDeployments() {
     console.log('\n🔧 Step 3: Implementing solution...\n');
 
     // Remove duplicate/problematic projects
-    const projectsToRemove = [
-      'ai-nodes-web',
-      'ai-nodes-web-new', 
-      'ai-nodes-web-2',
-      'web'
-    ];
+    const projectsToRemove = ['ai-nodes-web', 'ai-nodes-web-new', 'ai-nodes-web-2', 'web'];
 
     console.log('🗑️  Removing duplicate Vercel projects:');
     for (const project of projectsToRemove) {
       try {
         console.log(`   Removing: ${project}...`);
-        execSync(`vercel projects rm ${project} --yes`, { 
+        execSync(`vercel projects rm ${project} --yes`, {
           encoding: 'utf8',
-          stdio: 'pipe'
+          stdio: 'pipe',
         });
         console.log(`   ✅ Removed: ${project}`);
       } catch (error) {
@@ -48,12 +43,12 @@ async function fixVercelDeployments() {
 
     // Update the main ai-nodes project configuration
     console.log('🔧 Updating ai-nodes project settings...');
-    
+
     try {
       // Link the current directory to the ai-nodes project
-      execSync('vercel link --project ai-nodes --yes', { 
+      execSync('vercel link --project ai-nodes --yes', {
         encoding: 'utf8',
-        stdio: 'pipe'
+        stdio: 'pipe',
       });
       console.log('   ✅ Linked to ai-nodes project');
     } catch (error) {
@@ -61,7 +56,7 @@ async function fixVercelDeployments() {
     }
 
     console.log('\n📧 Step 5: Configuring notification settings...\n');
-    
+
     console.log('🔕 To stop email notifications:');
     console.log('   1. Go to: https://vercel.com/igorganapolskys-projects/settings/notifications');
     console.log('   2. Disable "Deployment Failed" notifications');
@@ -103,9 +98,9 @@ node_modules/
     // Test deployment
     console.log('🧪 Testing deployment configuration...');
     try {
-      const buildTest = execSync('pnpm --filter @depinautopilot/web build', { 
+      const buildTest = execSync('pnpm --filter @depinautopilot/web build', {
         encoding: 'utf8',
-        stdio: 'pipe'
+        stdio: 'pipe',
       });
       console.log('   ✅ Local build test passed');
     } catch (error) {
@@ -136,7 +131,6 @@ node_modules/
     console.log('   • .vercelignore prevents unwanted file deployments');
     console.log('   • Single project configuration eliminates conflicts');
     console.log('   • Proper monorepo setup for Vercel');
-
   } catch (error) {
     console.error('💥 Error fixing Vercel deployments:', error.message);
   }

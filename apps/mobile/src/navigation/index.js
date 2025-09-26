@@ -88,7 +88,7 @@ const TabIcon = ({ name, color, size }) => {
         return '📱';
     }
   };
-  return <Text style={{ fontSize: size, textAlign: 'center' }}>{getIcon()}</Text>;
+  return <Text style={{ fontSize: size, textAlign: 'center', color }}>{getIcon()}</Text>;
 };
 export const AppNavigator = () => {
   return (

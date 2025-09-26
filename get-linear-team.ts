@@ -30,7 +30,7 @@ async function getLinearTeam() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': apiKey,
+        Authorization: apiKey,
       },
       body: JSON.stringify({ query }),
     });
@@ -55,7 +55,6 @@ async function getLinearTeam() {
       console.log(`\n💡 Add this to your .env file:`);
       console.log(`LINEAR_TEAM_ID=${firstTeamId}`);
     }
-
   } catch (error) {
     console.error('Error fetching teams:', error);
     process.exit(1);

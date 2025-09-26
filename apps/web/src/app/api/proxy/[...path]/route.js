@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server';
+import { getLogger } from '@depinautopilot/utils';
+
+const logger = getLogger('web-proxy-api');
 const API_BASE_URL = process.env.API_URL || 'http://localhost:3001';
 // Helper to get authorization header
 function getAuthHeader(request) {
@@ -50,7 +53,7 @@ export async function GET(request, { params }) {
     const searchParams = request.nextUrl.searchParams;
     const apiUrl = buildApiUrl(path, searchParams);
     const headers = getForwardedHeaders(request);
-    console.log(`[API Proxy] GET ${apiUrl}`);
+    logger.info('API Proxy GET request', { apiUrl });
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers,
@@ -73,7 +76,7 @@ export async function GET(request, { params }) {
       headers: responseHeaders,
     });
   } catch (error) {
-    console.error('[API Proxy] GET Error:', error);
+    logger.error('API Proxy GET error', error);
     return NextResponse.json(
       { error: 'Internal server error', message: 'Failed to fetch data from API' },
       { status: 500 },
@@ -86,7 +89,7 @@ export async function POST(request, { params }) {
     const body = await request.text();
     const apiUrl = buildApiUrl(path, new URLSearchParams());
     const headers = getForwardedHeaders(request);
-    console.log(`[API Proxy] POST ${apiUrl}`);
+    logger.info('API Proxy POST request', { apiUrl });
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers,
@@ -97,7 +100,7 @@ export async function POST(request, { params }) {
       status: response.status,
     });
   } catch (error) {
-    console.error('[API Proxy] POST Error:', error);
+    logger.error('API Proxy POST error', error);
     return NextResponse.json(
       { error: 'Internal server error', message: 'Failed to send data to API' },
       { status: 500 },
@@ -110,7 +113,7 @@ export async function PUT(request, { params }) {
     const body = await request.text();
     const apiUrl = buildApiUrl(path, new URLSearchParams());
     const headers = getForwardedHeaders(request);
-    console.log(`[API Proxy] PUT ${apiUrl}`);
+    logger.info('API Proxy PUT request', { apiUrl });
     const response = await fetch(apiUrl, {
       method: 'PUT',
       headers,
@@ -121,7 +124,7 @@ export async function PUT(request, { params }) {
       status: response.status,
     });
   } catch (error) {
-    console.error('[API Proxy] PUT Error:', error);
+    logger.error('API Proxy PUT error', error);
     return NextResponse.json(
       { error: 'Internal server error', message: 'Failed to update data via API' },
       { status: 500 },
@@ -133,7 +136,7 @@ export async function DELETE(request, { params }) {
     const { path } = params;
     const apiUrl = buildApiUrl(path, new URLSearchParams());
     const headers = getForwardedHeaders(request);
-    console.log(`[API Proxy] DELETE ${apiUrl}`);
+    logger.info('API Proxy DELETE request', { apiUrl });
     const response = await fetch(apiUrl, {
       method: 'DELETE',
       headers,
@@ -143,7 +146,7 @@ export async function DELETE(request, { params }) {
       status: response.status,
     });
   } catch (error) {
-    console.error('[API Proxy] DELETE Error:', error);
+    logger.error('API Proxy DELETE error', error);
     return NextResponse.json(
       { error: 'Internal server error', message: 'Failed to delete data via API' },
       { status: 500 },

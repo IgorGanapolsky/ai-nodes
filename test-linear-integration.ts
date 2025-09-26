@@ -61,7 +61,7 @@ async function testLinearIntegration() {
     console.log('📊 Test 3: Getting projects...');
     const projects = await agent.getProjects();
     console.log('✅ Projects found:', projects.length);
-    projects.slice(0, 3).forEach(project => {
+    projects.slice(0, 3).forEach((project) => {
       console.log(`  - ${project.name} (${project.state}): ${project.progress}% complete`);
     });
     console.log();
@@ -89,7 +89,9 @@ async function testLinearIntegration() {
     });
     console.log('✅ Workflow completed:');
     workflowResults.forEach((result, index) => {
-      console.log(`  Step ${index + 1}: ${result.action} - ${result.success ? 'Success' : 'Failed'}`);
+      console.log(
+        `  Step ${index + 1}: ${result.action} - ${result.success ? 'Success' : 'Failed'}`,
+      );
     });
     console.log();
 
@@ -99,12 +101,13 @@ async function testLinearIntegration() {
       const mcpResponse = await agent.sendMCPCommand('ping');
       console.log('✅ MCP Server connected successfully');
     } catch (error) {
-      console.log('⚠️  MCP Server connection test failed (this is expected if the server is not running)');
+      console.log(
+        '⚠️  MCP Server connection test failed (this is expected if the server is not running)',
+      );
     }
 
     console.log('\\n✨ All tests completed successfully!');
     console.log('\\nYour Ona agents are now integrated with Linear and ready to use!');
-
   } catch (error) {
     console.error('❌ Test failed:', error);
     process.exit(1);

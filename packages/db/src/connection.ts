@@ -4,6 +4,9 @@ import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 import { schema } from './schema';
 import path from 'path';
 import fs from 'fs';
+import { getLogger } from '@depinautopilot/utils';
+
+const logger = getLogger('db-connection');
 
 export interface DatabaseConfig {
   url?: string;
@@ -42,7 +45,9 @@ export function createConnection(config: DatabaseConfig = {}) {
 
   // Create SQLite connection
   sqlite = new Database(dbPath, {
-    verbose: mergedConfig.verbose ? console.log : undefined,
+    verbose: mergedConfig.verbose
+      ? (message: string) => logger.debug('SQLite operation', { message })
+      : undefined,
     fileMustExist: false,
     timeout: mergedConfig.busyTimeout,
     readonly: mergedConfig.readOnly,
@@ -136,7 +141,9 @@ class ConnectionPool {
 
   private createNewConnection(): Database.Database {
     const connection = new Database(this.config.url!, {
-      verbose: this.config.verbose ? console.log : undefined,
+      verbose: this.config.verbose
+        ? (message: string) => logger.debug('SQLite operation', { message })
+        : undefined,
       fileMustExist: false,
       timeout: this.config.busyTimeout,
       readonly: this.config.readOnly,

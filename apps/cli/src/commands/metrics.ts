@@ -192,38 +192,62 @@ export const metricsCommand = new Command('metrics')
   );
 
 function getPerformanceColor(score: number) {
-  if (score >= 90) {return chalk.green;}
-  if (score >= 70) {return chalk.yellow;}
+  if (score >= 90) {
+    return chalk.green;
+  }
+  if (score >= 70) {
+    return chalk.yellow;
+  }
   return chalk.red;
 }
 
 function getUptimeStatus(uptime: number): string {
-  if (uptime >= 99) {return chalk.green('🟢 Excellent');}
-  if (uptime >= 95) {return chalk.yellow('🟡 Good');}
+  if (uptime >= 99) {
+    return chalk.green('🟢 Excellent');
+  }
+  if (uptime >= 95) {
+    return chalk.yellow('🟡 Good');
+  }
   return chalk.red('🔴 Poor');
 }
 
 function getCpuStatus(cpu: number): string {
-  if (cpu < 50) {return chalk.green('🟢 Normal');}
-  if (cpu < 80) {return chalk.yellow('🟡 High');}
+  if (cpu < 50) {
+    return chalk.green('🟢 Normal');
+  }
+  if (cpu < 80) {
+    return chalk.yellow('🟡 High');
+  }
   return chalk.red('🔴 Critical');
 }
 
 function getMemoryStatus(memory: number): string {
-  if (memory < 70) {return chalk.green('🟢 Normal');}
-  if (memory < 90) {return chalk.yellow('🟡 High');}
+  if (memory < 70) {
+    return chalk.green('🟢 Normal');
+  }
+  if (memory < 90) {
+    return chalk.yellow('🟡 High');
+  }
   return chalk.red('🔴 Critical');
 }
 
 function getStorageStatus(storage: number): string {
-  if (storage < 80) {return chalk.green('🟢 Normal');}
-  if (storage < 95) {return chalk.yellow('🟡 High');}
+  if (storage < 80) {
+    return chalk.green('🟢 Normal');
+  }
+  if (storage < 95) {
+    return chalk.yellow('🟡 High');
+  }
   return chalk.red('🔴 Critical');
 }
 
 function getLatencyStatus(latency: number): string {
-  if (latency < 100) {return chalk.green('🟢 Excellent');}
-  if (latency < 300) {return chalk.yellow('🟡 Good');}
+  if (latency < 100) {
+    return chalk.green('🟢 Excellent');
+  }
+  if (latency < 300) {
+    return chalk.yellow('🟡 Good');
+  }
   return chalk.red('🔴 Poor');
 }
 
@@ -243,7 +267,9 @@ function getSeverityColor(severity: string) {
 }
 
 function showTrendIndicator(name: string, data: Array<{ timestamp: string; value: number }>) {
-  if (data.length < 2) {return;}
+  if (data.length < 2) {
+    return;
+  }
 
   const recent = data.slice(-5);
   const trend = recent[recent.length - 1].value - recent[0].value;
@@ -262,8 +288,14 @@ function getTimeAgo(date: Date): string {
   const diffHours = Math.floor(diffMins / 60);
   const diffDays = Math.floor(diffHours / 24);
 
-  if (diffDays > 0) {return `${diffDays}d ago`;}
-  if (diffHours > 0) {return `${diffHours}h ago`;}
-  if (diffMins > 0) {return `${diffMins}m ago`;}
+  if (diffDays > 0) {
+    return `${diffDays}d ago`;
+  }
+  if (diffHours > 0) {
+    return `${diffHours}h ago`;
+  }
+  if (diffMins > 0) {
+    return `${diffMins}m ago`;
+  }
   return 'Just now';
 }

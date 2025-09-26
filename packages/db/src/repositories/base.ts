@@ -94,13 +94,19 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
   }
 
   async create(data: TInsert): Promise<TSelect> {
-    const result = await this.db.insert(this.table).values(data as any).returning();
+    const result = await this.db
+      .insert(this.table)
+      .values(data as any)
+      .returning();
 
     return result[0] as TSelect;
   }
 
   async createMany(data: TInsert[]): Promise<TSelect[]> {
-    const result = await this.db.insert(this.table).values(data as any).returning();
+    const result = await this.db
+      .insert(this.table)
+      .values(data as any)
+      .returning();
 
     return result as unknown as TSelect[];
   }

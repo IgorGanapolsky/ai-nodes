@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { Settings, LoadingState } from '../types';
 import { apiClient } from '../utils/api';
 import { SecureStorage } from '../utils/storage';
+import { getLogger } from '@depinautopilot/utils';
+
+const logger = getLogger('mobile-settings');
 
 const defaultSettings: Settings = {
   apiKey: '',
@@ -80,7 +83,9 @@ export const useSettings = () => {
         if (updatedSettings.apiKey) {
           const response = await apiClient.updateSettings(updatedSettings);
           if (!response.success) {
-            console.warn('Failed to sync settings with server:', response.error);
+            logger.warn('Failed to sync settings with server', {
+              error: response.error,
+            });
           }
         }
 

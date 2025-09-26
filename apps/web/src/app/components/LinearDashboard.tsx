@@ -2,17 +2,17 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  Plus, 
-  RefreshCw, 
-  CheckCircle, 
-  Clock, 
-  AlertTriangle, 
+import {
+  Plus,
+  RefreshCw,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
   Users,
   Tag,
   Calendar,
   ExternalLink,
-  Copy
+  Copy,
 } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -59,12 +59,14 @@ export function LinearDashboard() {
     taskDescription: '',
     priority: 0,
   });
-  const [toasts, setToasts] = useState<Array<{ id: number; type: 'success' | 'error' | 'info'; message: string }>>([]);
+  const [toasts, setToasts] = useState<
+    Array<{ id: number; type: 'success' | 'error' | 'info'; message: string }>
+  >([]);
   const pushToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     const id = Date.now() + Math.random();
-    setToasts(prev => [...prev, { id, type, message }]);
+    setToasts((prev) => [...prev, { id, type, message }]);
     setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
+      setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 2500);
   };
 
@@ -83,7 +85,11 @@ export function LinearDashboard() {
   };
 
   // Fetch issues
-  const { data: issues, isLoading: issuesLoading, refetch: refetchIssues } = useQuery({
+  const {
+    data: issues,
+    isLoading: issuesLoading,
+    refetch: refetchIssues,
+  } = useQuery({
     queryKey: ['linear-issues'],
     queryFn: async () => {
       const response = await apiClient.get('/linear?action=list-issues');
@@ -111,7 +117,11 @@ export function LinearDashboard() {
   });
 
   // Workflow status
-  const { data: workflow, refetch: refetchWorkflow, isFetching: statusLoading } = useQuery({
+  const {
+    data: workflow,
+    refetch: refetchWorkflow,
+    isFetching: statusLoading,
+  } = useQuery({
     queryKey: ['workflow-status'],
     queryFn: async () => {
       const response = await apiClient.get('/linear?action=workflow-status');
@@ -148,7 +158,15 @@ export function LinearDashboard() {
 
   // Update task status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ issueId, status, notes }: { issueId: string; status: string; notes?: string }) => {
+    mutationFn: async ({
+      issueId,
+      status,
+      notes,
+    }: {
+      issueId: string;
+      status: string;
+      notes?: string;
+    }) => {
       const response = await apiClient.post('/linear', {
         action: 'update-task-status',
         taskIssueId: issueId,
@@ -179,7 +197,7 @@ export function LinearDashboard() {
     },
     onError: (err: any) => {
       pushToast(`Failed to resume: ${err?.message || 'Unknown error'}`, 'error');
-    }
+    },
   });
 
   // Reset workflow
@@ -194,7 +212,7 @@ export function LinearDashboard() {
     },
     onError: (err: any) => {
       pushToast(`Failed to reset: ${err?.message || 'Unknown error'}`, 'error');
-    }
+    },
   });
 
   const handleCreateTask = () => {
@@ -236,23 +254,25 @@ export function LinearDashboard() {
     }
   };
 
-  const agentTasks = issues?.filter(issue => 
-    issue.labels.some(label => label.name === 'agent-task')
-  ) || [];
+  const agentTasks =
+    issues?.filter((issue) => issue.labels.some((label) => label.name === 'agent-task')) || [];
 
-  const coordinationIssues = issues?.filter(issue => 
-    issue.labels.some(label => label.name === 'coordination')
-  ) || [];
+  const coordinationIssues =
+    issues?.filter((issue) => issue.labels.some((label) => label.name === 'coordination')) || [];
 
   return (
     <div className="space-y-6">
       {/* Toasts */}
       <div className="fixed top-4 right-4 z-50 space-y-2">
-        {toasts.map(t => (
+        {toasts.map((t) => (
           <div
             key={t.id}
             className={`px-3 py-2 rounded shadow text-sm text-white ${
-              t.type === 'success' ? 'bg-green-600' : t.type === 'error' ? 'bg-red-600' : 'bg-gray-800'
+              t.type === 'success'
+                ? 'bg-green-600'
+                : t.type === 'error'
+                  ? 'bg-red-600'
+                  : 'bg-gray-800'
             }`}
           >
             {t.message}
@@ -266,23 +286,16 @@ export function LinearDashboard() {
             Manage agent tasks and coordination through Linear
           </p>
           <div className="text-xs text-gray-500 mt-1">
-            {labels ? `${labels.length} labels` : '...'} · {states ? `${states.length} states` : '...'}
+            {labels ? `${labels.length} labels` : '...'} ·{' '}
+            {states ? `${states.length} states` : '...'}
           </div>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={handleRefreshIssues}
-            disabled={issuesLoading}
-          >
+          <Button variant="outline" onClick={handleRefreshIssues} disabled={issuesLoading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${issuesLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <Button
-            variant="outline"
-            onClick={handleRefreshWorkflow}
-            disabled={statusLoading}
-          >
+          <Button variant="outline" onClick={handleRefreshWorkflow} disabled={statusLoading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${statusLoading ? 'animate-spin' : ''}`} />
             Status
           </Button>
@@ -303,18 +316,30 @@ export function LinearDashboard() {
           {workflow ? (
             <div className="flex items-start justify-between gap-6">
               <div className="text-sm space-y-2">
-                <div>Register Agents: <span className="font-medium">{workflow.workflow.steps.registerAgents}</span></div>
+                <div>
+                  Register Agents:{' '}
+                  <span className="font-medium">{workflow.workflow.steps.registerAgents}</span>
+                </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <span>
-                    Coordination Issue: <span className="font-medium">{workflow.workflow.steps.createCoordinationIssue}</span>
-                    {workflow.workflow.createdCoordinationIssueId ? ` (${workflow.workflow.createdCoordinationIssueId})` : ''}
-                    {workflow.workflow.createdCoordinationIssueTitle ? ` — ${workflow.workflow.createdCoordinationIssueTitle}` : ''}
+                    Coordination Issue:{' '}
+                    <span className="font-medium">
+                      {workflow.workflow.steps.createCoordinationIssue}
+                    </span>
+                    {workflow.workflow.createdCoordinationIssueId
+                      ? ` (${workflow.workflow.createdCoordinationIssueId})`
+                      : ''}
+                    {workflow.workflow.createdCoordinationIssueTitle
+                      ? ` — ${workflow.workflow.createdCoordinationIssueTitle}`
+                      : ''}
                   </span>
                   {workflow.workflow.createdCoordinationIssueUrl && (
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => window.open(workflow.workflow.createdCoordinationIssueUrl, '_blank')}
+                      onClick={() =>
+                        window.open(workflow.workflow.createdCoordinationIssueUrl, '_blank')
+                      }
                     >
                       <ExternalLink className="h-4 w-4" />
                     </Button>
@@ -323,15 +348,21 @@ export function LinearDashboard() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => navigator.clipboard.writeText(workflow.workflow.createdCoordinationIssueId)
-                        .then(() => pushToast('Copied coordination issue ID', 'success'))
-                        .catch(() => pushToast('Copy failed', 'error'))}
+                      onClick={() =>
+                        navigator.clipboard
+                          .writeText(workflow.workflow.createdCoordinationIssueId)
+                          .then(() => pushToast('Copied coordination issue ID', 'success'))
+                          .catch(() => pushToast('Copy failed', 'error'))
+                      }
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
-                <div>Create Tasks: <span className="font-medium">{workflow.workflow.steps.createTasks}</span></div>
+                <div>
+                  Create Tasks:{' '}
+                  <span className="font-medium">{workflow.workflow.steps.createTasks}</span>
+                </div>
                 <div className="mt-1">
                   <div className="text-xs text-gray-500">Per-agent tasks:</div>
                   <div className="mt-1 space-y-1">
@@ -354,9 +385,12 @@ export function LinearDashboard() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => navigator.clipboard.writeText(rec.issueId)
-                                .then(() => pushToast('Copied task ID', 'success'))
-                                .catch(() => pushToast('Copy failed', 'error'))}
+                              onClick={() =>
+                                navigator.clipboard
+                                  .writeText(rec.issueId)
+                                  .then(() => pushToast('Copied task ID', 'success'))
+                                  .catch(() => pushToast('Copy failed', 'error'))
+                              }
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
@@ -368,7 +402,12 @@ export function LinearDashboard() {
                     )}
                   </div>
                 </div>
-                <div>Last Updated: <span className="font-mono">{new Date(workflow.workflow.lastUpdated).toLocaleString()}</span></div>
+                <div>
+                  Last Updated:{' '}
+                  <span className="font-mono">
+                    {new Date(workflow.workflow.lastUpdated).toLocaleString()}
+                  </span>
+                </div>
               </div>
               <div className="flex gap-2 shrink-0">
                 <Button
@@ -397,9 +436,7 @@ export function LinearDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Create Agent Task</CardTitle>
-            <CardDescription>
-              Create a new task for an agent to work on
-            </CardDescription>
+            <CardDescription>Create a new task for an agent to work on</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -408,7 +445,9 @@ export function LinearDashboard() {
                 <input
                   type="text"
                   value={createForm.agentName}
-                  onChange={(e) => setCreateForm(prev => ({ ...prev, agentName: e.target.value }))}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({ ...prev, agentName: e.target.value }))
+                  }
                   className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
                   placeholder="e.g., Frontend Agent"
                 />
@@ -417,7 +456,9 @@ export function LinearDashboard() {
                 <label className="text-sm font-medium">Priority</label>
                 <select
                   value={createForm.priority}
-                  onChange={(e) => setCreateForm(prev => ({ ...prev, priority: parseInt(e.target.value) }))}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({ ...prev, priority: parseInt(e.target.value) }))
+                  }
                   className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
                 >
                   <option value={0}>Low</option>
@@ -432,7 +473,7 @@ export function LinearDashboard() {
               <input
                 type="text"
                 value={createForm.taskTitle}
-                onChange={(e) => setCreateForm(prev => ({ ...prev, taskTitle: e.target.value }))}
+                onChange={(e) => setCreateForm((prev) => ({ ...prev, taskTitle: e.target.value }))}
                 className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
                 placeholder="Brief description of the task"
               />
@@ -441,22 +482,18 @@ export function LinearDashboard() {
               <label className="text-sm font-medium">Task Description</label>
               <textarea
                 value={createForm.taskDescription}
-                onChange={(e) => setCreateForm(prev => ({ ...prev, taskDescription: e.target.value }))}
+                onChange={(e) =>
+                  setCreateForm((prev) => ({ ...prev, taskDescription: e.target.value }))
+                }
                 className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md h-24"
                 placeholder="Detailed description of what needs to be done"
               />
             </div>
             <div className="flex gap-2">
-              <Button 
-                onClick={handleCreateTask}
-                disabled={createTaskMutation.isPending}
-              >
+              <Button onClick={handleCreateTask} disabled={createTaskMutation.isPending}>
                 {createTaskMutation.isPending ? 'Creating...' : 'Create Task'}
               </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => setShowCreateForm(false)}
-              >
+              <Button variant="outline" onClick={() => setShowCreateForm(false)}>
                 Cancel
               </Button>
             </div>
@@ -489,10 +526,9 @@ export function LinearDashboard() {
                         <CardDescription className="mt-2">
                           {issue.description && (
                             <div className="text-sm text-gray-600 mb-2">
-                              {issue.description.length > 200 
-                                ? `${issue.description.substring(0, 200)}...` 
-                                : issue.description
-                              }
+                              {issue.description.length > 200
+                                ? `${issue.description.substring(0, 200)}...`
+                                : issue.description}
                             </div>
                           )}
                           <div className="flex items-center gap-4 text-xs text-gray-500">
@@ -556,10 +592,9 @@ export function LinearDashboard() {
                       <CardDescription className="mt-2">
                         {issue.description && (
                           <div className="text-sm text-gray-600 mb-2">
-                            {issue.description.length > 200 
-                              ? `${issue.description.substring(0, 200)}...` 
-                              : issue.description
-                            }
+                            {issue.description.length > 200
+                              ? `${issue.description.substring(0, 200)}...`
+                              : issue.description}
                           </div>
                         )}
                       </CardDescription>
@@ -620,10 +655,9 @@ export function LinearDashboard() {
                       <CardDescription className="mt-2">
                         {issue.description && (
                           <div className="text-sm text-gray-600 mb-2">
-                            {issue.description.length > 200 
-                              ? `${issue.description.substring(0, 200)}...` 
-                              : issue.description
-                            }
+                            {issue.description.length > 200
+                              ? `${issue.description.substring(0, 200)}...`
+                              : issue.description}
                           </div>
                         )}
                       </CardDescription>
@@ -665,7 +699,8 @@ export function LinearDashboard() {
 
         <TabsContent value="revenue" className="space-y-4">
           {(() => {
-            const getByLabel = (name: string) => (issues || []).filter(i => i.labels.some(l => l.name.toLowerCase() === name));
+            const getByLabel = (name: string) =>
+              (issues || []).filter((i) => i.labels.some((l) => l.name.toLowerCase() === name));
             const opportunity = getByLabel('opportunity');
             const outreach = getByLabel('outreach');
             const negotiation = getByLabel('negotiation');
@@ -713,15 +748,25 @@ export function LinearDashboard() {
                     <div className="space-y-2">
                       {opportunity
                         .slice()
-                        .sort((a, b) => (b.priority - a.priority) || (new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()))
+                        .sort(
+                          (a, b) =>
+                            b.priority - a.priority ||
+                            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+                        )
                         .slice(0, 10)
                         .map((issue) => (
                           <div key={issue.id} className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <Badge className={getPriorityColor(issue.priority)}>P{issue.priority}</Badge>
+                              <Badge className={getPriorityColor(issue.priority)}>
+                                P{issue.priority}
+                              </Badge>
                               <span className="text-sm">{issue.title}</span>
                             </div>
-                            <Button variant="ghost" size="sm" onClick={() => window.open(issue.url, '_blank')}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(issue.url, '_blank')}
+                            >
                               <ExternalLink className="h-4 w-4" />
                             </Button>
                           </div>

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { getLogger } from '@depinautopilot/utils';
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
+    this.logger = getLogger('mobile-error-boundary');
     this.state = {
       hasError: false,
       error: null,
@@ -17,7 +19,10 @@ class ErrorBoundary extends Component {
     };
   }
   componentDidCatch(error, errorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    this.logger.error('ErrorBoundary caught an error', error, {
+      componentStack: errorInfo.componentStack,
+      stack: error.stack,
+    });
     this.setState({
       error,
       errorInfo: errorInfo.componentStack || null,

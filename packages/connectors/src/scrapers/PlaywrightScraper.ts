@@ -68,7 +68,9 @@ export class PlaywrightScraper {
    * Initialize the browser
    */
   private async initBrowser(): Promise<void> {
-    if (this.browser) {return;}
+    if (this.browser) {
+      return;
+    }
 
     try {
       this.browser = await this.browserType.launch({

@@ -60,7 +60,9 @@ export abstract class BaseError extends Error {
    * Get context with sensitive data removed
    */
   private getSafeContext(): Record<string, any> | undefined {
-    if (!this.context) {return undefined;}
+    if (!this.context) {
+      return undefined;
+    }
 
     const sensitiveKeys = ['password', 'token', 'secret', 'key', 'authorization', 'auth'];
     const safeContext = { ...this.context };

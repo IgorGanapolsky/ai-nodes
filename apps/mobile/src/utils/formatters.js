@@ -83,11 +83,17 @@ export const getStatusColor = (status) => {
   }
 };
 export const getPerformanceColor = (performance) => {
-  if (performance >= 90) {return '#10B981';}
-  if (performance >= 70) {return '#F59E0B';}
+  if (performance >= 90) {
+    return '#10B981';
+  }
+  if (performance >= 70) {
+    return '#F59E0B';
+  }
   return '#EF4444';
 };
 export const truncateString = (str, maxLength) => {
-  if (str.length <= maxLength) {return str;}
+  if (str.length <= maxLength) {
+    return str;
+  }
   return str.substring(0, maxLength - 3) + '...';
 };

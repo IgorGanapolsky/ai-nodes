@@ -145,8 +145,12 @@ export class WebSocketService {
   }
 
   getConnectionState(): 'connecting' | 'connected' | 'disconnected' {
-    if (this.isConnecting) {return 'connecting';}
-    if (this.ws?.readyState === WebSocket.OPEN) {return 'connected';}
+    if (this.isConnecting) {
+      return 'connecting';
+    }
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      return 'connected';
+    }
     return 'disconnected';
   }
 }

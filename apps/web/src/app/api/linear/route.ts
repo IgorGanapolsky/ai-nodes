@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LinearService, AgentCoordination, CreateIssueInput } from '@depinautopilot/core';
+import { getLogger } from '@depinautopilot/utils';
 import fs from 'fs';
 import path from 'path';
+
+const logger = getLogger('web-linear-api');
 
 // Initialize Linear service
 const linearService = new LinearService({
@@ -32,7 +35,10 @@ function defaultState() {
       createdCoordinationIssueId: null as null | string,
       createdCoordinationIssueTitle: null as null | string,
       createdCoordinationIssueUrl: null as null | string,
-      agentTasks: {} as Record<string, { created: boolean; issueId?: string; title?: string; url?: string }>,
+      agentTasks: {} as Record<
+        string,
+        { created: boolean; issueId?: string; title?: string; url?: string }
+      >,
       lastUpdated: new Date().toISOString(),
     },
   };
@@ -102,10 +108,13 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
   } catch (error) {
-    console.error('Linear API error:', error);
+    logger.error('Linear API error', error);
     return NextResponse.json(
-      { error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
+      {
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 },
     );
   }
 }
@@ -139,21 +148,27 @@ export async function POST(request: NextRequest) {
       case 'create-agent-task':
         const { agentName, taskTitle, taskDescription, priority: taskPriority, labels } = body;
         if (!agentName || !taskTitle || !taskDescription) {
-          return NextResponse.json({ error: 'Agent name, task title, and description are required' }, { status: 400 });
+          return NextResponse.json(
+            { error: 'Agent name, task title, and description are required' },
+            { status: 400 },
+          );
         }
         const agentTask = await agentCoordination.createAgentTask(
           agentName,
           taskTitle,
           taskDescription,
           taskPriority || 0,
-          labels || ['agent-task']
+          labels || ['agent-task'],
         );
         return NextResponse.json({ issue: agentTask });
 
       case 'update-task-status':
         const { taskIssueId, status, notes } = body;
         if (!taskIssueId || !status) {
-          return NextResponse.json({ error: 'Task issue ID and status are required' }, { status: 400 });
+          return NextResponse.json(
+            { error: 'Task issue ID and status are required' },
+            { status: 400 },
+          );
         }
         const statusUpdate = await agentCoordination.updateTaskStatus(taskIssueId, status, notes);
         return NextResponse.json({ issue: statusUpdate });
@@ -161,13 +176,16 @@ export async function POST(request: NextRequest) {
       case 'create-coordination-issue':
         const { title, description, involvedAgents, priority: coordinationPriority } = body;
         if (!title || !description || !involvedAgents || !Array.isArray(involvedAgents)) {
-          return NextResponse.json({ error: 'Title, description, and involved agents are required' }, { status: 400 });
+          return NextResponse.json(
+            { error: 'Title, description, and involved agents are required' },
+            { status: 400 },
+          );
         }
         const coordinationIssue = await agentCoordination.createCoordinationIssue(
           title,
           description,
           involvedAgents,
-          coordinationPriority || 1
+          coordinationPriority || 1,
         );
         return NextResponse.json({ issue: coordinationIssue });
 
@@ -202,7 +220,7 @@ export async function POST(request: NextRequest) {
             'Sprint Planning - Agent Coordination',
             `This issue coordinates all agents for the current development sprint.\n\n**Sprint Goals:**\n- Complete Linear integration\n- Fix deployment issues\n- Implement agent coordination workflows\n\n**Agent Responsibilities:**\n- Frontend Agent: UI components and user experience\n- Backend Agent: API development and data management\n- DevOps Agent: Deployment and infrastructure\n- QA Agent: Testing and quality assurance\n\n**Coordination Points:**\n- Daily standups via Linear comments\n- Cross-agent dependencies tracked in sub-issues\n- Progress updates in this main coordination issue`,
             ['Frontend Agent', 'Backend Agent', 'DevOps Agent', 'QA Agent'],
-            1
+            1,
           );
           state.workflow.createdCoordinationIssueId = issue.id;
           state.workflow.createdCoordinationIssueTitle = issue.title || 'Coordination Issue';
@@ -246,8 +264,19 @@ export async function POST(request: NextRequest) {
           for (const [agentName, taskTitle, taskDescription, priority] of specs) {
             const rec = state.workflow.agentTasks[agentName];
             if (rec && rec.created) continue;
-            const task = await agentCoordination.createAgentTask(agentName, taskTitle, taskDescription, priority, ['agent-task']);
-            state.workflow.agentTasks[agentName] = { created: true, issueId: task.id, title: task.title, url: task.url };
+            const task = await agentCoordination.createAgentTask(
+              agentName,
+              taskTitle,
+              taskDescription,
+              priority,
+              ['agent-task'],
+            );
+            state.workflow.agentTasks[agentName] = {
+              created: true,
+              issueId: task.id,
+              title: task.title,
+              url: task.url,
+            };
           }
           state.workflow.steps.createTasks = 'completed';
           state.workflow.currentStep = null;
@@ -267,10 +296,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
   } catch (error) {
-    console.error('Linear API error:', error);
+    logger.error('Linear API error', error);
     return NextResponse.json(
-      { error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
+      {
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 },
     );
   }
 }

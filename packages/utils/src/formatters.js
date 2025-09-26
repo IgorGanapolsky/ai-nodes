@@ -88,10 +88,14 @@ export function formatLargeNumber(value, options = {}) {
  * Format numbers with custom suffixes (K, M, B, T)
  */
 export function formatNumberWithSuffix(value, decimals = 2) {
-  if (value === 0) {return '0';}
+  if (value === 0) {
+    return '0';
+  }
   const suffixes = ['', 'K', 'M', 'B', 'T', 'P', 'E'];
   const tier = Math.floor(Math.log10(Math.abs(value)) / 3);
-  if (tier === 0) {return value.toFixed(decimals);}
+  if (tier === 0) {
+    return value.toFixed(decimals);
+  }
   const suffix = suffixes[tier] || `e${tier * 3}`;
   const scaled = value / Math.pow(1000, tier);
   return scaled.toFixed(decimals) + suffix;
@@ -158,7 +162,9 @@ export function formatDurationFromSeconds(seconds) {
  * Format file size in bytes to human readable format
  */
 export function formatFileSize(bytes, decimals = 2) {
-  if (bytes === 0) {return '0 B';}
+  if (bytes === 0) {
+    return '0 B';
+  }
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   const formatted = (bytes / Math.pow(1024, i)).toFixed(decimals);
@@ -189,14 +195,18 @@ export function formatPhoneNumber(phoneNumber, countryCode = 'US') {
  * Truncate string with ellipsis
  */
 export function truncateString(str, maxLength, ellipsis = '...') {
-  if (str.length <= maxLength) {return str;}
+  if (str.length <= maxLength) {
+    return str;
+  }
   return str.slice(0, maxLength - ellipsis.length) + ellipsis;
 }
 /**
  * Truncate string in the middle (useful for addresses, hashes)
  */
 export function truncateMiddle(str, startLength = 6, endLength = 4, ellipsis = '...') {
-  if (str.length <= startLength + endLength + ellipsis.length) {return str;}
+  if (str.length <= startLength + endLength + ellipsis.length) {
+    return str;
+  }
   return str.slice(0, startLength) + ellipsis + str.slice(-endLength);
 }
 /**

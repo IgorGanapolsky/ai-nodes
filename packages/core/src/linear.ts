@@ -1,6 +1,6 @@
 /**
  * Linear Integration Service
- * 
+ *
  * Provides integration with Linear for project management and agent coordination
  */
 
@@ -107,7 +107,7 @@ export class LinearService {
       };
 
       const response = await this.graphqlRequest(mutation, variables);
-      
+
       if (!response.data?.issueCreate?.success || !response.data?.issueCreate?.issue) {
         throw new Error('Failed to create issue');
       }
@@ -168,7 +168,7 @@ export class LinearService {
       };
 
       const response = await this.graphqlRequest(mutation, variables);
-      
+
       if (!response.data?.issueUpdate?.success || !response.data?.issueUpdate?.issue) {
         throw new Error('Failed to update issue');
       }
@@ -215,7 +215,7 @@ export class LinearService {
       `;
 
       const response = await this.graphqlRequest(query, { id: issueId });
-      
+
       if (!response.data?.issue) {
         return null;
       }
@@ -280,7 +280,7 @@ export class LinearService {
       };
 
       const response = await this.graphqlRequest(query, variables);
-      
+
       if (!response.data?.issues?.nodes) {
         return [];
       }
@@ -295,7 +295,11 @@ export class LinearService {
   /**
    * Create a label if missing
    */
-  async createLabel(name: string, color?: string, teamId?: string): Promise<{ id: string; name: string; color: string }>{
+  async createLabel(
+    name: string,
+    color?: string,
+    teamId?: string,
+  ): Promise<{ id: string; name: string; color: string }> {
     const mutation = `
       mutation IssueLabelCreate($input: IssueLabelCreateInput!) {
         issueLabelCreate(input: $input) {
@@ -325,9 +329,12 @@ export class LinearService {
   /**
    * Ensure a set of labels exist on a team
    */
-  async ensureLabels(labels: Array<{ name: string; color?: string }>, teamId?: string): Promise<{ created: number; existing: number }>{
+  async ensureLabels(
+    labels: Array<{ name: string; color?: string }>,
+    teamId?: string,
+  ): Promise<{ created: number; existing: number }> {
     const existing = await this.getLabels(teamId);
-    const existingNames = new Set(existing.map(l => l.name.toLowerCase()));
+    const existingNames = new Set(existing.map((l) => l.name.toLowerCase()));
     let created = 0;
     for (const l of labels) {
       if (!existingNames.has(l.name.toLowerCase())) {
@@ -358,7 +365,7 @@ export class LinearService {
       `;
 
       const response = await this.graphqlRequest(query, { teamId: teamId || this.teamId });
-      
+
       if (!response.data?.team?.labels?.nodes) {
         return [];
       }
@@ -390,7 +397,7 @@ export class LinearService {
       `;
 
       const response = await this.graphqlRequest(query, { teamId: teamId || this.teamId });
-      
+
       if (!response.data?.team?.states?.nodes) {
         return [];
       }
@@ -410,7 +417,7 @@ export class LinearService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${this.apiKey}`,
       },
       body: JSON.stringify({
         query,
@@ -422,7 +429,7 @@ export class LinearService {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json() as { errors?: Array<{message: string}>, data?: any };
+    const data = (await response.json()) as { errors?: Array<{ message: string }>; data?: any };
 
     if (data.errors) {
       throw new Error(`GraphQL errors: ${data.errors.map((e) => e.message).join(', ')}`);
@@ -441,16 +448,19 @@ export class LinearService {
       description: issue.description,
       state: issue.state?.name || 'Unknown',
       priority: issue.priority || 0,
-      assignee: issue.assignee ? {
-        id: issue.assignee.id,
-        name: issue.assignee.name,
-        email: issue.assignee.email,
-      } : undefined,
-      labels: issue.labels?.nodes?.map((label: any) => ({
-        id: label.id,
-        name: label.name,
-        color: label.color,
-      })) || [],
+      assignee: issue.assignee
+        ? {
+            id: issue.assignee.id,
+            name: issue.assignee.name,
+            email: issue.assignee.email,
+          }
+        : undefined,
+      labels:
+        issue.labels?.nodes?.map((label: any) => ({
+          id: label.id,
+          name: label.name,
+          color: label.color,
+        })) || [],
       createdAt: new Date(issue.createdAt),
       updatedAt: new Date(issue.updatedAt),
       url: issue.url,
@@ -476,7 +486,7 @@ export class AgentCoordination {
     taskTitle: string,
     taskDescription: string,
     priority: number = 0,
-    labels: string[] = ['agent-task']
+    labels: string[] = ['agent-task'],
   ): Promise<LinearIssue> {
     const title = `[${agentName}] ${taskTitle}`;
     const description = `**Agent:** ${agentName}\n\n**Task:** ${taskDescription}\n\n**Created:** ${new Date().toISOString()}`;
@@ -495,9 +505,11 @@ export class AgentCoordination {
   async updateTaskStatus(
     issueId: string,
     status: 'in-progress' | 'completed' | 'blocked' | 'review',
-    notes?: string
+    notes?: string,
   ): Promise<LinearIssue> {
-    const description = notes ? `**Status Update:** ${status}\n\n**Notes:** ${notes}\n\n**Updated:** ${new Date().toISOString()}` : undefined;
+    const description = notes
+      ? `**Status Update:** ${status}\n\n**Notes:** ${notes}\n\n**Updated:** ${new Date().toISOString()}`
+      : undefined;
 
     return this.linearService.updateIssue(issueId, {
       state: status,
@@ -522,9 +534,9 @@ export class AgentCoordination {
     title: string,
     description: string,
     involvedAgents: string[],
-    priority: number = 1
+    priority: number = 1,
   ): Promise<LinearIssue> {
-    const agentList = involvedAgents.map(agent => `- ${agent}`).join('\n');
+    const agentList = involvedAgents.map((agent) => `- ${agent}`).join('\n');
     const fullDescription = `**Coordination Issue**\n\n**Involved Agents:**\n${agentList}\n\n**Description:**\n${description}\n\n**Created:** ${new Date().toISOString()}`;
 
     return this.linearService.createIssue({

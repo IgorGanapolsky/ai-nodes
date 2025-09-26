@@ -1,7 +1,10 @@
 import fetch from 'node-fetch';
 import { Opportunity } from './types';
 
-export async function prospectReddit(subreddit: string = 'Entrepreneur', limit: number = 10): Promise<Opportunity[]> {
+export async function prospectReddit(
+  subreddit: string = 'Entrepreneur',
+  limit: number = 10,
+): Promise<Opportunity[]> {
   const url = `https://www.reddit.com/r/${encodeURIComponent(subreddit)}/new.json?limit=${Math.min(limit, 50)}`;
   try {
     const res = await fetch(url, { headers: { 'User-Agent': 'depinautopilot/1.0' } });
@@ -19,4 +22,3 @@ export async function prospectReddit(subreddit: string = 'Entrepreneur', limit: 
     return [];
   }
 }
-

@@ -28,15 +28,11 @@ cp -r "$WEB_APP_DIR"/* "$TEMP_DEPLOY_DIR/"
 cp "$PROJECT_ROOT/package.json" "$TEMP_DEPLOY_DIR/package.json.root"
 cp "$PROJECT_ROOT/pnpm-lock.yaml" "$TEMP_DEPLOY_DIR/" 2>/dev/null || echo "No pnpm-lock.yaml found"
 
-# Copy TypeScript configuration
-if [[ -f "$WEB_APP_DIR/tsconfig.json" ]]; then
-    cp "$WEB_APP_DIR/tsconfig.json" "$TEMP_DEPLOY_DIR/"
-else
-    # Create a basic tsconfig.json if it doesn't exist
-    cat > "$TEMP_DEPLOY_DIR/tsconfig.json" << 'TSCONFIG_EOF'
+# Create a standalone tsconfig.json (remove extends reference)
+cat > "$TEMP_DEPLOY_DIR/tsconfig.json" << 'TSCONFIG_EOF'
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "es6"],
+    "lib": ["DOM", "DOM.Iterable", "ES6"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -55,14 +51,16 @@ else
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/hooks/*": ["./src/hooks/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next", "out"]
 }
 TSCONFIG_EOF
-fi
 
 echo "⚙️  Step 3: Creating standalone package.json..."
 

@@ -21,5 +21,3 @@ export function Sidebar(): JSX.Element {
     </aside>
   );
 }
-
-

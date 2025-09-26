@@ -2,25 +2,19 @@
   "agents": {
     "CTO Agent": {
       "name": "CTO Agent",
-      "capabilities": [
-        "Strategic oversight and technical leadership"
-      ],
+      "capabilities": ["Strategic oversight and technical leadership"],
       "activeTasks": [],
       "status": "available"
     },
     "Frontend Agent": {
       "name": "Frontend Agent",
-      "capabilities": [
-        "React TypeScript UI development"
-      ],
+      "capabilities": ["React TypeScript UI development"],
       "activeTasks": [],
       "status": "available"
     },
     "Backend Agent": {
       "name": "Backend Agent",
-      "capabilities": [
-        "API development and database management"
-      ],
+      "capabilities": ["API development and database management"],
       "activeTasks": [],
       "status": "available"
     }

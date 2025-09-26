@@ -3,6 +3,9 @@ import { apiClient } from '../utils/api';
 import { webSocketService } from '../services/websocket';
 import { notificationService } from '../services/notifications';
 import { useSettings } from './useSettings';
+import { getLogger } from '@depinautopilot/utils';
+
+const logger = getLogger('mobile-reinvest');
 
 export const useReinvest = () => {
   const [isReinvesting, setIsReinvesting] = useState(false);
@@ -17,7 +20,9 @@ export const useReinvest = () => {
   const { settings } = useSettings();
 
   const triggerReinvest = useCallback(async () => {
-    if (isReinvesting) {return { success: false, error: 'Reinvest already in progress' };}
+    if (isReinvesting) {
+      return { success: false, error: 'Reinvest already in progress' };
+    }
 
     setIsReinvesting(true);
 
@@ -73,12 +78,15 @@ export const useReinvest = () => {
 
   const checkAutoReinvest = useCallback(
     async (currentEarnings: number) => {
-      if (!settings.autoReinvest || isReinvesting) {return;}
+      if (!settings.autoReinvest || isReinvesting) {
+        return;
+      }
 
       if (currentEarnings >= settings.reinvestThreshold) {
-        console.log(
-          `Auto-reinvest triggered: $${currentEarnings} >= $${settings.reinvestThreshold}`,
-        );
+        logger.info('Auto-reinvest triggered', {
+          currentEarnings,
+          reinvestThreshold: settings.reinvestThreshold,
+        });
 
         // Send notification about auto-reinvest
         await notificationService.scheduleLocalNotification(
