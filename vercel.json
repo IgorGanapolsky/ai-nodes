@@ -4,7 +4,6 @@
   "buildCommand": "pnpm install --frozen-lockfile && pnpm --filter @depinautopilot/web build",
   "outputDirectory": "apps/web/.next",
   "installCommand": "npm install -g pnpm@8.15.0",
-  "root": ".",
   "env": {
     "STRIPE_SECRET_KEY": "@stripe_secret_key",
     "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
