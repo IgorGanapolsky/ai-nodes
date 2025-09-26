@@ -67,9 +67,11 @@
 
 - Prospecting (every 15m): pulls candidates from GitHub/Reddit and creates `[OPP/SOURCE]` Linear issues labeled `opportunity` (deduped by title/url). Trigger manually via `POST /admin/scheduler/trigger {"jobName":"prospecting"}`.
 - Revenue Loop (every 10m): converts `opportunity` issues into `Outreach:` tasks (labels `agent-task,outreach`). Trigger manually via `POST /admin/scheduler/trigger {"jobName":"revenue-loop"}`.
+- Outreach Sender (every 20m): reads `outreach` tasks, composes an email (dry-run to test address by default). In live mode, sends to `ContactEmail` from the task description with safeguards (suppression + per-domain rate limit) and appends an “Emailed: …” line to the issue.
 
 ### Env Vars
 
 - Linear: `LINEAR_API_KEY`, `LINEAR_TEAM_ID`
 - Prospecting: `GITHUB_TOKEN` (optional), `GITHUB_SEARCH_QUERY`, `REDDIT_SUBREDDIT`
 - Email: `RESEND_API_KEY` or SMTP (SES) — `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_SECURE`, plus `FROM_EMAIL`, `REPLY_TO_EMAIL`
+- Outreach: `OUTREACH_DRY_RUN`, `OUTREACH_TEST_EMAIL`, `OUTREACH_MAX_PER_DOMAIN_PER_DAY`, `OUTREACH_SUPPRESS_DOMAINS`, `OUTREACH_SUPPRESS_EMAILS`

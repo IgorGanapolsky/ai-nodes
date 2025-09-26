@@ -4,21 +4,11 @@
     "silent": true,
     "autoJobCancelation": true
   },
-  "builds": [
-    {
-      "src": "apps/web/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "apps/web/.next"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/apps/web/$1"
-    }
-  ],
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- apps/web packages/core packages/db packages/utils package.json pnpm-lock.yaml",
+  "buildCommand": "npm install -g pnpm@8.15.0 && pnpm install --frozen-lockfile && pnpm --filter @depinautopilot/web build",
+  "installCommand": "npm install -g pnpm@8.15.0 && pnpm install --frozen-lockfile",
+  "outputDirectory": "apps/web/.next",
+  "framework": "nextjs",
   "env": {
     "NODE_ENV": "production",
     "NEXT_TELEMETRY_DISABLED": "1"

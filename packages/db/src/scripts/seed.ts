@@ -3,27 +3,28 @@
 import { getRepositories } from '../repositories';
 import crypto from 'crypto';
 
-// Sample data generators
+// Sample data generators - DEVELOPMENT/TESTING ONLY
+// WARNING: These are fake placeholder passwords for testing only!
 function generateUsers() {
   return [
     {
       email: 'admin@example.com',
-      passwordHash: crypto.createHash('sha256').update('admin123').digest('hex'),
+      passwordHash: crypto.createHash('sha256').update('FAKE_ADMIN_PASSWORD_FOR_TESTING').digest('hex'),
       role: 'admin' as const,
     },
     {
       email: 'user1@example.com',
-      passwordHash: crypto.createHash('sha256').update('user123').digest('hex'),
+      passwordHash: crypto.createHash('sha256').update('FAKE_USER1_PASSWORD_FOR_TESTING').digest('hex'),
       role: 'user' as const,
     },
     {
       email: 'user2@example.com',
-      passwordHash: crypto.createHash('sha256').update('user456').digest('hex'),
+      passwordHash: crypto.createHash('sha256').update('FAKE_USER2_PASSWORD_FOR_TESTING').digest('hex'),
       role: 'user' as const,
     },
     {
       email: 'viewer@example.com',
-      passwordHash: crypto.createHash('sha256').update('viewer123').digest('hex'),
+      passwordHash: crypto.createHash('sha256').update('FAKE_VIEWER_PASSWORD_FOR_TESTING').digest('hex'),
       role: 'viewer' as const,
     },
   ];
