@@ -2,13 +2,13 @@ const snoowrap = require('snoowrap');
 const fs = require('fs').promises;
 require('dotenv').config({ path: './.env' });
 
-// Your LIVE Reddit credentials
+// Reddit credentials from environment variables
 const reddit = new snoowrap({
-  userAgent: 'AI-Nodes-Bot/1.0 by Virtual_Exit5690',
-  clientId: 'OX37oY5MNhf0iOdKRwhUSA',
-  clientSecret: 'mk-XEasANmHS9CnScSgNyuulH1xNDw',
-  username: 'Virtual_Exit5690',
-  password: 'Rockland25&*'
+  userAgent: process.env.REDDIT_USER_AGENT || 'AI-Nodes-Bot/1.0',
+  clientId: process.env.REDDIT_CLIENT_ID,
+  clientSecret: process.env.REDDIT_CLIENT_SECRET,
+  username: process.env.REDDIT_USERNAME,
+  password: process.env.REDDIT_PASSWORD
 });
 
 // Subreddits to monitor

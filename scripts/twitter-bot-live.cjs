@@ -2,12 +2,12 @@ const { TwitterApi } = require('twitter-api-v2');
 const fs = require('fs').promises;
 require('dotenv').config({ path: './.env' });
 
-// Your LIVE Twitter credentials
+// Twitter credentials from environment variables
 const client = new TwitterApi({
-  appKey: 'LlmJseXJe2b1Jjdf6GASw0LtC',
-  appSecret: 'FQkLIPevGC4q5jHihhJdoSxSBdrg9c8zvD32hPvKDN2Z9hS3V8',
-  accessToken: '1733256637199073280-47swc3B8iakivwxE3IqXkXHPzTS9Af',
-  accessSecret: 'Lp3c6zN0oAuEnfnPKOSAgO3YJ6UZEpruijeN9PoaNDokF',
+  appKey: process.env.TWITTER_APP_KEY,
+  appSecret: process.env.TWITTER_APP_SECRET,
+  accessToken: process.env.TWITTER_ACCESS_TOKEN,
+  accessSecret: process.env.TWITTER_ACCESS_SECRET,
 });
 
 const rwClient = client.readWrite;
