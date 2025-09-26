@@ -19,7 +19,6 @@ import { useState } from 'react';
 import { TrendingUp, Activity, Zap, Server } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -31,18 +30,7 @@ interface UtilizationChartProps {
   isLoading?: boolean;
 }
 
-interface ChartDataPoint {
-  timestamp: string;
-  date: string;
-  uptime: number;
-  earnings: number;
-  targetEarnings: number;
-  devices: number;
-  onlineDevices: number;
-  networkLatency: number;
-  cpuUsage: number;
-  memoryUsage: number;
-}
+// ChartDataPoint interface removed as it's not used
 
 // Custom tooltip component
 const CustomTooltip = ({ active, payload, label }: any) => {

@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft,
-  Download,
   Mail,
   Wallet,
   Calendar,
@@ -14,7 +13,6 @@ import {
   Server,
   Activity,
 } from 'lucide-react';
-import Link from 'next/link';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

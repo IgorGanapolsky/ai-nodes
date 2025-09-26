@@ -1,4 +1,4 @@
-import { Users, Server, Activity, TrendingUp, Zap, AlertTriangle, DollarSign } from 'lucide-react';
+import { Users, Server, Activity, TrendingUp, Zap, AlertTriangle } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

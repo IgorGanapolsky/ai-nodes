@@ -1,4 +1,11 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+
+// Extend axios config to include metadata
+interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
+  metadata?: {
+    startTime: number;
+  };
+}
 import { Owner } from '@/app/components/OwnerCard';
 import { Device } from '@/app/components/DeviceTable';
 import { Alert } from '@/app/components/AlertsList';
@@ -101,7 +108,7 @@ class APIClient {
 
     // Request interceptor
     this.client.interceptors.request.use(
-      (config) => {
+      (config: ExtendedAxiosRequestConfig) => {
         // Add correlation ID for tracking
         config.headers['X-Correlation-ID'] = this.generateCorrelationId();
 
@@ -120,14 +127,14 @@ class APIClient {
     // Response interceptor
     this.client.interceptors.response.use(
       (response) => {
-        const duration = Date.now() - (response.config.metadata?.startTime || Date.now());
+        const duration = Date.now() - ((response.config as ExtendedAxiosRequestConfig).metadata?.startTime || Date.now());
         console.log(
           `[API] ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url} (${duration}ms)`,
         );
         return response;
       },
       (error) => {
-        const duration = Date.now() - (error.config?.metadata?.startTime || Date.now());
+        const duration = Date.now() - ((error.config as ExtendedAxiosRequestConfig)?.metadata?.startTime || Date.now());
         console.error(
           `[API] ${error.response?.status || 'ERROR'} ${error.config?.method?.toUpperCase()} ${error.config?.url} (${duration}ms)`,
           error.message,
@@ -287,18 +294,4 @@ class APIClient {
 export const apiClient = new APIClient();
 
 // Export types for external use
-export type {
-  Owner,
-  Device,
-  Alert,
-  SummaryData,
-  Statement,
-  OwnerMetrics,
-  ChartDataResponse,
-  OwnersQuery,
-  DevicesQuery,
-  AlertsQuery,
-  GenerateStatementRequest,
-  GenerateStatementResponse,
-  PaginatedResponse,
-};
+// Types are already exported above
