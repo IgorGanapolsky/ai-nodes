@@ -21,7 +21,7 @@ const healthResponseSchema = z.object({
 type HealthResponse = z.infer<typeof healthResponseSchema>;
 
 const healthRoutes: FastifyPluginCallback = async (fastify) => {
-  fastify.get('/', async (request, reply) => {
+  fastify.get('/', async (_request, reply) => {
     try {
       const memoryUsage = process.memoryUsage();
       const totalMemory = memoryUsage.heapTotal + memoryUsage.external;
@@ -38,7 +38,7 @@ const healthRoutes: FastifyPluginCallback = async (fastify) => {
         dbResponseTime = Date.now() - startTime;
         dbStatus = 'up';
       } catch (error) {
-        fastify.log.error('Database health check failed:', error);
+        fastify.log.error('Database health check failed: ' + (error instanceof Error ? error.message : String(error)));
         dbStatus = 'down';
       }
 
@@ -63,7 +63,7 @@ const healthRoutes: FastifyPluginCallback = async (fastify) => {
 
       return reply.status(statusCode).send(healthData);
     } catch (error) {
-      fastify.log.error('Health check error:', error);
+      fastify.log.error('Health check error: ' + (error instanceof Error ? error.message : String(error)));
 
       return reply.status(503).send({
         status: 'unhealthy',
@@ -74,12 +74,12 @@ const healthRoutes: FastifyPluginCallback = async (fastify) => {
   });
 
   // Liveness probe - simple endpoint for container orchestration
-  fastify.get('/live', async (request, reply) => {
+  fastify.get('/live', async (_request, reply) => {
     return reply.status(200).send({ status: 'alive' });
   });
 
   // Readiness probe - checks if service is ready to accept traffic
-  fastify.get('/ready', async (request, reply) => {
+  fastify.get('/ready', async (_request, reply) => {
     try {
       // TODO: Add checks for external dependencies (database, cache, etc.)
       return reply.status(200).send({ status: 'ready' });

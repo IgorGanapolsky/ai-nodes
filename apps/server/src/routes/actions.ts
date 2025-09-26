@@ -79,10 +79,7 @@ const optimizationRequestSchema = z.object({
     .optional(),
 });
 
-type RepriceRequest = z.infer<typeof repriceRequestSchema>;
 type RepriceResponse = z.infer<typeof repriceResponseSchema>;
-type MaintenanceRequest = z.infer<typeof maintenanceRequestSchema>;
-type OptimizationRequest = z.infer<typeof optimizationRequestSchema>;
 
 const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fastify) => {
   // POST /actions/reprice - Dynamic pricing adjustment
@@ -95,7 +92,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
     },
     async (request, reply) => {
       try {
-        const { deviceIds, strategy, parameters, scheduledFor, dryRun } = request.body;
+        const { deviceIds, strategy, scheduledFor, dryRun } = request.body;
 
         // Generate a job ID for tracking
         const jobId = `reprice_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -147,19 +144,15 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
         if (!dryRun && !scheduledFor) {
           // TODO: Queue the repricing job for immediate execution
-          fastify.log.info('Queued repricing job:', {
-            jobId,
-            strategy,
-            devicesAffected: response.devicesAffected,
-          });
+          fastify.log.info(`Queued repricing job: ${jobId}, strategy: ${strategy}, devicesAffected: ${response.devicesAffected}`);
         } else if (scheduledFor) {
           // TODO: Schedule the repricing job for later execution
-          fastify.log.info('Scheduled repricing job:', { jobId, scheduledFor });
+          fastify.log.info(`Scheduled repricing job: ${jobId}, scheduledFor: ${scheduledFor}`);
         }
 
         return reply.status(202).send(response); // 202 Accepted for async operation
       } catch (error) {
-        fastify.log.error('Error processing reprice request:', error);
+        fastify.log.error('Error processing reprice request: ' + (error instanceof Error ? error.message : String(error)));
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to process repricing request',
@@ -201,16 +194,11 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
           })),
         };
 
-        fastify.log.info('Queued maintenance job:', {
-          jobId,
-          action,
-          devicesAffected: deviceIds.length,
-          scheduledFor: response.scheduledFor,
-        });
+        fastify.log.info(`Queued maintenance job: ${jobId}, action: ${action}, devicesAffected: ${deviceIds.length}, scheduledFor: ${response.scheduledFor}`);
 
         return reply.status(202).send(response);
       } catch (error) {
-        fastify.log.error('Error processing maintenance request:', error);
+        fastify.log.error('Error processing maintenance request: ' + (error instanceof Error ? error.message : String(error)));
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to process maintenance request',
@@ -260,15 +248,11 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
           ],
         };
 
-        fastify.log.info('Queued optimization job:', {
-          jobId,
-          optimizationType,
-          devicesAffected: response.devicesAffected,
-        });
+        fastify.log.info(`Queued optimization job: ${jobId}, optimizationType: ${optimizationType}, devicesAffected: ${response.devicesAffected}`);
 
         return reply.status(202).send(response);
       } catch (error) {
-        fastify.log.error('Error processing optimization request:', error);
+        fastify.log.error('Error processing optimization request: ' + (error instanceof Error ? error.message : String(error)));
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to process optimization request',
@@ -280,7 +264,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
   // GET /actions/jobs/:jobId - Get job status
   fastify.get('/jobs/:jobId', async (request, reply) => {
     try {
-      const { jobId } = request.params;
+      const { jobId } = request.params as { jobId: string };
 
       // TODO: Replace with actual job status lookup
       const jobStatus = {
@@ -304,7 +288,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
       return reply.send(jobStatus);
     } catch (error) {
-      fastify.log.error(`Error fetching job status for ${request.params.jobId}:`, error);
+      fastify.log.error(`Error fetching job status for ${(request.params as { jobId: string }).jobId}: ` + (error instanceof Error ? error.message : String(error)));
       return reply.status(404).send({
         error: 'Not found',
         message: 'Job not found',
@@ -315,7 +299,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
   // GET /actions/jobs - List all jobs
   fastify.get('/jobs', async (request, reply) => {
     try {
-      const { status, type, limit = 10, page = 1 } = request.query;
+      const { limit = 10, page = 1 } = request.query as { status?: string; type?: string; limit?: number; page?: number };
 
       // TODO: Replace with actual job listing logic
       const mockJobs = [
@@ -345,7 +329,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
         },
       });
     } catch (error) {
-      fastify.log.error('Error fetching jobs:', error);
+      fastify.log.error('Error fetching jobs: ' + (error instanceof Error ? error.message : String(error)));
       return reply.status(500).send({
         error: 'Internal server error',
         message: 'Failed to fetch jobs',

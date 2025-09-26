@@ -22,7 +22,7 @@ const alertSchema = z.object({
   updatedAt: z.string(),
   resolvedAt: z.string().optional(),
   resolvedBy: z.string().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
   actions: z
     .array(
       z.object({
@@ -49,7 +49,7 @@ const createAlertSchema = z.object({
   severity: z.enum(['low', 'medium', 'high', 'critical']),
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 const updateAlertSchema = z.object({
@@ -105,8 +105,6 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
           type,
           severity,
           status,
-          startDate,
-          endDate,
           page,
           limit,
           sortBy,
@@ -268,7 +266,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
 
         return reply.send(response);
       } catch (error) {
-        fastify.log.error('Error fetching alerts:', error);
+        fastify.log.error('Error fetching alerts: ' + (error instanceof Error ? error.message : String(error)));
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to fetch alerts',
@@ -317,7 +315,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
 
       return reply.send(mockAlert);
     } catch (error) {
-      fastify.log.error(`Error fetching alert ${request.params.id}:`, error);
+      fastify.log.error(`Error fetching alert ${(request.params as { id: string }).id}: ` + (error instanceof Error ? error.message : String(error)));
       return reply.status(404).send({
         error: 'Not found',
         message: 'Alert not found',
@@ -357,16 +355,11 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
 
         // TODO: Save to database, send notifications, etc.
 
-        fastify.log.info('Created new alert:', {
-          alertId,
-          ownerId: alertData.ownerId,
-          type: alertData.type,
-          severity: alertData.severity,
-        });
+        fastify.log.info(`Created new alert: ${alertId}, ownerId: ${alertData.ownerId}, type: ${alertData.type}, severity: ${alertData.severity}`);
 
         return reply.status(201).send(newAlert);
       } catch (error) {
-        fastify.log.error('Error creating alert:', error);
+        fastify.log.error('Error creating alert: ' + (error instanceof Error ? error.message : String(error)));
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to create alert',
@@ -417,11 +410,11 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
           },
         };
 
-        fastify.log.info('Resolved alert:', { alertId: id, resolvedBy });
+        fastify.log.info(`Resolved alert: ${id}, resolvedBy: ${resolvedBy}`);
 
         return reply.send(resolvedAlert);
       } catch (error) {
-        fastify.log.error(`Error resolving alert ${request.params.id}:`, error);
+        fastify.log.error(`Error resolving alert ${(request.params as { id: string }).id}: ` + (error instanceof Error ? error.message : String(error)));
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to resolve alert',
@@ -469,11 +462,11 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
           },
         };
 
-        fastify.log.info('Updated alert:', { alertId: id, status: updates.status });
+        fastify.log.info(`Updated alert: ${id}, status: ${updates.status}`);
 
         return reply.send(updatedAlert);
       } catch (error) {
-        fastify.log.error(`Error updating alert ${request.params.id}:`, error);
+        fastify.log.error(`Error updating alert ${(request.params as { id: string }).id}: ` + (error instanceof Error ? error.message : String(error)));
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to update alert',
@@ -490,11 +483,11 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
       const { id } = request.params;
 
       // TODO: Replace with actual database deletion
-      fastify.log.info('Deleted alert:', { alertId: id });
+      fastify.log.info(`Deleted alert: ${id}`);
 
       return reply.status(204).send();
     } catch (error) {
-      fastify.log.error(`Error deleting alert ${request.params.id}:`, error);
+      fastify.log.error(`Error deleting alert ${(request.params as { id: string }).id}: ` + (error instanceof Error ? error.message : String(error)));
       return reply.status(500).send({
         error: 'Internal server error',
         message: 'Failed to delete alert',
@@ -524,7 +517,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
     },
     async (request, reply) => {
       try {
-        const { alertIds, action, resolvedBy, notes } = request.body;
+        const { alertIds, action, resolvedBy } = request.body;
 
         // TODO: Replace with actual bulk operations
         const results = alertIds.map((id) => ({
@@ -534,11 +527,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
           updatedAt: new Date().toISOString(),
         }));
 
-        fastify.log.info('Bulk alert operation:', {
-          action,
-          alertCount: alertIds.length,
-          performer: resolvedBy,
-        });
+        fastify.log.info(`Bulk alert operation: ${action}, alertCount: ${alertIds.length}, performer: ${resolvedBy}`);
 
         return reply.send({
           results,
@@ -549,7 +538,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
           },
         });
       } catch (error) {
-        fastify.log.error('Error performing bulk alert operation:', error);
+        fastify.log.error('Error performing bulk alert operation: ' + (error instanceof Error ? error.message : String(error)));
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to perform bulk operation',
@@ -559,7 +548,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
   );
 
   // GET /alerts/stats - Get alert statistics
-  fastify.get('/stats', async (request, reply) => {
+  fastify.get('/stats', async (_request, reply) => {
     try {
       // TODO: Replace with actual database queries
       const stats = {
@@ -591,7 +580,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
 
       return reply.send(stats);
     } catch (error) {
-      fastify.log.error('Error fetching alert stats:', error);
+      fastify.log.error('Error fetching alert stats: ' + (error instanceof Error ? error.message : String(error)));
       return reply.status(500).send({
         error: 'Internal server error',
         message: 'Failed to fetch alert statistics',

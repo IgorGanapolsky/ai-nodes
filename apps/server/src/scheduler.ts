@@ -66,7 +66,7 @@ export class Scheduler {
 
           this.app.log.info('Connector polling completed successfully');
         } catch (error) {
-          this.app.log.error('Error during connector polling:', error);
+          this.app.log.error('Error during connector polling: ' + (error instanceof Error ? error.message : String(error)));
         }
       },
       {
@@ -96,7 +96,7 @@ export class Scheduler {
 
           this.app.log.info('Alert generation check completed');
         } catch (error) {
-          this.app.log.error('Error during alert generation:', error);
+          this.app.log.error('Error during alert generation: ' + (error instanceof Error ? error.message : String(error)));
         }
       },
       {
@@ -126,7 +126,7 @@ export class Scheduler {
 
           this.app.log.info('Weekly statement generation completed');
         } catch (error) {
-          this.app.log.error('Error during weekly statement generation:', error);
+          this.app.log.error('Error during weekly statement generation: ' + (error instanceof Error ? error.message : String(error)));
         }
       },
       {
@@ -156,7 +156,7 @@ export class Scheduler {
 
           this.app.log.info('Daily cleanup completed');
         } catch (error) {
-          this.app.log.error('Error during daily cleanup:', error);
+          this.app.log.error('Error during daily cleanup: ' + (error instanceof Error ? error.message : String(error)));
         }
       },
       {
@@ -186,7 +186,7 @@ export class Scheduler {
 
           this.app.log.info('Performance optimization check completed');
         } catch (error) {
-          this.app.log.error('Error during performance optimization check:', error);
+          this.app.log.error('Error during performance optimization check: ' + (error instanceof Error ? error.message : String(error)));
         }
       },
       {
@@ -235,7 +235,7 @@ export class Scheduler {
           );
         }
       } catch (error) {
-        this.app.log.error(`Error polling device ${device.id}:`, error);
+        this.app.log.error(`Error polling device ${device.id}: ` + (error instanceof Error ? error.message : String(error)));
       }
     }
   }
@@ -287,7 +287,7 @@ export class Scheduler {
         this.app.log.info(`Generated ${alertsGenerated.length} new alerts`);
       }
     } catch (error) {
-      this.app.log.error('Error in alert generation:', error);
+      this.app.log.error('Error in alert generation: ' + (error instanceof Error ? error.message : String(error)));
     }
   }
 
@@ -336,13 +336,13 @@ export class Scheduler {
 
           this.app.log.info(`Queued weekly statement for owner ${owner.id}`);
         } catch (error) {
-          this.app.log.error(`Error generating statement for owner ${owner.id}:`, error);
+          this.app.log.error(`Error generating statement for owner ${owner.id}: ` + (error instanceof Error ? error.message : String(error)));
         }
       }
 
       this.app.log.info(`Generated ${statementsGenerated.length} weekly statements`);
     } catch (error) {
-      this.app.log.error('Error in weekly statement generation:', error);
+      this.app.log.error('Error in weekly statement generation: ' + (error instanceof Error ? error.message : String(error)));
     }
   }
 
@@ -369,7 +369,7 @@ export class Scheduler {
 
       this.app.log.info('Daily cleanup tasks completed');
     } catch (error) {
-      this.app.log.error('Error during daily cleanup:', error);
+      this.app.log.error('Error during daily cleanup: ' + (error instanceof Error ? error.message : String(error)));
     }
   }
 
@@ -398,7 +398,7 @@ export class Scheduler {
         );
       }
     } catch (error) {
-      this.app.log.error('Error during performance optimization check:', error);
+      this.app.log.error('Error during performance optimization check: ' + (error instanceof Error ? error.message : String(error)));
     }
   }
 
@@ -453,9 +453,9 @@ export class Scheduler {
    * Get status of all scheduled jobs
    */
   public getJobStatus(): Array<{ name: string; isRunning: boolean }> {
-    return Array.from(this.jobs.entries()).map(([name, task]) => ({
+    return Array.from(this.jobs.entries()).map(([name, _task]) => ({
       name,
-      isRunning: task.running || false,
+      isRunning: false, // ScheduledTask doesn't expose running status
     }));
   }
 
