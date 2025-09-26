@@ -9,14 +9,15 @@ export class CacheManager {
   private memoryCache: NodeCache;
   private defaultTtl: number;
 
-  constructor(defaultTtl: number = 300) { // 5 minutes default
+  constructor(defaultTtl: number = 300) {
+    // 5 minutes default
     this.defaultTtl = defaultTtl;
     this.memoryCache = new NodeCache({
       stdTTL: defaultTtl,
       checkperiod: Math.floor(defaultTtl / 10), // Check every 10% of TTL
       useClones: false, // For better performance
       deleteOnExpire: true,
-      maxKeys: 1000 // Limit memory usage
+      maxKeys: 1000, // Limit memory usage
     });
 
     // Setup cache event listeners
@@ -47,7 +48,7 @@ export class CacheManager {
 
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
 
@@ -62,14 +63,14 @@ export class CacheManager {
     method: string,
     data: T,
     ttl?: number,
-    params?: any
+    params?: any,
   ): Promise<void> {
     try {
       const key = this.generateKey(connectorType, method, params);
       const entry: CacheEntry<T> = {
         data,
         timestamp: Date.now(),
-        ttl: ttl || this.defaultTtl
+        ttl: ttl || this.defaultTtl,
       };
 
       this.memoryCache.set(key, entry, ttl || this.defaultTtl);
@@ -82,11 +83,7 @@ export class CacheManager {
   /**
    * Get a value from cache
    */
-  async get<T>(
-    connectorType: string,
-    method: string,
-    params?: any
-  ): Promise<T | null> {
+  async get<T>(connectorType: string, method: string, params?: any): Promise<T | null> {
     try {
       const key = this.generateKey(connectorType, method, params);
       const entry = this.memoryCache.get<CacheEntry<T>>(key);
@@ -133,7 +130,7 @@ export class CacheManager {
   async clearConnector(connectorType: string): Promise<number> {
     try {
       const keys = this.memoryCache.keys();
-      const connectorKeys = keys.filter(key => key.startsWith(`${connectorType}:`));
+      const connectorKeys = keys.filter((key) => key.startsWith(`${connectorType}:`));
 
       let deletedCount = 0;
       for (const key of connectorKeys) {
@@ -182,7 +179,7 @@ export class CacheManager {
     method: string,
     fetchFunction: () => Promise<T>,
     ttl?: number,
-    params?: any
+    params?: any,
   ): Promise<T> {
     // Try to get from cache first
     const cached = await this.get<T>(connectorType, method, params);
@@ -224,7 +221,7 @@ export class CacheManager {
     connectorType: string,
     method: string,
     additionalTtl: number,
-    params?: any
+    params?: any,
   ): Promise<boolean> {
     const key = this.generateKey(connectorType, method, params);
     const currentTtl = this.memoryCache.getTtl(key);
@@ -244,7 +241,7 @@ export class CacheManager {
     connectorType: string,
     method: string,
     fn: T,
-    ttl?: number
+    ttl?: number,
   ): T {
     return (async (...args: Parameters<T>) => {
       return this.getOrSet(
@@ -252,7 +249,7 @@ export class CacheManager {
         method,
         () => fn(...args),
         ttl,
-        args.length > 0 ? args : undefined
+        args.length > 0 ? args : undefined,
       );
     }) as T;
   }

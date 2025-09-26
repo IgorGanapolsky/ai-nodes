@@ -40,14 +40,15 @@ export class PlaywrightScraper {
     this.defaultOptions = {
       headless: true,
       timeout: 30000,
-      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      userAgent:
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
       viewport: { width: 1920, height: 1080 },
       browser: 'chromium',
       waitForSelector: '',
       waitForNetworkIdle: false,
       screenshot: false,
       retries: 3,
-      ...options
+      ...options,
     };
 
     // Select browser type
@@ -79,8 +80,8 @@ export class PlaywrightScraper {
           '--disable-accelerated-2d-canvas',
           '--no-first-run',
           '--no-zygote',
-          '--disable-gpu'
-        ]
+          '--disable-gpu',
+        ],
       });
     } catch (error) {
       throw ErrorHandler.wrapScraperError(error, 'Browser initialization failed');
@@ -98,7 +99,7 @@ export class PlaywrightScraper {
 
     const page = await this.browser.newPage({
       userAgent: this.defaultOptions.userAgent,
-      viewport: this.defaultOptions.viewport
+      viewport: this.defaultOptions.viewport,
     });
 
     // Set default timeout
@@ -125,70 +126,72 @@ export class PlaywrightScraper {
   async scrape(url: string, options: Partial<ScrapingOptions> = {}): Promise<ScrapingResult> {
     const config = { ...this.defaultOptions, ...options };
 
-    return RetryLogic.execute(async () => {
-      const startTime = Date.now();
-      let page: Page | null = null;
+    return RetryLogic.execute(
+      async () => {
+        const startTime = Date.now();
+        let page: Page | null = null;
 
-      try {
-        page = await this.createPage();
+        try {
+          page = await this.createPage();
 
-        // Navigate to URL
-        const response = await page.goto(url, {
-          waitUntil: config.waitForNetworkIdle ? 'networkidle' : 'domcontentloaded',
-          timeout: config.timeout
-        });
-
-        if (!response) {
-          throw ErrorHandler.createError('SCRAPER_ERROR', 'No response received', { url }, true);
-        }
-
-        // Wait for specific selector if provided
-        if (config.waitForSelector) {
-          await page.waitForSelector(config.waitForSelector, {
-            timeout: config.timeout
+          // Navigate to URL
+          const response = await page.goto(url, {
+            waitUntil: config.waitForNetworkIdle ? 'networkidle' : 'domcontentloaded',
+            timeout: config.timeout,
           });
-        }
 
-        // Get page content
-        const html = await page.content();
-        const text = await page.textContent('body') || '';
-        const title = await page.title();
-
-        // Take screenshot if requested
-        let screenshot: Buffer | undefined;
-        if (config.screenshot) {
-          screenshot = await page.screenshot({
-            fullPage: true,
-            type: 'png'
-          });
-        }
-
-        const loadTime = Date.now() - startTime;
-
-        return {
-          html,
-          text,
-          url: page.url(),
-          title,
-          screenshot,
-          metadata: {
-            loadTime,
-            statusCode: response.status(),
-            headers: await response.allHeaders()
+          if (!response) {
+            throw ErrorHandler.createError('SCRAPER_ERROR', 'No response received', { url }, true);
           }
-        };
 
-      } catch (error) {
-        throw ErrorHandler.wrapScraperError(error, `Failed to scrape ${url}`);
-      } finally {
-        if (page) {
-          await page.close();
+          // Wait for specific selector if provided
+          if (config.waitForSelector) {
+            await page.waitForSelector(config.waitForSelector, {
+              timeout: config.timeout,
+            });
+          }
+
+          // Get page content
+          const html = await page.content();
+          const text = (await page.textContent('body')) || '';
+          const title = await page.title();
+
+          // Take screenshot if requested
+          let screenshot: Buffer | undefined;
+          if (config.screenshot) {
+            screenshot = await page.screenshot({
+              fullPage: true,
+              type: 'png',
+            });
+          }
+
+          const loadTime = Date.now() - startTime;
+
+          return {
+            html,
+            text,
+            url: page.url(),
+            title,
+            screenshot,
+            metadata: {
+              loadTime,
+              statusCode: response.status(),
+              headers: await response.allHeaders(),
+            },
+          };
+        } catch (error) {
+          throw ErrorHandler.wrapScraperError(error, `Failed to scrape ${url}`);
+        } finally {
+          if (page) {
+            await page.close();
+          }
         }
-      }
-    }, {
-      retries: config.retries,
-      shouldRetry: (error) => ErrorHandler.isTemporaryError(error)
-    });
+      },
+      {
+        retries: config.retries,
+        shouldRetry: (error) => ErrorHandler.isTemporaryError(error),
+      },
+    );
   }
 
   /**
@@ -197,7 +200,7 @@ export class PlaywrightScraper {
   async scrapeMultiple(
     urls: string[],
     options: Partial<ScrapingOptions> = {},
-    concurrency: number = 3
+    concurrency: number = 3,
   ): Promise<ScrapingResult[]> {
     const results: ScrapingResult[] = [];
     const errors: Error[] = [];
@@ -215,20 +218,20 @@ export class PlaywrightScraper {
       });
 
       const batchResults = await Promise.all(batchPromises);
-      results.push(...batchResults.filter(result => result !== null) as ScrapingResult[]);
+      results.push(...(batchResults.filter((result) => result !== null) as ScrapingResult[]));
 
       // Add delay between batches to be respectful
       if (i + concurrency < urls.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
 
     if (errors.length > 0 && results.length === 0) {
       throw ErrorHandler.createError(
         'SCRAPER_ERROR',
-        `All scraping attempts failed: ${errors.map(e => e.message).join(', ')}`,
+        `All scraping attempts failed: ${errors.map((e) => e.message).join(', ')}`,
         { errors },
-        true
+        true,
       );
     }
 
@@ -241,52 +244,54 @@ export class PlaywrightScraper {
   async extractData(
     url: string,
     selectors: Record<string, string>,
-    options: Partial<ScrapingOptions> = {}
+    options: Partial<ScrapingOptions> = {},
   ): Promise<Record<string, string | null>> {
     const config = { ...this.defaultOptions, ...options };
 
-    return RetryLogic.execute(async () => {
-      let page: Page | null = null;
+    return RetryLogic.execute(
+      async () => {
+        let page: Page | null = null;
 
-      try {
-        page = await this.createPage();
+        try {
+          page = await this.createPage();
 
-        await page.goto(url, {
-          waitUntil: config.waitForNetworkIdle ? 'networkidle' : 'domcontentloaded',
-          timeout: config.timeout
-        });
-
-        if (config.waitForSelector) {
-          await page.waitForSelector(config.waitForSelector, {
-            timeout: config.timeout
+          await page.goto(url, {
+            waitUntil: config.waitForNetworkIdle ? 'networkidle' : 'domcontentloaded',
+            timeout: config.timeout,
           });
-        }
 
-        const results: Record<string, string | null> = {};
+          if (config.waitForSelector) {
+            await page.waitForSelector(config.waitForSelector, {
+              timeout: config.timeout,
+            });
+          }
 
-        for (const [key, selector] of Object.entries(selectors)) {
-          try {
-            const element = await page.$(selector);
-            results[key] = element ? await element.textContent() : null;
-          } catch (error) {
-            console.warn(`Failed to extract data for selector ${selector}:`, error);
-            results[key] = null;
+          const results: Record<string, string | null> = {};
+
+          for (const [key, selector] of Object.entries(selectors)) {
+            try {
+              const element = await page.$(selector);
+              results[key] = element ? await element.textContent() : null;
+            } catch (error) {
+              console.warn(`Failed to extract data for selector ${selector}:`, error);
+              results[key] = null;
+            }
+          }
+
+          return results;
+        } catch (error) {
+          throw ErrorHandler.wrapScraperError(error, `Failed to extract data from ${url}`);
+        } finally {
+          if (page) {
+            await page.close();
           }
         }
-
-        return results;
-
-      } catch (error) {
-        throw ErrorHandler.wrapScraperError(error, `Failed to extract data from ${url}`);
-      } finally {
-        if (page) {
-          await page.close();
-        }
-      }
-    }, {
-      retries: config.retries,
-      shouldRetry: (error) => ErrorHandler.isTemporaryError(error)
-    });
+      },
+      {
+        retries: config.retries,
+        shouldRetry: (error) => ErrorHandler.isTemporaryError(error),
+      },
+    );
   }
 
   /**
@@ -301,68 +306,73 @@ export class PlaywrightScraper {
       submitButton: string;
       successIndicator?: string;
     },
-    options: Partial<ScrapingOptions> = {}
+    options: Partial<ScrapingOptions> = {},
   ): Promise<{ success: boolean; cookies: any[]; sessionData?: any }> {
     const config = { ...this.defaultOptions, ...options };
 
-    return RetryLogic.execute(async () => {
-      let page: Page | null = null;
+    return RetryLogic.execute(
+      async () => {
+        let page: Page | null = null;
 
-      try {
-        page = await this.createPage();
+        try {
+          page = await this.createPage();
 
-        await page.goto(loginUrl, {
-          waitUntil: 'domcontentloaded',
-          timeout: config.timeout
-        });
-
-        // Fill login form
-        await page.fill(selectors.usernameField, credentials.username);
-        await page.fill(selectors.passwordField, credentials.password);
-        await page.click(selectors.submitButton);
-
-        // Wait for navigation or success indicator
-        if (selectors.successIndicator) {
-          await page.waitForSelector(selectors.successIndicator, {
-            timeout: config.timeout
+          await page.goto(loginUrl, {
+            waitUntil: 'domcontentloaded',
+            timeout: config.timeout,
           });
-        } else {
-          await page.waitForLoadState('domcontentloaded');
-        }
 
-        // Check if login was successful
-        const currentUrl = page.url();
-        const success = !currentUrl.includes('login') && !currentUrl.includes('error');
+          // Fill login form
+          await page.fill(selectors.usernameField, credentials.username);
+          await page.fill(selectors.passwordField, credentials.password);
+          await page.click(selectors.submitButton);
 
-        // Get session cookies
-        const cookies = await page.context().cookies();
-
-        return {
-          success,
-          cookies,
-          sessionData: {
-            url: currentUrl,
-            title: await page.title()
+          // Wait for navigation or success indicator
+          if (selectors.successIndicator) {
+            await page.waitForSelector(selectors.successIndicator, {
+              timeout: config.timeout,
+            });
+          } else {
+            await page.waitForLoadState('domcontentloaded');
           }
-        };
 
-      } catch (error) {
-        throw ErrorHandler.wrapScraperError(error, 'Login failed');
-      } finally {
-        if (page) {
-          await page.close();
+          // Check if login was successful
+          const currentUrl = page.url();
+          const success = !currentUrl.includes('login') && !currentUrl.includes('error');
+
+          // Get session cookies
+          const cookies = await page.context().cookies();
+
+          return {
+            success,
+            cookies,
+            sessionData: {
+              url: currentUrl,
+              title: await page.title(),
+            },
+          };
+        } catch (error) {
+          throw ErrorHandler.wrapScraperError(error, 'Login failed');
+        } finally {
+          if (page) {
+            await page.close();
+          }
         }
-      }
-    }, {
-      retries: config.retries,
-      shouldRetry: (error) => ErrorHandler.isTemporaryError(error)
-    });
+      },
+      {
+        retries: config.retries,
+        shouldRetry: (error) => ErrorHandler.isTemporaryError(error),
+      },
+    );
   }
 
   /**
    * Check if a page is accessible
    */
-  async checkAccessibility(url: string, timeout: number = 10000): Promise<{
+  async checkAccessibility(
+    url: string,
+    timeout: number = 10000,
+  ): Promise<{
     accessible: boolean;
     statusCode?: number;
     loadTime: number;
@@ -376,7 +386,7 @@ export class PlaywrightScraper {
 
       const response = await page.goto(url, {
         waitUntil: 'domcontentloaded',
-        timeout
+        timeout,
       });
 
       const loadTime = Date.now() - startTime;
@@ -384,15 +394,14 @@ export class PlaywrightScraper {
       return {
         accessible: true,
         statusCode: response?.status(),
-        loadTime
+        loadTime,
       };
-
     } catch (error) {
       const loadTime = Date.now() - startTime;
       return {
         accessible: false,
         loadTime,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       };
     } finally {
       if (page) {
@@ -422,7 +431,7 @@ export class PlaywrightScraper {
     return {
       type: this.defaultOptions.browser,
       version: this.browserType.name(),
-      isConnected: this.browser !== null && this.browser.isConnected()
+      isConnected: this.browser !== null && this.browser.isConnected(),
     };
   }
 }

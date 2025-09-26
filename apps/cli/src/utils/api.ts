@@ -79,7 +79,7 @@ export class ApiClient {
     this.config = {
       baseURL: config?.baseURL || userConfig.apiUrl || 'http://localhost:3001',
       timeout: config?.timeout || 10000,
-      apiKey: config?.apiKey || userConfig.apiKey
+      apiKey: config?.apiKey || userConfig.apiKey,
     };
 
     this.client = axios.create({
@@ -87,8 +87,8 @@ export class ApiClient {
       timeout: this.config.timeout,
       headers: {
         'Content-Type': 'application/json',
-        ...(this.config.apiKey && { 'Authorization': `Bearer ${this.config.apiKey}` })
-      }
+        ...(this.config.apiKey && { Authorization: `Bearer ${this.config.apiKey}` }),
+      },
     });
 
     // Request interceptor for logging in verbose mode
@@ -99,7 +99,7 @@ export class ApiClient {
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Response interceptor for error handling
@@ -107,14 +107,18 @@ export class ApiClient {
       (response) => response,
       (error) => {
         if (error.response) {
-          console.error(chalk.red(`API Error: ${error.response.status} - ${error.response.data?.message || error.message}`));
+          console.error(
+            chalk.red(
+              `API Error: ${error.response.status} - ${error.response.data?.message || error.message}`,
+            ),
+          );
         } else if (error.request) {
           console.error(chalk.red('Network Error: Unable to connect to API server'));
         } else {
           console.error(chalk.red(`Error: ${error.message}`));
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -176,14 +180,19 @@ export class ApiClient {
   }
 
   async getUtilizationPlan(targetUtilization: number): Promise<UtilizationPlan> {
-    const response: AxiosResponse<UtilizationPlan> = await this.client.get('/api/plan/utilization', {
-      params: { target: targetUtilization }
-    });
+    const response: AxiosResponse<UtilizationPlan> = await this.client.get(
+      '/api/plan/utilization',
+      {
+        params: { target: targetUtilization },
+      },
+    );
     return response.data;
   }
 
   async getPricingSuggestions(): Promise<PricingSuggestion[]> {
-    const response: AxiosResponse<PricingSuggestion[]> = await this.client.get('/api/pricing/suggestions');
+    const response: AxiosResponse<PricingSuggestion[]> = await this.client.get(
+      '/api/pricing/suggestions',
+    );
     return response.data;
   }
 
@@ -195,7 +204,7 @@ export class ApiClient {
     const response: AxiosResponse<Statement> = await this.client.post('/api/statements/generate', {
       ownerId,
       startDate,
-      endDate
+      endDate,
     });
     return response.data;
   }

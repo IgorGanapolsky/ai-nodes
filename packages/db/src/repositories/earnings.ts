@@ -47,7 +47,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
       pagination?: PaginationOptions;
       filters?: Omit<EarningsFilters, 'nodeId'>;
       dateRange?: { start: Date; end: Date };
-    } = {}
+    } = {},
   ): Promise<QueryResult<Earning>> {
     const filters = { ...options.filters, nodeId };
 
@@ -56,7 +56,11 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
         this.table.timestamp,
         options.dateRange.start,
         options.dateRange.end,
-        { filters, pagination: options.pagination, sort: { column: 'timestamp', direction: 'desc' } }
+        {
+          filters,
+          pagination: options.pagination,
+          sort: { column: 'timestamp', direction: 'desc' },
+        },
       );
     }
 
@@ -72,7 +76,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<EarningsFilters, 'isPaid'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Earning>> {
     return this.findMany({
       filters: { ...options.filters, isPaid: false },
@@ -88,17 +92,12 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     options: {
       pagination?: PaginationOptions;
       filters?: EarningsFilters;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Earning>> {
-    return super.findByDateRange(
-      this.table.timestamp,
-      startDate,
-      endDate,
-      {
-        ...options,
-        sort: { column: 'timestamp', direction: 'desc' },
-      }
-    );
+    return super.findByDateRange(this.table.timestamp, startDate, endDate, {
+      ...options,
+      sort: { column: 'timestamp', direction: 'desc' },
+    });
   }
 
   // Mark earnings as paid
@@ -124,14 +123,14 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
   // Get earnings statistics
   async getEarningsReport(
     filters: EarningsFilters = {},
-    dateRange?: { start: Date; end: Date }
+    dateRange?: { start: Date; end: Date },
   ): Promise<EarningsReport> {
     let whereConditions = [];
 
     // Apply filters
     if (filters.nodeId) {
       if (Array.isArray(filters.nodeId)) {
-        whereConditions.push(or(...filters.nodeId.map(id => eq(this.table.nodeId, id))));
+        whereConditions.push(or(...filters.nodeId.map((id) => eq(this.table.nodeId, id))));
       } else {
         whereConditions.push(eq(this.table.nodeId, filters.nodeId));
       }
@@ -141,7 +140,9 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     }
     if (filters.earningType) {
       if (Array.isArray(filters.earningType)) {
-        whereConditions.push(or(...filters.earningType.map(type => eq(this.table.earningType, type))));
+        whereConditions.push(
+          or(...filters.earningType.map((type) => eq(this.table.earningType, type))),
+        );
       } else {
         whereConditions.push(eq(this.table.earningType, filters.earningType));
       }
@@ -155,10 +156,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
       const startTimestamp = Math.floor(dateRange.start.getTime() / 1000);
       const endTimestamp = Math.floor(dateRange.end.getTime() / 1000);
       whereConditions.push(
-        and(
-          gte(this.table.timestamp, startTimestamp),
-          lte(this.table.timestamp, endTimestamp)
-        )
+        and(gte(this.table.timestamp, startTimestamp), lte(this.table.timestamp, endTimestamp)),
       );
     }
 
@@ -179,13 +177,19 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
           total: sum(this.table.amount),
         })
         .from(this.table)
-        .where(whereClause ? and(whereClause, eq(this.table.isPaid, false)) : eq(this.table.isPaid, false)),
+        .where(
+          whereClause
+            ? and(whereClause, eq(this.table.isPaid, false))
+            : eq(this.table.isPaid, false),
+        ),
       this.db
         .select({
           total: sum(this.table.amount),
         })
         .from(this.table)
-        .where(whereClause ? and(whereClause, eq(this.table.isPaid, true)) : eq(this.table.isPaid, true)),
+        .where(
+          whereClause ? and(whereClause, eq(this.table.isPaid, true)) : eq(this.table.isPaid, true),
+        ),
     ]);
 
     // Get breakdown by currency
@@ -230,18 +234,27 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
       totalPaid: paidStats[0]?.total || 0,
       earningsCount: totalStats[0]?.count || 0,
       averageEarning: totalStats[0]?.average || 0,
-      byCurrency: currencyStats.reduce((acc, { currency, total, count, average }) => {
-        acc[currency] = { total: total || 0, count: count || 0, average: average || 0 };
-        return acc;
-      }, {} as Record<string, { total: number; count: number; average: number }>),
-      byType: typeStats.reduce((acc, { type, total, count, average }) => {
-        acc[type] = { total: total || 0, count: count || 0, average: average || 0 };
-        return acc;
-      }, {} as Record<string, { total: number; count: number; average: number }>),
-      byNode: nodeStats.reduce((acc, { nodeId, total, count, average }) => {
-        acc[nodeId] = { total: total || 0, count: count || 0, average: average || 0 };
-        return acc;
-      }, {} as Record<string, { total: number; count: number; average: number }>),
+      byCurrency: currencyStats.reduce(
+        (acc, { currency, total, count, average }) => {
+          acc[currency] = { total: total || 0, count: count || 0, average: average || 0 };
+          return acc;
+        },
+        {} as Record<string, { total: number; count: number; average: number }>,
+      ),
+      byType: typeStats.reduce(
+        (acc, { type, total, count, average }) => {
+          acc[type] = { total: total || 0, count: count || 0, average: average || 0 };
+          return acc;
+        },
+        {} as Record<string, { total: number; count: number; average: number }>,
+      ),
+      byNode: nodeStats.reduce(
+        (acc, { nodeId, total, count, average }) => {
+          acc[nodeId] = { total: total || 0, count: count || 0, average: average || 0 };
+          return acc;
+        },
+        {} as Record<string, { total: number; count: number; average: number }>,
+      ),
     };
   }
 
@@ -250,7 +263,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     interval: 'hour' | 'day' | 'week' | 'month',
     startDate: Date,
     endDate: Date,
-    filters: EarningsFilters = {}
+    filters: EarningsFilters = {},
   ): Promise<TimeSeriesPoint[]> {
     let whereConditions = [];
 
@@ -258,16 +271,13 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     const startTimestamp = Math.floor(startDate.getTime() / 1000);
     const endTimestamp = Math.floor(endDate.getTime() / 1000);
     whereConditions.push(
-      and(
-        gte(this.table.timestamp, startTimestamp),
-        lte(this.table.timestamp, endTimestamp)
-      )
+      and(gte(this.table.timestamp, startTimestamp), lte(this.table.timestamp, endTimestamp)),
     );
 
     // Apply filters
     if (filters.nodeId) {
       if (Array.isArray(filters.nodeId)) {
-        whereConditions.push(or(...filters.nodeId.map(id => eq(this.table.nodeId, id))));
+        whereConditions.push(or(...filters.nodeId.map((id) => eq(this.table.nodeId, id))));
       } else {
         whereConditions.push(eq(this.table.nodeId, filters.nodeId));
       }
@@ -319,7 +329,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
   async getSummaryByPeriod(
     period: 'today' | 'week' | 'month' | 'year',
     currency: string = 'USD',
-    filters: Omit<EarningsFilters, 'currency'> = {}
+    filters: Omit<EarningsFilters, 'currency'> = {},
   ): Promise<EarningsSummary> {
     const now = new Date();
     let startDate: Date;
@@ -349,24 +359,23 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     const endTimestamp = Math.floor(endDate.getTime() / 1000);
 
     let whereConditions = [
-      and(
-        gte(this.table.timestamp, startTimestamp),
-        lte(this.table.timestamp, endTimestamp)
-      ),
+      and(gte(this.table.timestamp, startTimestamp), lte(this.table.timestamp, endTimestamp)),
       eq(this.table.currency, currency),
     ];
 
     // Apply additional filters
     if (filters.nodeId) {
       if (Array.isArray(filters.nodeId)) {
-        whereConditions.push(or(...filters.nodeId.map(id => eq(this.table.nodeId, id))));
+        whereConditions.push(or(...filters.nodeId.map((id) => eq(this.table.nodeId, id))));
       } else {
         whereConditions.push(eq(this.table.nodeId, filters.nodeId));
       }
     }
     if (filters.earningType) {
       if (Array.isArray(filters.earningType)) {
-        whereConditions.push(or(...filters.earningType.map(type => eq(this.table.earningType, type))));
+        whereConditions.push(
+          or(...filters.earningType.map((type) => eq(this.table.earningType, type))),
+        );
       } else {
         whereConditions.push(eq(this.table.earningType, filters.earningType));
       }
@@ -396,18 +405,17 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
   async getTopEarningNodes(
     limit: number = 10,
     dateRange?: { start: Date; end: Date },
-    currency: string = 'USD'
-  ): Promise<Array<{ nodeId: string; totalEarnings: number; earningsCount: number; averageEarning: number }>> {
+    currency: string = 'USD',
+  ): Promise<
+    Array<{ nodeId: string; totalEarnings: number; earningsCount: number; averageEarning: number }>
+  > {
     let whereConditions = [eq(this.table.currency, currency)];
 
     if (dateRange) {
       const startTimestamp = Math.floor(dateRange.start.getTime() / 1000);
       const endTimestamp = Math.floor(dateRange.end.getTime() / 1000);
       whereConditions.push(
-        and(
-          gte(this.table.timestamp, startTimestamp),
-          lte(this.table.timestamp, endTimestamp)
-        )
+        and(gte(this.table.timestamp, startTimestamp), lte(this.table.timestamp, endTimestamp)),
       );
     }
 
@@ -438,12 +446,14 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
   async getProjectedEarnings(
     nodeId: string,
     days: number = 30,
-    projectionDays: number = 30
+    projectionDays: number = 30,
   ): Promise<{ dailyAverage: number; projectedTotal: number; confidence: number }> {
     const endDate = new Date();
     const startDate = new Date(endDate.getTime() - days * 24 * 60 * 60 * 1000);
 
-    const historicalData = await this.findByNode(nodeId, { dateRange: { start: startDate, end: endDate } });
+    const historicalData = await this.findByNode(nodeId, {
+      dateRange: { start: startDate, end: endDate },
+    });
 
     if (historicalData.data.length === 0) {
       return { dailyAverage: 0, projectedTotal: 0, confidence: 0 };
@@ -455,15 +465,17 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
 
     // Simple confidence calculation based on data consistency
     const dailyEarnings = new Map<string, number>();
-    historicalData.data.forEach(earning => {
+    historicalData.data.forEach((earning) => {
       const date = new Date(earning.timestamp * 1000).toDateString();
       dailyEarnings.set(date, (dailyEarnings.get(date) || 0) + earning.amount);
     });
 
     const earningsArray = Array.from(dailyEarnings.values());
-    const variance = earningsArray.reduce((sum, value) => sum + Math.pow(value - dailyAverage, 2), 0) / earningsArray.length;
+    const variance =
+      earningsArray.reduce((sum, value) => sum + Math.pow(value - dailyAverage, 2), 0) /
+      earningsArray.length;
     const standardDeviation = Math.sqrt(variance);
-    const confidence = Math.max(0, Math.min(1, 1 - (standardDeviation / dailyAverage)));
+    const confidence = Math.max(0, Math.min(1, 1 - standardDeviation / dailyAverage));
 
     return {
       dailyAverage,

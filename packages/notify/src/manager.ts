@@ -33,15 +33,9 @@ export class NotificationManager {
     };
 
     // Initialize notification services
-    this.discord = new DiscordNotifier(
-      config.discord?.webhookUrl,
-      config.discord || {}
-    );
+    this.discord = new DiscordNotifier(config.discord?.webhookUrl, config.discord || {});
 
-    this.email = new EmailNotifier(
-      config.email?.resendApiKey,
-      config.email || {}
-    );
+    this.email = new EmailNotifier(config.email?.resendApiKey, config.email || {});
   }
 
   /**
@@ -55,7 +49,7 @@ export class NotificationManager {
       channels?: NotificationChannel[];
       override?: boolean;
       severity?: 'low' | 'medium' | 'high' | 'critical';
-    } = {}
+    } = {},
   ): Promise<NotificationBatchResult> {
     const ownerWithPrefs = this.ensureOwnerPreferences(owner);
     const request: NotificationRequest = {
@@ -130,7 +124,7 @@ export class NotificationManager {
   public async sendStatement(
     owner: Owner,
     statement: StatementSummary,
-    options: { override?: boolean } = {}
+    options: { override?: boolean } = {},
   ): Promise<NotificationBatchResult> {
     const data: StatementNotificationData = {
       statement,
@@ -150,7 +144,7 @@ export class NotificationManager {
     alert: Alert,
     nodeName: string,
     nodeType: string,
-    options: { override?: boolean } = {}
+    options: { override?: boolean } = {},
   ): Promise<NotificationBatchResult> {
     const data: AlertNotificationData = {
       alert,
@@ -174,7 +168,7 @@ export class NotificationManager {
     nodeType: string,
     oldStatus: string,
     newStatus: string,
-    options: { override?: boolean } = {}
+    options: { override?: boolean } = {},
   ): Promise<NotificationBatchResult> {
     const data: NodeStatusNotificationData = {
       nodeId,
@@ -197,7 +191,7 @@ export class NotificationManager {
   public async sendWelcome(
     owner: Owner,
     nodeCount: number = 0,
-    options: { override?: boolean } = {}
+    options: { override?: boolean } = {},
   ): Promise<NotificationBatchResult> {
     const data: WelcomeNotificationData = {
       ownerName: owner.displayName,
@@ -212,7 +206,7 @@ export class NotificationManager {
    */
   public updateOwnerPreferences(
     owner: Owner,
-    preferences: Partial<NotificationPreferences>
+    preferences: Partial<NotificationPreferences>,
   ): OwnerWithPreferences {
     const ownerWithPrefs = this.ensureOwnerPreferences(owner);
     ownerWithPrefs.notificationPreferences = {
@@ -226,9 +220,7 @@ export class NotificationManager {
   /**
    * Get notification statistics for an owner
    */
-  public async getNotificationStats(
-    owner: Owner
-  ): Promise<{
+  public async getNotificationStats(owner: Owner): Promise<{
     totalSent: number;
     byChannel: Record<NotificationChannel, number>;
     byType: Record<NotificationType, number>;
@@ -301,7 +293,7 @@ export class NotificationManager {
    * Process a notification request
    */
   private async processNotificationRequest(
-    request: NotificationRequest
+    request: NotificationRequest,
   ): Promise<NotificationBatchResult> {
     const results: NotificationResult[] = [];
     const { owner, type, data, channels, override } = request;
@@ -338,8 +330,8 @@ export class NotificationManager {
       results.push(result);
     }
 
-    const totalSent = results.filter(r => r.success).length;
-    const totalFailed = results.filter(r => !r.success).length;
+    const totalSent = results.filter((r) => r.success).length;
+    const totalFailed = results.filter((r) => !r.success).length;
 
     return {
       owner,
@@ -357,7 +349,7 @@ export class NotificationManager {
     owner: Owner,
     type: NotificationType,
     data: NotificationData,
-    channel: NotificationChannel
+    channel: NotificationChannel,
   ): Promise<NotificationResult> {
     const timestamp = new Date();
 
@@ -400,7 +392,7 @@ export class NotificationManager {
   private async sendDiscordNotification(
     owner: Owner,
     type: NotificationType,
-    data: NotificationData
+    data: NotificationData,
   ): Promise<void> {
     const webhook = owner.discordWebhook;
     if (!webhook) {
@@ -416,7 +408,7 @@ export class NotificationManager {
           owner,
           statementData.period,
           statementData.totalEarnings,
-          statementData.nodeCount
+          statementData.nodeCount,
         );
         break;
 
@@ -428,7 +420,7 @@ export class NotificationManager {
           alertData.alert.message,
           alertData.alert.severity as any,
           alertData.nodeName,
-          alertData.nodeType
+          alertData.nodeType,
         );
         break;
 
@@ -440,7 +432,7 @@ export class NotificationManager {
           statusData.nodeName,
           statusData.nodeType,
           statusData.oldStatus,
-          statusData.newStatus
+          statusData.newStatus,
         );
         break;
 
@@ -463,7 +455,7 @@ export class NotificationManager {
   private async sendEmailNotification(
     owner: Owner,
     type: NotificationType,
-    data: NotificationData
+    data: NotificationData,
   ): Promise<void> {
     if (!this.email.isAvailable()) {
       throw new NotificationError('Email service not configured', 'email');
@@ -488,7 +480,7 @@ export class NotificationManager {
           statusData.nodeName,
           statusData.nodeType,
           statusData.oldStatus,
-          statusData.newStatus
+          statusData.newStatus,
         );
         break;
 
@@ -501,7 +493,7 @@ export class NotificationManager {
         await this.email.send(
           owner.email,
           `${type} Notification`,
-          `<p>Notification data:</p><pre>${JSON.stringify(data, null, 2)}</pre>`
+          `<p>Notification data:</p><pre>${JSON.stringify(data, null, 2)}</pre>`,
         );
     }
   }

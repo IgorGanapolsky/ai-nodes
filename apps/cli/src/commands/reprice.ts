@@ -33,7 +33,7 @@ function createSuggestCommand(): Command {
 
           // Filter by device if specified
           const filteredSuggestions = options.device
-            ? suggestions.filter(s => s.deviceId === options.device)
+            ? suggestions.filter((s) => s.deviceId === options.device)
             : suggestions;
 
           spinner.succeed(`Generated ${filteredSuggestions.length} pricing suggestion(s)`);
@@ -49,56 +49,79 @@ function createSuggestCommand(): Command {
           }
 
           // Display suggestions in a table
-          console.log('\n' + createTable(
-            [
-              { title: 'Device ID', key: 'deviceIdShort' },
-              { title: 'Current Price', key: 'currentPrice', color: formatters.currency },
-              { title: 'Suggested Price', key: 'suggestedPrice', color: formatters.currency },
-              { title: 'Change', key: 'priceChange', color: (value: string) => {
-                const num = parseFloat(value.replace(/[^-\d.]/g, ''));
-                return num > 0 ? chalk.green(value) : chalk.red(value);
-              }},
-              { title: 'Reason', key: 'reason' }
-            ],
-            filteredSuggestions.map(suggestion => ({
-              ...suggestion,
-              deviceIdShort: suggestion.deviceId.substring(0, 8) + '...',
-              priceChange: `${suggestion.suggestedPrice > suggestion.currentPrice ? '+' : ''}${formatters.currency(suggestion.suggestedPrice - suggestion.currentPrice)}`
-            })),
-            { title: 'Pricing Suggestions' }
-          ));
+          console.log(
+            '\n' +
+              createTable(
+                [
+                  { title: 'Device ID', key: 'deviceIdShort' },
+                  { title: 'Current Price', key: 'currentPrice', color: formatters.currency },
+                  { title: 'Suggested Price', key: 'suggestedPrice', color: formatters.currency },
+                  {
+                    title: 'Change',
+                    key: 'priceChange',
+                    color: (value: string) => {
+                      const num = parseFloat(value.replace(/[^-\d.]/g, ''));
+                      return num > 0 ? chalk.green(value) : chalk.red(value);
+                    },
+                  },
+                  { title: 'Reason', key: 'reason' },
+                ],
+                filteredSuggestions.map((suggestion) => ({
+                  ...suggestion,
+                  deviceIdShort: suggestion.deviceId.substring(0, 8) + '...',
+                  priceChange: `${suggestion.suggestedPrice > suggestion.currentPrice ? '+' : ''}${formatters.currency(suggestion.suggestedPrice - suggestion.currentPrice)}`,
+                })),
+                { title: 'Pricing Suggestions' },
+              ),
+          );
 
           // Show expected impact summary
           console.log('\n' + chalk.bold.cyan('📊 Impact Summary:'));
           filteredSuggestions.forEach((suggestion, index) => {
-            console.log(`${index + 1}. Device ${suggestion.deviceId.substring(0, 8)}: ${suggestion.expectedImpact}`);
+            console.log(
+              `${index + 1}. Device ${suggestion.deviceId.substring(0, 8)}: ${suggestion.expectedImpact}`,
+            );
           });
 
           // Show statistics
-          const increaseCount = filteredSuggestions.filter(s => s.suggestedPrice > s.currentPrice).length;
-          const decreaseCount = filteredSuggestions.filter(s => s.suggestedPrice < s.currentPrice).length;
-          const totalPotentialIncrease = filteredSuggestions.reduce((sum, s) =>
-            sum + Math.max(0, s.suggestedPrice - s.currentPrice), 0
+          const increaseCount = filteredSuggestions.filter(
+            (s) => s.suggestedPrice > s.currentPrice,
+          ).length;
+          const decreaseCount = filteredSuggestions.filter(
+            (s) => s.suggestedPrice < s.currentPrice,
+          ).length;
+          const totalPotentialIncrease = filteredSuggestions.reduce(
+            (sum, s) => sum + Math.max(0, s.suggestedPrice - s.currentPrice),
+            0,
           );
-          const totalPotentialDecrease = filteredSuggestions.reduce((sum, s) =>
-            sum + Math.min(0, s.suggestedPrice - s.currentPrice), 0
+          const totalPotentialDecrease = filteredSuggestions.reduce(
+            (sum, s) => sum + Math.min(0, s.suggestedPrice - s.currentPrice),
+            0,
           );
 
           console.log('\n' + chalk.bold.yellow('📈 Pricing Analysis:'));
           console.log(`• Price increases suggested: ${chalk.green(increaseCount)} devices`);
           console.log(`• Price decreases suggested: ${chalk.red(decreaseCount)} devices`);
-          console.log(`• Total potential daily revenue increase: ${chalk.green(formatters.currency(totalPotentialIncrease))}`);
+          console.log(
+            `• Total potential daily revenue increase: ${chalk.green(formatters.currency(totalPotentialIncrease))}`,
+          );
           if (totalPotentialDecrease < 0) {
-            console.log(`• Total potential daily revenue decrease: ${chalk.red(formatters.currency(Math.abs(totalPotentialDecrease)))}`);
+            console.log(
+              `• Total potential daily revenue decrease: ${chalk.red(formatters.currency(Math.abs(totalPotentialDecrease)))}`,
+            );
           }
-          console.log(`• Net daily revenue impact: ${formatters.currency(totalPotentialIncrease + totalPotentialDecrease)}`);
-
+          console.log(
+            `• Net daily revenue impact: ${formatters.currency(totalPotentialIncrease + totalPotentialDecrease)}`,
+          );
         } catch (error) {
           spinner.fail('Failed to generate pricing suggestions');
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error generating suggestions:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error generating suggestions:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });
@@ -121,7 +144,7 @@ function createApplyCommand(): Command {
 
           // Filter by device if specified
           if (options.device) {
-            suggestions = suggestions.filter(s => s.deviceId === options.device);
+            suggestions = suggestions.filter((s) => s.deviceId === options.device);
           }
 
           spinner.succeed(`Found ${suggestions.length} pricing suggestion(s)`);
@@ -143,10 +166,10 @@ function createApplyCommand(): Command {
           selectedSuggestions = suggestions;
         } else {
           // Interactive selection
-          const choices = suggestions.map(s => ({
+          const choices = suggestions.map((s) => ({
             name: `${s.deviceId.substring(0, 8)}... (${formatters.currency(s.currentPrice)} → ${formatters.currency(s.suggestedPrice)}) - ${s.reason}`,
             value: s,
-            checked: false
+            checked: false,
           }));
 
           const { selected } = await inquirer.prompt([
@@ -160,32 +183,41 @@ function createApplyCommand(): Command {
                   return 'Please select at least one pricing change.';
                 }
                 return true;
-              }
-            }
+              },
+            },
           ]);
 
           selectedSuggestions = selected;
         }
 
         // Show what will be changed
-        console.log('\n' + createTable(
-          [
-            { title: 'Device ID', key: 'deviceIdShort' },
-            { title: 'Current', key: 'currentPrice', color: formatters.currency },
-            { title: 'New Price', key: 'suggestedPrice', color: formatters.currency },
-            { title: 'Change', key: 'change', color: (value: string) => {
-              const num = parseFloat(value.replace(/[^-\d.]/g, ''));
-              return num > 0 ? chalk.green(value) : chalk.red(value);
-            }},
-            { title: 'Reason', key: 'reason' }
-          ],
-          selectedSuggestions.map(s => ({
-            ...s,
-            deviceIdShort: s.deviceId.substring(0, 8) + '...',
-            change: (s.suggestedPrice > s.currentPrice ? '+' : '') + (s.suggestedPrice - s.currentPrice).toFixed(2)
-          })),
-          { title: options.dryRun ? 'Pricing Changes (DRY RUN)' : 'Pricing Changes to Apply' }
-        ));
+        console.log(
+          '\n' +
+            createTable(
+              [
+                { title: 'Device ID', key: 'deviceIdShort' },
+                { title: 'Current', key: 'currentPrice', color: formatters.currency },
+                { title: 'New Price', key: 'suggestedPrice', color: formatters.currency },
+                {
+                  title: 'Change',
+                  key: 'change',
+                  color: (value: string) => {
+                    const num = parseFloat(value.replace(/[^-\d.]/g, ''));
+                    return num > 0 ? chalk.green(value) : chalk.red(value);
+                  },
+                },
+                { title: 'Reason', key: 'reason' },
+              ],
+              selectedSuggestions.map((s) => ({
+                ...s,
+                deviceIdShort: s.deviceId.substring(0, 8) + '...',
+                change:
+                  (s.suggestedPrice > s.currentPrice ? '+' : '') +
+                  (s.suggestedPrice - s.currentPrice).toFixed(2),
+              })),
+              { title: options.dryRun ? 'Pricing Changes (DRY RUN)' : 'Pricing Changes to Apply' },
+            ),
+        );
 
         if (options.dryRun) {
           console.log(chalk.yellow('\n🔍 DRY RUN: No changes were applied.'));
@@ -194,8 +226,9 @@ function createApplyCommand(): Command {
 
         // Confirmation
         if (!options.force) {
-          const totalRevenueDelta = selectedSuggestions.reduce((sum, s) =>
-            sum + (s.suggestedPrice - s.currentPrice), 0
+          const totalRevenueDelta = selectedSuggestions.reduce(
+            (sum, s) => sum + (s.suggestedPrice - s.currentPrice),
+            0,
           );
 
           const { confirm } = await inquirer.prompt([
@@ -203,8 +236,8 @@ function createApplyCommand(): Command {
               type: 'confirm',
               name: 'confirm',
               message: `Apply ${selectedSuggestions.length} pricing changes? (Net daily revenue impact: ${formatters.currency(totalRevenueDelta)})`,
-              default: false
-            }
+              default: false,
+            },
           ]);
 
           if (!confirm) {
@@ -217,33 +250,41 @@ function createApplyCommand(): Command {
         const applySpinner = ora('Applying pricing changes...').start();
 
         try {
-          const changes = selectedSuggestions.map(s => ({
+          const changes = selectedSuggestions.map((s) => ({
             deviceId: s.deviceId,
-            newPrice: s.suggestedPrice
+            newPrice: s.suggestedPrice,
           }));
 
           await api.applyPricingChanges(changes);
-          applySpinner.succeed(chalk.green(`Successfully applied ${changes.length} pricing change(s)!`));
+          applySpinner.succeed(
+            chalk.green(`Successfully applied ${changes.length} pricing change(s)!`),
+          );
 
           // Show summary
-          const totalIncrease = selectedSuggestions.reduce((sum, s) =>
-            sum + Math.max(0, s.suggestedPrice - s.currentPrice), 0
+          const totalIncrease = selectedSuggestions.reduce(
+            (sum, s) => sum + Math.max(0, s.suggestedPrice - s.currentPrice),
+            0,
           );
-          const totalDecrease = selectedSuggestions.reduce((sum, s) =>
-            sum + Math.min(0, s.suggestedPrice - s.currentPrice), 0
+          const totalDecrease = selectedSuggestions.reduce(
+            (sum, s) => sum + Math.min(0, s.suggestedPrice - s.currentPrice),
+            0,
           );
 
           console.log('\n' + chalk.bold.green('✅ Pricing Changes Applied:'));
           console.log(`• ${selectedSuggestions.length} devices repriced`);
-          console.log(`• Daily revenue impact: ${formatters.currency(totalIncrease + totalDecrease)}`);
+          console.log(
+            `• Daily revenue impact: ${formatters.currency(totalIncrease + totalDecrease)}`,
+          );
           console.log(`• Changes will take effect immediately`);
-
         } catch (error) {
           applySpinner.fail('Failed to apply pricing changes');
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error applying pricing changes:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error applying pricing changes:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });
@@ -268,7 +309,7 @@ function createAnalyzeCommand(): Command {
         try {
           const devices = await api.getDevices(options.device ? undefined : undefined);
           const filteredDevices = options.device
-            ? devices.filter(d => d.id === options.device)
+            ? devices.filter((d) => d.id === options.device)
             : devices;
 
           if (filteredDevices.length === 0) {
@@ -279,26 +320,28 @@ function createAnalyzeCommand(): Command {
           spinner.succeed('Pricing analysis complete');
 
           // Calculate pricing metrics
-          const deviceMetrics = filteredDevices.map(device => {
-            const metrics = device.metrics;
-            if (!metrics) return null;
+          const deviceMetrics = filteredDevices
+            .map((device) => {
+              const metrics = device.metrics;
+              if (!metrics) return null;
 
-            const revenuePerDay = metrics.grossRevenue24h;
-            const weeklyRevenue = metrics.grossRevenue7d;
-            const utilization = metrics.utilization;
+              const revenuePerDay = metrics.grossRevenue24h;
+              const weeklyRevenue = metrics.grossRevenue7d;
+              const utilization = metrics.utilization;
 
-            // Estimate pricing efficiency
-            const revenuePerUtilizationPoint = revenuePerDay / Math.max(utilization, 1);
+              // Estimate pricing efficiency
+              const revenuePerUtilizationPoint = revenuePerDay / Math.max(utilization, 1);
 
-            return {
-              device,
-              revenuePerDay,
-              weeklyRevenue,
-              utilization,
-              revenuePerUtilizationPoint,
-              efficiency: utilization > 0 ? revenuePerDay / utilization : 0
-            };
-          }).filter(m => m !== null);
+              return {
+                device,
+                revenuePerDay,
+                weeklyRevenue,
+                utilization,
+                revenuePerUtilizationPoint,
+                efficiency: utilization > 0 ? revenuePerDay / utilization : 0,
+              };
+            })
+            .filter((m) => m !== null);
 
           if (deviceMetrics.length === 0) {
             console.log(chalk.yellow('No device metrics available for analysis.'));
@@ -307,84 +350,111 @@ function createAnalyzeCommand(): Command {
 
           // Overall performance
           const totalDailyRevenue = deviceMetrics.reduce((sum, m) => sum + m!.revenuePerDay, 0);
-          const averageUtilization = deviceMetrics.reduce((sum, m) => sum + m!.utilization, 0) / deviceMetrics.length;
-          const averageEfficiency = deviceMetrics.reduce((sum, m) => sum + m!.efficiency, 0) / deviceMetrics.length;
+          const averageUtilization =
+            deviceMetrics.reduce((sum, m) => sum + m!.utilization, 0) / deviceMetrics.length;
+          const averageEfficiency =
+            deviceMetrics.reduce((sum, m) => sum + m!.efficiency, 0) / deviceMetrics.length;
 
           console.log('\n' + chalk.bold.cyan('📊 Pricing Performance Overview:'));
           console.log(`• Total daily revenue: ${formatters.currency(totalDailyRevenue)}`);
           console.log(`• Average utilization: ${formatters.percentage(averageUtilization)}`);
-          console.log(`• Average pricing efficiency: ${averageEfficiency.toFixed(2)} $/% utilization`);
+          console.log(
+            `• Average pricing efficiency: ${averageEfficiency.toFixed(2)} $/% utilization`,
+          );
 
           // Device performance breakdown
-          console.log('\n' + createTable(
-            [
-              { title: 'Device', key: 'deviceName' },
-              { title: 'Daily Revenue', key: 'revenuePerDay', color: formatters.currency },
-              { title: 'Utilization', key: 'utilization', color: formatters.percentage },
-              { title: 'Efficiency', key: 'efficiency' },
-              { title: 'Performance', key: 'performance', color: (value: string) => {
-                if (value.includes('High')) return chalk.green(value);
-                if (value.includes('Low')) return chalk.red(value);
-                return chalk.yellow(value);
-              }}
-            ],
-            deviceMetrics.map(m => {
-              const efficiency = m!.efficiency;
-              let performance = 'Medium';
+          console.log(
+            '\n' +
+              createTable(
+                [
+                  { title: 'Device', key: 'deviceName' },
+                  { title: 'Daily Revenue', key: 'revenuePerDay', color: formatters.currency },
+                  { title: 'Utilization', key: 'utilization', color: formatters.percentage },
+                  { title: 'Efficiency', key: 'efficiency' },
+                  {
+                    title: 'Performance',
+                    key: 'performance',
+                    color: (value: string) => {
+                      if (value.includes('High')) return chalk.green(value);
+                      if (value.includes('Low')) return chalk.red(value);
+                      return chalk.yellow(value);
+                    },
+                  },
+                ],
+                deviceMetrics.map((m) => {
+                  const efficiency = m!.efficiency;
+                  let performance = 'Medium';
 
-              if (efficiency > averageEfficiency * 1.2) {
-                performance = 'High';
-              } else if (efficiency < averageEfficiency * 0.8) {
-                performance = 'Low';
-              }
+                  if (efficiency > averageEfficiency * 1.2) {
+                    performance = 'High';
+                  } else if (efficiency < averageEfficiency * 0.8) {
+                    performance = 'Low';
+                  }
 
-              return {
-                deviceName: m!.device.name,
-                revenuePerDay: m!.revenuePerDay,
-                utilization: m!.utilization,
-                efficiency: efficiency.toFixed(2),
-                performance
-              };
-            }),
-            { title: 'Device Pricing Performance' }
-          ));
+                  return {
+                    deviceName: m!.device.name,
+                    revenuePerDay: m!.revenuePerDay,
+                    utilization: m!.utilization,
+                    efficiency: efficiency.toFixed(2),
+                    performance,
+                  };
+                }),
+                { title: 'Device Pricing Performance' },
+              ),
+          );
 
           // Pricing recommendations based on performance
           const recommendations = [];
 
-          const lowPerformers = deviceMetrics.filter(m => m!.efficiency < averageEfficiency * 0.8);
-          const highPerformers = deviceMetrics.filter(m => m!.efficiency > averageEfficiency * 1.2);
-          const underutilized = deviceMetrics.filter(m => m!.utilization < 50);
-          const overutilized = deviceMetrics.filter(m => m!.utilization > 90);
+          const lowPerformers = deviceMetrics.filter(
+            (m) => m!.efficiency < averageEfficiency * 0.8,
+          );
+          const highPerformers = deviceMetrics.filter(
+            (m) => m!.efficiency > averageEfficiency * 1.2,
+          );
+          const underutilized = deviceMetrics.filter((m) => m!.utilization < 50);
+          const overutilized = deviceMetrics.filter((m) => m!.utilization > 90);
 
           if (lowPerformers.length > 0) {
-            recommendations.push(`${lowPerformers.length} devices are underperforming - consider lowering prices to increase utilization`);
+            recommendations.push(
+              `${lowPerformers.length} devices are underperforming - consider lowering prices to increase utilization`,
+            );
           }
 
           if (highPerformers.length > 0) {
-            recommendations.push(`${highPerformers.length} devices are high-performing - consider testing higher prices`);
+            recommendations.push(
+              `${highPerformers.length} devices are high-performing - consider testing higher prices`,
+            );
           }
 
           if (underutilized.length > 0) {
-            recommendations.push(`${underutilized.length} devices have low utilization (<50%) - reduce prices or improve marketing`);
+            recommendations.push(
+              `${underutilized.length} devices have low utilization (<50%) - reduce prices or improve marketing`,
+            );
           }
 
           if (overutilized.length > 0) {
-            recommendations.push(`${overutilized.length} devices are highly utilized (>90%) - consider increasing prices`);
+            recommendations.push(
+              `${overutilized.length} devices are highly utilized (>90%) - consider increasing prices`,
+            );
           }
 
           // Market positioning analysis
           const revenueRange = {
-            min: Math.min(...deviceMetrics.map(m => m!.revenuePerDay)),
-            max: Math.max(...deviceMetrics.map(m => m!.revenuePerDay)),
-            median: deviceMetrics.sort((a, b) => a!.revenuePerDay - b!.revenuePerDay)[Math.floor(deviceMetrics.length / 2)]!.revenuePerDay
+            min: Math.min(...deviceMetrics.map((m) => m!.revenuePerDay)),
+            max: Math.max(...deviceMetrics.map((m) => m!.revenuePerDay)),
+            median: deviceMetrics.sort((a, b) => a!.revenuePerDay - b!.revenuePerDay)[
+              Math.floor(deviceMetrics.length / 2)
+            ]!.revenuePerDay,
           };
 
           console.log('\n' + chalk.bold.yellow('💰 Revenue Distribution:'));
           console.log(`• Minimum daily revenue: ${formatters.currency(revenueRange.min)}`);
           console.log(`• Median daily revenue: ${formatters.currency(revenueRange.median)}`);
           console.log(`• Maximum daily revenue: ${formatters.currency(revenueRange.max)}`);
-          console.log(`• Revenue spread: ${formatters.currency(revenueRange.max - revenueRange.min)}`);
+          console.log(
+            `• Revenue spread: ${formatters.currency(revenueRange.max - revenueRange.min)}`,
+          );
 
           if (recommendations.length > 0) {
             console.log('\n' + chalk.bold.blue('💡 Pricing Recommendations:'));
@@ -398,7 +468,7 @@ function createAnalyzeCommand(): Command {
 
           const totalPotentialIncrease = overutilized.reduce((sum, m) => {
             // Estimate 10% price increase potential for overutilized devices
-            return sum + (m!.revenuePerDay * 0.1);
+            return sum + m!.revenuePerDay * 0.1;
           }, 0);
 
           const totalPotentialFromUnderutilized = underutilized.reduce((sum, m) => {
@@ -409,16 +479,24 @@ function createAnalyzeCommand(): Command {
             return sum + Math.max(0, potentialRevenue - currentRevenue);
           }, 0);
 
-          console.log(`• Potential revenue from price optimization: ${formatters.currency(totalPotentialIncrease)}/day`);
-          console.log(`• Potential revenue from utilization improvements: ${formatters.currency(totalPotentialFromUnderutilized)}/day`);
-          console.log(`• Total optimization potential: ${formatters.currency(totalPotentialIncrease + totalPotentialFromUnderutilized)}/day`);
-
+          console.log(
+            `• Potential revenue from price optimization: ${formatters.currency(totalPotentialIncrease)}/day`,
+          );
+          console.log(
+            `• Potential revenue from utilization improvements: ${formatters.currency(totalPotentialFromUnderutilized)}/day`,
+          );
+          console.log(
+            `• Total optimization potential: ${formatters.currency(totalPotentialIncrease + totalPotentialFromUnderutilized)}/day`,
+          );
         } catch (error) {
           spinner.fail('Failed to analyze pricing performance');
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error analyzing pricing:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error analyzing pricing:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });

@@ -34,7 +34,12 @@ async function demonstrateConnectors() {
 
   // Test different networks
   console.log('\n6. Testing different networks...');
-  const networks = [ConnectorNetwork.NOSANA, ConnectorNetwork.RENDER, ConnectorNetwork.GRASS, ConnectorNetwork.NATIX];
+  const networks = [
+    ConnectorNetwork.NOSANA,
+    ConnectorNetwork.RENDER,
+    ConnectorNetwork.GRASS,
+    ConnectorNetwork.NATIX,
+  ];
 
   for (const network of networks) {
     const connector = createConnector(network);

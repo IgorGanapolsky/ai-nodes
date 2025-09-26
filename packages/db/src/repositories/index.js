@@ -16,39 +16,39 @@ import { AlertRepository } from './alert';
 import { RevenueShareRepository } from './revenue-share';
 // Factory function to create repository instances
 export function createRepositories() {
-    return {
-        users: new UserRepository(),
-        nodes: new NodeRepository(),
-        earnings: new EarningsRepository(),
-        metrics: new MetricsRepository(),
-        alerts: new AlertRepository(),
-        revenueShares: new RevenueShareRepository(),
-    };
+  return {
+    users: new UserRepository(),
+    nodes: new NodeRepository(),
+    earnings: new EarningsRepository(),
+    metrics: new MetricsRepository(),
+    alerts: new AlertRepository(),
+    revenueShares: new RevenueShareRepository(),
+  };
 }
 // Singleton instance
 let repositories = null;
 export function getRepositories() {
-    if (!repositories) {
-        repositories = createRepositories();
-    }
-    return repositories;
+  if (!repositories) {
+    repositories = createRepositories();
+  }
+  return repositories;
 }
 // Individual repository getters for convenience
 export function getUserRepository() {
-    return getRepositories().users;
+  return getRepositories().users;
 }
 export function getNodeRepository() {
-    return getRepositories().nodes;
+  return getRepositories().nodes;
 }
 export function getEarningsRepository() {
-    return getRepositories().earnings;
+  return getRepositories().earnings;
 }
 export function getMetricsRepository() {
-    return getRepositories().metrics;
+  return getRepositories().metrics;
 }
 export function getAlertRepository() {
-    return getRepositories().alerts;
+  return getRepositories().alerts;
 }
 export function getRevenueShareRepository() {
-    return getRepositories().revenueShares;
+  return getRepositories().revenueShares;
 }

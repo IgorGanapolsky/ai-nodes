@@ -13,7 +13,7 @@ export enum ConnectorNetwork {
   NOSANA = 'nosana',
   RENDER = 'render',
   GRASS = 'grass',
-  NATIX = 'natix'
+  NATIX = 'natix',
 }
 
 /**
@@ -100,8 +100,8 @@ export class ConnectorFactory {
    * @returns Map of network name to connector instance
    */
   static createAllConnectors(): Map<ConnectorNetwork, IConnector> {
-    const configs: ConnectorConfig[] = ConnectorFactory.getSupportedNetworks().map(network => ({
-      network
+    const configs: ConnectorConfig[] = ConnectorFactory.getSupportedNetworks().map((network) => ({
+      network,
     }));
 
     return ConnectorFactory.createMultipleConnectors(configs);
@@ -116,7 +116,7 @@ export class ConnectorFactory {
  */
 export function createConnector(
   network: ConnectorNetwork,
-  options: Omit<ConnectorConfig, 'network'> = {}
+  options: Omit<ConnectorConfig, 'network'> = {},
 ): IConnector {
   return ConnectorFactory.createConnector({ network, ...options });
 }

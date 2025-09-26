@@ -25,17 +25,17 @@ export const useEarnings = (nodeId?: string, timeRange: string = '7d') => {
     } catch (error) {
       setLoading({
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     } finally {
-      setLoading(prev => ({ ...prev, isLoading: false }));
+      setLoading((prev) => ({ ...prev, isLoading: false }));
     }
   }, [nodeId, timeRange]);
 
   const groupEarningsByTime = (data: EarningsData[], range: string): ChartData => {
     const grouped = new Map<string, number>();
 
-    data.forEach(earning => {
+    data.forEach((earning) => {
       const date = new Date(earning.timestamp);
       let key: string;
 
@@ -77,7 +77,7 @@ export const useEarnings = (nodeId?: string, timeRange: string = '7d') => {
   // WebSocket real-time updates
   useEffect(() => {
     const unsubscribe = webSocketService.subscribe('earnings_update', (data: EarningsData) => {
-      setEarnings(prev => {
+      setEarnings((prev) => {
         const newEarnings = [...prev, data];
         // Re-transform data for charts
         const groupedData = groupEarningsByTime(newEarnings, timeRange);
@@ -95,7 +95,7 @@ export const useEarnings = (nodeId?: string, timeRange: string = '7d') => {
 
   const totalEarnings = earnings.reduce((sum, earning) => sum + earning.amount, 0);
   const todayEarnings = earnings
-    .filter(earning => {
+    .filter((earning) => {
       const earningDate = new Date(earning.timestamp);
       const today = new Date();
       return earningDate.toDateString() === today.toDateString();
@@ -103,7 +103,7 @@ export const useEarnings = (nodeId?: string, timeRange: string = '7d') => {
     .reduce((sum, earning) => sum + earning.amount, 0);
 
   const yesterdayEarnings = earnings
-    .filter(earning => {
+    .filter((earning) => {
       const earningDate = new Date(earning.timestamp);
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
@@ -111,9 +111,8 @@ export const useEarnings = (nodeId?: string, timeRange: string = '7d') => {
     })
     .reduce((sum, earning) => sum + earning.amount, 0);
 
-  const earningsGrowth = yesterdayEarnings > 0
-    ? ((todayEarnings - yesterdayEarnings) / yesterdayEarnings) * 100
-    : 0;
+  const earningsGrowth =
+    yesterdayEarnings > 0 ? ((todayEarnings - yesterdayEarnings) / yesterdayEarnings) * 100 : 0;
 
   return {
     earnings,

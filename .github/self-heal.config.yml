@@ -35,22 +35,22 @@ healing:
       enabled: false
       webhook_url_secret: SLACK_WEBHOOK_URL
       channels:
-        - "#ci-alerts"
-        - "#engineering"
+        - '#ci-alerts'
+        - '#engineering'
 
     email:
       enabled: false
       recipients:
-        - "devops@example.com"
-        - "engineering@example.com"
+        - 'devops@example.com'
+        - 'engineering@example.com'
 
     github:
       create_issues: true
       assign_to: []
       labels:
-        - "ci-failure"
-        - "auto-heal"
-        - "needs-review"
+        - 'ci-failure'
+        - 'auto-heal'
+        - 'needs-review'
 
 # Healing strategies for specific error patterns
 strategies:
@@ -58,18 +58,18 @@ strategies:
     # Package conflict resolution strategies
     conflicts:
       react:
-        strategy: "pin_to_latest_stable"
-        version: "^18.3.0"
+        strategy: 'pin_to_latest_stable'
+        version: '^18.3.0'
 
       typescript:
-        strategy: "pin_to_latest_stable"
-        version: "^5.6.0"
+        strategy: 'pin_to_latest_stable'
+        version: '^5.6.0'
 
       eslint:
-        strategy: "use_recommended_config"
+        strategy: 'use_recommended_config'
         plugins:
-          - "@typescript-eslint/eslint-plugin@^8.44.0"
-          - "@typescript-eslint/parser@^8.44.0"
+          - '@typescript-eslint/eslint-plugin@^8.44.0'
+          - '@typescript-eslint/parser@^8.44.0'
 
     # Lockfile handling
     lockfile:
@@ -83,9 +83,9 @@ strategies:
       auto_fix: true
       disable_failing_rules: false
       ignore_patterns:
-        - "*.d.ts"
-        - "build/"
-        - "dist/"
+        - '*.d.ts'
+        - 'build/'
+        - 'dist/'
 
     # Prettier formatting
     prettier:
@@ -102,7 +102,7 @@ strategies:
     # TypeScript error handling
     typescript:
       # Suppression strategy: comment, ignore, or any
-      suppression_method: "comment"
+      suppression_method: 'comment'
 
       # Generate missing type definitions
       generate_missing_types: true
@@ -115,9 +115,9 @@ strategies:
 
       # Skip type checking for specific files/patterns
       skip_type_check:
-        - "**/*.test.ts"
-        - "**/*.spec.ts"
-        - "**/mocks/**"
+        - '**/*.test.ts'
+        - '**/*.spec.ts'
+        - '**/mocks/**'
 
   tests:
     # Test failure handling strategies
@@ -171,7 +171,7 @@ ai_diagnosis:
 # Branch and PR management
 branch_management:
   # Healing branch naming
-  branch_prefix: "auto-heal/"
+  branch_prefix: 'auto-heal/'
   include_timestamp: true
   include_failure_type: true
 
@@ -181,13 +181,13 @@ branch_management:
     default_reviewers: []
 
     # PR template customization
-    title_prefix: "🔧 Auto-heal:"
+    title_prefix: '🔧 Auto-heal:'
 
     # Labels to add to healing PRs
     labels:
-      - "auto-heal"
-      - "ci-fix"
-      - "bot"
+      - 'auto-heal'
+      - 'ci-fix'
+      - 'bot'
 
     # Auto-delete branch after merge
     delete_branch_after_merge: true
@@ -205,16 +205,16 @@ safety:
 
   # Never heal these file patterns
   protected_files:
-    - "package.json"
-    - "pnpm-lock.yaml"
-    - "tsconfig.json"
-    - ".github/workflows/ci.yml"
+    - 'package.json'
+    - 'pnpm-lock.yaml'
+    - 'tsconfig.json'
+    - '.github/workflows/ci.yml'
 
   # Always require manual review for these changes
   require_manual_review:
-    - "database migrations"
-    - "security-related files"
-    - "configuration files"
+    - 'database migrations'
+    - 'security-related files'
+    - 'configuration files'
 
 # Monitoring and metrics
 monitoring:

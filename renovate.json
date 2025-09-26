@@ -1,12 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Ultra-aggressive Renovate configuration for maximum automation and speed",
-  "extends": [
-    "config:recommended",
-    "config:js-app",
-    "docker:enableMajor",
-    "schedule:hourly"
-  ],
+  "extends": ["config:recommended", "config:js-app", "docker:enableMajor", "schedule:hourly"],
   "timezone": "America/New_York",
   "schedule": ["every hour"],
   "prConcurrentLimit": 20,
@@ -25,11 +20,7 @@
   "addLabels": ["fast-track"],
   "assignees": [],
   "reviewers": [],
-  "ignorePaths": [
-    "**/node_modules/**",
-    "**/bower_components/**",
-    "**/vendor/**"
-  ],
+  "ignorePaths": ["**/node_modules/**", "**/bower_components/**", "**/vendor/**"],
   "vulnerabilityAlerts": {
     "enabled": true,
     "automerge": true,
@@ -101,45 +92,25 @@
     },
     {
       "description": "Testing frameworks - keep current",
-      "matchPackagePatterns": [
-        "^jest",
-        "^vitest",
-        "^@testing-library/",
-        "^cypress",
-        "^playwright"
-      ],
+      "matchPackagePatterns": ["^jest", "^vitest", "^@testing-library/", "^cypress", "^playwright"],
       "automerge": true,
       "schedule": ["at any time"]
     },
     {
       "description": "Linting and formatting - always latest",
-      "matchPackagePatterns": [
-        "^eslint",
-        "^prettier",
-        "^@typescript-eslint/"
-      ],
+      "matchPackagePatterns": ["^eslint", "^prettier", "^@typescript-eslint/"],
       "automerge": true,
       "schedule": ["at any time"]
     },
     {
       "description": "Build tools - keep them current",
-      "matchPackagePatterns": [
-        "^webpack",
-        "^vite",
-        "^rollup",
-        "^esbuild",
-        "^babel"
-      ],
+      "matchPackagePatterns": ["^webpack", "^vite", "^rollup", "^esbuild", "^babel"],
       "automerge": true,
       "schedule": ["at any time"]
     },
     {
       "description": "React ecosystem - immediate updates",
-      "matchPackagePatterns": [
-        "^react",
-        "^@react-",
-        "^next"
-      ],
+      "matchPackagePatterns": ["^react", "^@react-", "^next"],
       "automerge": true,
       "schedule": ["at any time"]
     },
@@ -167,9 +138,7 @@
     }
   ],
   "hostRules": [],
-  "postUpdateOptions": [
-    "npmDedupe"
-  ],
+  "postUpdateOptions": ["npmDedupe"],
   "npm": {
     "rangeStrategy": "bump"
   },

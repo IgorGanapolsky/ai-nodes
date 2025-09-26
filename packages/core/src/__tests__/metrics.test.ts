@@ -58,8 +58,9 @@ describe('Metrics Functions', () => {
 
     it('should throw error for invalid window size', () => {
       const data = createDataPoints([1, 2, 3]);
-      expect(() => calculateRollingAverage(data, { windowSize: 0 }))
-        .toThrow('Window size must be positive');
+      expect(() => calculateRollingAverage(data, { windowSize: 0 })).toThrow(
+        'Window size must be positive',
+      );
     });
 
     it('should include metadata in results', () => {
@@ -115,7 +116,7 @@ describe('Metrics Functions', () => {
 
   describe('calculateUtilization', () => {
     it('should calculate utilization correctly', () => {
-      expect(calculateUtilization(8, 24)).toBe(8/24);
+      expect(calculateUtilization(8, 24)).toBe(8 / 24);
       expect(calculateUtilization(24, 24)).toBe(1);
       expect(calculateUtilization(0, 24)).toBe(0);
     });
@@ -159,8 +160,9 @@ describe('Metrics Functions', () => {
     });
 
     it('should throw error for empty array', () => {
-      expect(() => calculateAverageUtilization([]))
-        .toThrow('Cannot calculate average from empty metrics array');
+      expect(() => calculateAverageUtilization([])).toThrow(
+        'Cannot calculate average from empty metrics array',
+      );
     });
   });
 
@@ -266,7 +268,7 @@ describe('Metrics Functions', () => {
           revenueUsd: 0,
           uptime: 1,
           timestamp: new Date('2024-01-02'),
-        }
+        },
       ];
 
       const result = calculateRevenuePerHour(metrics);
@@ -276,8 +278,9 @@ describe('Metrics Functions', () => {
     });
 
     it('should throw error for empty metrics', () => {
-      expect(() => calculateRevenuePerHour([]))
-        .toThrow('Cannot calculate revenue per hour from empty metrics');
+      expect(() => calculateRevenuePerHour([])).toThrow(
+        'Cannot calculate revenue per hour from empty metrics',
+      );
     });
   });
 

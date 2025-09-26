@@ -53,7 +53,7 @@ export class RateLimiter {
 
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => {
-        const index = this.queue.findIndex(req => req.resolve === resolve);
+        const index = this.queue.findIndex((req) => req.resolve === resolve);
         if (index !== -1) {
           this.queue.splice(index, 1);
         }
@@ -68,7 +68,7 @@ export class RateLimiter {
         reject: (error: Error) => {
           clearTimeout(timeoutId);
           reject(error);
-        }
+        },
       });
 
       // Try to process the queue immediately
@@ -84,12 +84,12 @@ export class RateLimiter {
    */
   getInfo(): RateLimitInfo {
     this.refillTokens();
-    const resetTime = this.lastRefill + (this.maxTokens - this.tokens) / this.refillRate * 1000;
+    const resetTime = this.lastRefill + ((this.maxTokens - this.tokens) / this.refillRate) * 1000;
 
     return {
       remaining: this.tokens,
       reset: Math.ceil(resetTime),
-      limit: this.maxTokens
+      limit: this.maxTokens,
     };
   }
 

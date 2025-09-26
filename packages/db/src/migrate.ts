@@ -13,7 +13,6 @@ async function main() {
     console.log('✅ Migrations completed successfully');
 
     console.log('✅ Database connection verified');
-
   } catch (error) {
     console.error('❌ Migration failed:', error);
     process.exit(1);

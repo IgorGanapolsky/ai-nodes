@@ -18,15 +18,15 @@ export interface TableOptions {
 
 export function createTable(columns: TableColumn[], data: any[], options?: TableOptions): string {
   const table = new Table({
-    head: columns.map(col => chalk.bold.cyan(col.title)),
+    head: columns.map((col) => chalk.bold.cyan(col.title)),
     style: {
       head: options?.style?.head || [],
-      border: options?.style?.border || ['gray']
-    }
+      border: options?.style?.border || ['gray'],
+    },
   });
 
-  data.forEach(row => {
-    const tableRow = columns.map(col => {
+  data.forEach((row) => {
+    const tableRow = columns.map((col) => {
       const value = row[col.key] || '-';
       const stringValue = String(value);
       return col.color ? col.color(stringValue) : stringValue;
@@ -44,21 +44,21 @@ export function createTable(columns: TableColumn[], data: any[], options?: Table
 
 export function createSimpleTable(headers: string[], rows: string[][]): string {
   const table = new Table({
-    head: headers.map(header => chalk.bold.cyan(header)),
+    head: headers.map((header) => chalk.bold.cyan(header)),
     style: {
-      border: ['gray']
-    }
+      border: ['gray'],
+    },
   });
 
-  rows.forEach(row => table.push(row));
+  rows.forEach((row) => table.push(row));
   return table.toString();
 }
 
 export function createKeyValueTable(data: Record<string, any>): string {
   const table = new Table({
     style: {
-      border: ['gray']
-    }
+      border: ['gray'],
+    },
   });
 
   Object.entries(data).forEach(([key, value]) => {
@@ -90,5 +90,5 @@ export const formatters = {
   date: (value: string | Date) => {
     const date = new Date(value);
     return chalk.gray(date.toLocaleString());
-  }
+  },
 };

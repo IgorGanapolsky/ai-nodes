@@ -21,19 +21,20 @@ export default function OwnersPage() {
   // Fetch owners data
   const { data: owners, isLoading: ownersLoading } = useQuery({
     queryKey: ['owners', searchQuery, filterStatus],
-    queryFn: () => apiClient.getOwners({
-      search: searchQuery,
-      status: filterStatus === 'all' ? undefined : filterStatus,
-      limit: 50
-    }),
-    refetchInterval: 30000 // Refresh every 30 seconds
+    queryFn: () =>
+      apiClient.getOwners({
+        search: searchQuery,
+        status: filterStatus === 'all' ? undefined : filterStatus,
+        limit: 50,
+      }),
+    refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Fetch summary metrics
   const { data: summary, isLoading: summaryLoading } = useQuery({
     queryKey: ['owners-summary'],
     queryFn: () => apiClient.getOwnersSummary(),
-    refetchInterval: 60000 // Refresh every minute
+    refetchInterval: 60000, // Refresh every minute
   });
 
   const filteredOwners = owners?.owners || [];
@@ -65,9 +66,7 @@ export default function OwnersPage() {
       </div>
 
       {/* Summary Metrics */}
-      {summary && !summaryLoading && (
-        <MetricsSummary data={summary} />
-      )}
+      {summary && !summaryLoading && <MetricsSummary data={summary} />}
 
       {/* Search and Filter */}
       <Card>
@@ -76,9 +75,7 @@ export default function OwnersPage() {
             <Users className="h-5 w-5" />
             Owners Directory
           </CardTitle>
-          <CardDescription>
-            Search and filter through all node owners
-          </CardDescription>
+          <CardDescription>Search and filter through all node owners</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4 mb-6">

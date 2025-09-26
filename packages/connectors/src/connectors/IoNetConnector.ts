@@ -20,7 +20,11 @@ export class IoNetConnector extends BaseConnector {
     return this.generateMockMetrics(externalId, since);
   }
 
-  async getOccupancy(externalId: string, periodStart: Date, periodEnd: Date): Promise<DeviceOccupancy> {
+  async getOccupancy(
+    externalId: string,
+    periodStart: Date,
+    periodEnd: Date,
+  ): Promise<DeviceOccupancy> {
     await this.simulateDelay();
     return this.generateMockOccupancy(externalId, periodStart, periodEnd);
   }

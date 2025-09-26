@@ -5,11 +5,7 @@ import { fileURLToPath } from 'url';
 import type { Owner } from '@depinautopilot/db';
 import type { Alert } from '@depinautopilot/db';
 import type { StatementSummary } from '@depinautopilot/core';
-import {
-  type EmailConfig,
-  type EmailTemplateData,
-  EmailNotificationError,
-} from './types.js';
+import { type EmailConfig, type EmailTemplateData, EmailNotificationError } from './types.js';
 
 // Get the directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -63,10 +59,7 @@ export class EmailNotifier {
       if (error instanceof EmailNotificationError) {
         throw error;
       }
-      throw new EmailNotificationError(
-        'Failed to send email',
-        error as Error
-      );
+      throw new EmailNotificationError('Failed to send email', error as Error);
     }
   }
 
@@ -139,7 +132,7 @@ export class EmailNotifier {
     nodeName: string,
     nodeType: string,
     oldStatus: string,
-    newStatus: string
+    newStatus: string,
   ): Promise<void> {
     const isOnline = newStatus === 'online';
     const isCritical = newStatus === 'offline' || newStatus === 'error';
@@ -177,35 +170,46 @@ export class EmailNotifier {
       });
 
       // Handle conditional blocks {{#if condition}}...{{/if}}
-      template = template.replace(/\{\{#if (\w+)\}\}(.*?)\{\{\/if\}\}/gs, (match, condition, content) => {
-        const value = this.getNestedValue(data, condition);
-        return value ? content : '';
-      });
+      template = template.replace(
+        /\{\{#if (\w+)\}\}(.*?)\{\{\/if\}\}/gs,
+        (match, condition, content) => {
+          const value = this.getNestedValue(data, condition);
+          return value ? content : '';
+        },
+      );
 
       // Handle loops {{#each array}}...{{/each}}
-      template = template.replace(/\{\{#each (\w+)\}\}(.*?)\{\{\/each\}\}/gs, (match, arrayKey, content) => {
-        const array = this.getNestedValue(data, arrayKey) as any[];
-        if (!Array.isArray(array)) return '';
+      template = template.replace(
+        /\{\{#each (\w+)\}\}(.*?)\{\{\/each\}\}/gs,
+        (match, arrayKey, content) => {
+          const array = this.getNestedValue(data, arrayKey) as any[];
+          if (!Array.isArray(array)) return '';
 
-        return array.map((item, index) => {
-          let itemContent = content;
-          // Replace {{.}} with current item
-          itemContent = itemContent.replace(/\{\{\.\}\}/g, String(item));
-          // Replace {{@index}} with current index
-          itemContent = itemContent.replace(/\{\{@index\}\}/g, String(index));
-          // Replace {{item.property}} with item properties
-          itemContent = itemContent.replace(/\{\{(\w+)\}\}/g, (itemMatch: string, itemKey: string) => {
-            return item[itemKey] !== undefined ? String(item[itemKey]) : itemMatch;
-          });
-          return itemContent;
-        }).join('');
-      });
+          return array
+            .map((item, index) => {
+              let itemContent = content;
+              // Replace {{.}} with current item
+              itemContent = itemContent.replace(/\{\{\.\}\}/g, String(item));
+              // Replace {{@index}} with current index
+              itemContent = itemContent.replace(/\{\{@index\}\}/g, String(index));
+              // Replace {{item.property}} with item properties
+              itemContent = itemContent.replace(
+                /\{\{(\w+)\}\}/g,
+                (itemMatch: string, itemKey: string) => {
+                  return item[itemKey] !== undefined ? String(item[itemKey]) : itemMatch;
+                },
+              );
+              return itemContent;
+            })
+            .join('');
+        },
+      );
 
       return template;
     } catch (error) {
       throw new EmailNotificationError(
         `Failed to render email template: ${templateName}`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -222,10 +226,10 @@ export class EmailNotifier {
    */
   private getSeverityColor(severity: string): string {
     const colors = {
-      low: '#95a5a6',     // Gray
-      medium: '#f39c12',  // Orange
-      high: '#e74c3c',    // Red
-      critical: '#8b0000' // Dark red
+      low: '#95a5a6', // Gray
+      medium: '#f39c12', // Orange
+      high: '#e74c3c', // Red
+      critical: '#8b0000', // Dark red
     };
     return colors[severity as keyof typeof colors] || colors.medium;
   }
@@ -237,7 +241,7 @@ export class EmailNotifier {
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     };
 
     const startStr = start.toLocaleDateString('en-US', options);
@@ -279,7 +283,7 @@ export class EmailNotifier {
               Sent at: ${new Date().toLocaleString()}
             </p>
           </div>
-        `
+        `,
       );
       return true;
     } catch (error) {

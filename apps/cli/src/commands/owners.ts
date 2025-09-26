@@ -30,7 +30,7 @@ function createAddCommand(): Command {
               name: 'name',
               message: 'Owner name:',
               default: options.name,
-              validate: (input) => input.trim() ? true : 'Name is required'
+              validate: (input) => (input.trim() ? true : 'Name is required'),
             },
             {
               type: 'input',
@@ -40,14 +40,14 @@ function createAddCommand(): Command {
               validate: (input) => {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(input) ? true : 'Please enter a valid email address';
-              }
+              },
             },
             {
               type: 'input',
               name: 'walletAddress',
               message: 'Wallet address (optional):',
-              default: options.wallet
-            }
+              default: options.wallet,
+            },
           ]);
 
           ownerData = answers;
@@ -60,7 +60,7 @@ function createAddCommand(): Command {
           ownerData = {
             name: options.name,
             email: options.email,
-            walletAddress: options.wallet
+            walletAddress: options.wallet,
           };
         }
 
@@ -70,23 +70,29 @@ function createAddCommand(): Command {
           const newOwner = await api.createOwner(ownerData);
           spinner.succeed(chalk.green('Owner created successfully!'));
 
-          console.log('\n' + createTable(
-            [
-              { title: 'ID', key: 'id' },
-              { title: 'Name', key: 'name' },
-              { title: 'Email', key: 'email' },
-              { title: 'Wallet', key: 'walletAddress' },
-              { title: 'Created', key: 'createdAt', color: formatters.date }
-            ],
-            [newOwner],
-            { title: 'New Owner Details' }
-          ));
+          console.log(
+            '\n' +
+              createTable(
+                [
+                  { title: 'ID', key: 'id' },
+                  { title: 'Name', key: 'name' },
+                  { title: 'Email', key: 'email' },
+                  { title: 'Wallet', key: 'walletAddress' },
+                  { title: 'Created', key: 'createdAt', color: formatters.date },
+                ],
+                [newOwner],
+                { title: 'New Owner Details' },
+              ),
+          );
         } catch (error) {
           spinner.fail('Failed to create owner');
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error creating owner:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error creating owner:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });
@@ -115,23 +121,29 @@ function createListCommand(): Command {
             return;
           }
 
-          console.log('\n' + createTable(
-            [
-              { title: 'ID', key: 'id' },
-              { title: 'Name', key: 'name' },
-              { title: 'Email', key: 'email' },
-              { title: 'Wallet', key: 'walletAddress' },
-              { title: 'Created', key: 'createdAt', color: formatters.date }
-            ],
-            owners,
-            { title: 'Owners' }
-          ));
+          console.log(
+            '\n' +
+              createTable(
+                [
+                  { title: 'ID', key: 'id' },
+                  { title: 'Name', key: 'name' },
+                  { title: 'Email', key: 'email' },
+                  { title: 'Wallet', key: 'walletAddress' },
+                  { title: 'Created', key: 'createdAt', color: formatters.date },
+                ],
+                owners,
+                { title: 'Owners' },
+              ),
+          );
         } catch (error) {
           spinner.fail('Failed to fetch owners');
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error fetching owners:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error fetching owners:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });
@@ -167,7 +179,7 @@ function createUpdateCommand(): Command {
               type: 'input',
               name: 'name',
               message: 'Owner name:',
-              default: options.name || currentOwner.name
+              default: options.name || currentOwner.name,
             },
             {
               type: 'input',
@@ -177,14 +189,14 @@ function createUpdateCommand(): Command {
               validate: (input) => {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(input) ? true : 'Please enter a valid email address';
-              }
+              },
             },
             {
               type: 'input',
               name: 'walletAddress',
               message: 'Wallet address:',
-              default: options.wallet || currentOwner.walletAddress || ''
-            }
+              default: options.wallet || currentOwner.walletAddress || '',
+            },
           ]);
 
           updateData = answers;
@@ -205,23 +217,29 @@ function createUpdateCommand(): Command {
           const updatedOwner = await api.updateOwner(id, updateData);
           updateSpinner.succeed(chalk.green('Owner updated successfully!'));
 
-          console.log('\n' + createTable(
-            [
-              { title: 'ID', key: 'id' },
-              { title: 'Name', key: 'name' },
-              { title: 'Email', key: 'email' },
-              { title: 'Wallet', key: 'walletAddress' },
-              { title: 'Updated', key: 'updatedAt', color: formatters.date }
-            ],
-            [updatedOwner],
-            { title: 'Updated Owner Details' }
-          ));
+          console.log(
+            '\n' +
+              createTable(
+                [
+                  { title: 'ID', key: 'id' },
+                  { title: 'Name', key: 'name' },
+                  { title: 'Email', key: 'email' },
+                  { title: 'Wallet', key: 'walletAddress' },
+                  { title: 'Updated', key: 'updatedAt', color: formatters.date },
+                ],
+                [updatedOwner],
+                { title: 'Updated Owner Details' },
+              ),
+          );
         } catch (error) {
           updateSpinner.fail('Failed to update owner');
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error updating owner:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error updating owner:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });
@@ -253,8 +271,8 @@ function createRemoveCommand(): Command {
               type: 'confirm',
               name: 'confirm',
               message: `Are you sure you want to remove owner "${owner.name}" (${owner.email})?`,
-              default: false
-            }
+              default: false,
+            },
           ]);
 
           if (!confirm) {
@@ -273,7 +291,10 @@ function createRemoveCommand(): Command {
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error removing owner:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error removing owner:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });

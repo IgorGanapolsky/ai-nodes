@@ -6,325 +6,326 @@ import { RetryLogic } from '../utils/RetryLogic';
  * Used when API access is unavailable or limited
  */
 export class PlaywrightScraper {
-    browser = null;
-    browserType;
-    defaultOptions;
-    constructor(options = {}) {
-        this.defaultOptions = {
-            headless: true,
-            timeout: 30000,
-            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            viewport: { width: 1920, height: 1080 },
-            browser: 'chromium',
-            waitForSelector: '',
-            waitForNetworkIdle: false,
-            screenshot: false,
-            retries: 3,
-            ...options
-        };
-        // Select browser type
-        switch (this.defaultOptions.browser) {
-            case 'firefox':
-                this.browserType = firefox;
-                break;
-            case 'webkit':
-                this.browserType = webkit;
-                break;
-            default:
-                this.browserType = chromium;
-        }
+  browser = null;
+  browserType;
+  defaultOptions;
+  constructor(options = {}) {
+    this.defaultOptions = {
+      headless: true,
+      timeout: 30000,
+      userAgent:
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      viewport: { width: 1920, height: 1080 },
+      browser: 'chromium',
+      waitForSelector: '',
+      waitForNetworkIdle: false,
+      screenshot: false,
+      retries: 3,
+      ...options,
+    };
+    // Select browser type
+    switch (this.defaultOptions.browser) {
+      case 'firefox':
+        this.browserType = firefox;
+        break;
+      case 'webkit':
+        this.browserType = webkit;
+        break;
+      default:
+        this.browserType = chromium;
     }
-    /**
-     * Initialize the browser
-     */
-    async initBrowser() {
-        if (this.browser)
-            return;
-        try {
-            this.browser = await this.browserType.launch({
-                headless: this.defaultOptions.headless,
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-accelerated-2d-canvas',
-                    '--no-first-run',
-                    '--no-zygote',
-                    '--disable-gpu'
-                ]
-            });
-        }
-        catch (error) {
-            throw ErrorHandler.wrapScraperError(error, 'Browser initialization failed');
-        }
+  }
+  /**
+   * Initialize the browser
+   */
+  async initBrowser() {
+    if (this.browser) return;
+    try {
+      this.browser = await this.browserType.launch({
+        headless: this.defaultOptions.headless,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--no-first-run',
+          '--no-zygote',
+          '--disable-gpu',
+        ],
+      });
+    } catch (error) {
+      throw ErrorHandler.wrapScraperError(error, 'Browser initialization failed');
     }
-    /**
-     * Create a new page with common settings
-     */
-    async createPage() {
-        await this.initBrowser();
-        if (!this.browser) {
-            throw ErrorHandler.createError('SCRAPER_ERROR', 'Browser not initialized', {}, false);
-        }
-        const page = await this.browser.newPage({
-            userAgent: this.defaultOptions.userAgent,
-            viewport: this.defaultOptions.viewport
-        });
-        // Set default timeout
-        page.setDefaultTimeout(this.defaultOptions.timeout);
-        // Add request interception for optimization
-        await page.route('**/*', (route) => {
-            const resourceType = route.request().resourceType();
-            // Block unnecessary resources to speed up loading
-            if (['image', 'stylesheet', 'font', 'media'].includes(resourceType)) {
-                route.abort();
-            }
-            else {
-                route.continue();
-            }
-        });
-        return page;
+  }
+  /**
+   * Create a new page with common settings
+   */
+  async createPage() {
+    await this.initBrowser();
+    if (!this.browser) {
+      throw ErrorHandler.createError('SCRAPER_ERROR', 'Browser not initialized', {}, false);
     }
-    /**
-     * Scrape a single URL
-     */
-    async scrape(url, options = {}) {
-        const config = { ...this.defaultOptions, ...options };
-        return RetryLogic.execute(async () => {
-            const startTime = Date.now();
-            let page = null;
-            try {
-                page = await this.createPage();
-                // Navigate to URL
-                const response = await page.goto(url, {
-                    waitUntil: config.waitForNetworkIdle ? 'networkidle' : 'domcontentloaded',
-                    timeout: config.timeout
-                });
-                if (!response) {
-                    throw ErrorHandler.createError('SCRAPER_ERROR', 'No response received', { url }, true);
-                }
-                // Wait for specific selector if provided
-                if (config.waitForSelector) {
-                    await page.waitForSelector(config.waitForSelector, {
-                        timeout: config.timeout
-                    });
-                }
-                // Get page content
-                const html = await page.content();
-                const text = await page.textContent('body') || '';
-                const title = await page.title();
-                // Take screenshot if requested
-                let screenshot;
-                if (config.screenshot) {
-                    screenshot = await page.screenshot({
-                        fullPage: true,
-                        type: 'png'
-                    });
-                }
-                const loadTime = Date.now() - startTime;
-                return {
-                    html,
-                    text,
-                    url: page.url(),
-                    title,
-                    screenshot,
-                    metadata: {
-                        loadTime,
-                        statusCode: response.status(),
-                        headers: await response.allHeaders()
-                    }
-                };
-            }
-            catch (error) {
-                throw ErrorHandler.wrapScraperError(error, `Failed to scrape ${url}`);
-            }
-            finally {
-                if (page) {
-                    await page.close();
-                }
-            }
-        }, {
-            retries: config.retries,
-            shouldRetry: (error) => ErrorHandler.isTemporaryError(error)
-        });
-    }
-    /**
-     * Scrape multiple URLs concurrently
-     */
-    async scrapeMultiple(urls, options = {}, concurrency = 3) {
-        const results = [];
-        const errors = [];
-        // Process URLs in batches to avoid overwhelming the target
-        for (let i = 0; i < urls.length; i += concurrency) {
-            const batch = urls.slice(i, i + concurrency);
-            const batchPromises = batch.map(async (url) => {
-                try {
-                    return await this.scrape(url, options);
-                }
-                catch (error) {
-                    errors.push(error instanceof Error ? error : new Error(String(error)));
-                    return null;
-                }
-            });
-            const batchResults = await Promise.all(batchPromises);
-            results.push(...batchResults.filter(result => result !== null));
-            // Add delay between batches to be respectful
-            if (i + concurrency < urls.length) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-        }
-        if (errors.length > 0 && results.length === 0) {
-            throw ErrorHandler.createError('SCRAPER_ERROR', `All scraping attempts failed: ${errors.map(e => e.message).join(', ')}`, { errors }, true);
-        }
-        return results;
-    }
-    /**
-     * Extract specific data using CSS selectors
-     */
-    async extractData(url, selectors, options = {}) {
-        const config = { ...this.defaultOptions, ...options };
-        return RetryLogic.execute(async () => {
-            let page = null;
-            try {
-                page = await this.createPage();
-                await page.goto(url, {
-                    waitUntil: config.waitForNetworkIdle ? 'networkidle' : 'domcontentloaded',
-                    timeout: config.timeout
-                });
-                if (config.waitForSelector) {
-                    await page.waitForSelector(config.waitForSelector, {
-                        timeout: config.timeout
-                    });
-                }
-                const results = {};
-                for (const [key, selector] of Object.entries(selectors)) {
-                    try {
-                        const element = await page.$(selector);
-                        results[key] = element ? await element.textContent() : null;
-                    }
-                    catch (error) {
-                        console.warn(`Failed to extract data for selector ${selector}:`, error);
-                        results[key] = null;
-                    }
-                }
-                return results;
-            }
-            catch (error) {
-                throw ErrorHandler.wrapScraperError(error, `Failed to extract data from ${url}`);
-            }
-            finally {
-                if (page) {
-                    await page.close();
-                }
-            }
-        }, {
-            retries: config.retries,
-            shouldRetry: (error) => ErrorHandler.isTemporaryError(error)
-        });
-    }
-    /**
-     * Perform login to a dashboard
-     */
-    async login(loginUrl, credentials, selectors, options = {}) {
-        const config = { ...this.defaultOptions, ...options };
-        return RetryLogic.execute(async () => {
-            let page = null;
-            try {
-                page = await this.createPage();
-                await page.goto(loginUrl, {
-                    waitUntil: 'domcontentloaded',
-                    timeout: config.timeout
-                });
-                // Fill login form
-                await page.fill(selectors.usernameField, credentials.username);
-                await page.fill(selectors.passwordField, credentials.password);
-                await page.click(selectors.submitButton);
-                // Wait for navigation or success indicator
-                if (selectors.successIndicator) {
-                    await page.waitForSelector(selectors.successIndicator, {
-                        timeout: config.timeout
-                    });
-                }
-                else {
-                    await page.waitForLoadState('domcontentloaded');
-                }
-                // Check if login was successful
-                const currentUrl = page.url();
-                const success = !currentUrl.includes('login') && !currentUrl.includes('error');
-                // Get session cookies
-                const cookies = await page.context().cookies();
-                return {
-                    success,
-                    cookies,
-                    sessionData: {
-                        url: currentUrl,
-                        title: await page.title()
-                    }
-                };
-            }
-            catch (error) {
-                throw ErrorHandler.wrapScraperError(error, 'Login failed');
-            }
-            finally {
-                if (page) {
-                    await page.close();
-                }
-            }
-        }, {
-            retries: config.retries,
-            shouldRetry: (error) => ErrorHandler.isTemporaryError(error)
-        });
-    }
-    /**
-     * Check if a page is accessible
-     */
-    async checkAccessibility(url, timeout = 10000) {
+    const page = await this.browser.newPage({
+      userAgent: this.defaultOptions.userAgent,
+      viewport: this.defaultOptions.viewport,
+    });
+    // Set default timeout
+    page.setDefaultTimeout(this.defaultOptions.timeout);
+    // Add request interception for optimization
+    await page.route('**/*', (route) => {
+      const resourceType = route.request().resourceType();
+      // Block unnecessary resources to speed up loading
+      if (['image', 'stylesheet', 'font', 'media'].includes(resourceType)) {
+        route.abort();
+      } else {
+        route.continue();
+      }
+    });
+    return page;
+  }
+  /**
+   * Scrape a single URL
+   */
+  async scrape(url, options = {}) {
+    const config = { ...this.defaultOptions, ...options };
+    return RetryLogic.execute(
+      async () => {
         const startTime = Date.now();
         let page = null;
         try {
-            page = await this.createPage();
-            const response = await page.goto(url, {
-                waitUntil: 'domcontentloaded',
-                timeout
+          page = await this.createPage();
+          // Navigate to URL
+          const response = await page.goto(url, {
+            waitUntil: config.waitForNetworkIdle ? 'networkidle' : 'domcontentloaded',
+            timeout: config.timeout,
+          });
+          if (!response) {
+            throw ErrorHandler.createError('SCRAPER_ERROR', 'No response received', { url }, true);
+          }
+          // Wait for specific selector if provided
+          if (config.waitForSelector) {
+            await page.waitForSelector(config.waitForSelector, {
+              timeout: config.timeout,
             });
-            const loadTime = Date.now() - startTime;
-            return {
-                accessible: true,
-                statusCode: response?.status(),
-                loadTime
-            };
+          }
+          // Get page content
+          const html = await page.content();
+          const text = (await page.textContent('body')) || '';
+          const title = await page.title();
+          // Take screenshot if requested
+          let screenshot;
+          if (config.screenshot) {
+            screenshot = await page.screenshot({
+              fullPage: true,
+              type: 'png',
+            });
+          }
+          const loadTime = Date.now() - startTime;
+          return {
+            html,
+            text,
+            url: page.url(),
+            title,
+            screenshot,
+            metadata: {
+              loadTime,
+              statusCode: response.status(),
+              headers: await response.allHeaders(),
+            },
+          };
+        } catch (error) {
+          throw ErrorHandler.wrapScraperError(error, `Failed to scrape ${url}`);
+        } finally {
+          if (page) {
+            await page.close();
+          }
         }
-        catch (error) {
-            const loadTime = Date.now() - startTime;
-            return {
-                accessible: false,
-                loadTime,
-                error: error instanceof Error ? error.message : String(error)
-            };
+      },
+      {
+        retries: config.retries,
+        shouldRetry: (error) => ErrorHandler.isTemporaryError(error),
+      },
+    );
+  }
+  /**
+   * Scrape multiple URLs concurrently
+   */
+  async scrapeMultiple(urls, options = {}, concurrency = 3) {
+    const results = [];
+    const errors = [];
+    // Process URLs in batches to avoid overwhelming the target
+    for (let i = 0; i < urls.length; i += concurrency) {
+      const batch = urls.slice(i, i + concurrency);
+      const batchPromises = batch.map(async (url) => {
+        try {
+          return await this.scrape(url, options);
+        } catch (error) {
+          errors.push(error instanceof Error ? error : new Error(String(error)));
+          return null;
         }
-        finally {
-            if (page) {
-                await page.close();
+      });
+      const batchResults = await Promise.all(batchPromises);
+      results.push(...batchResults.filter((result) => result !== null));
+      // Add delay between batches to be respectful
+      if (i + concurrency < urls.length) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+    if (errors.length > 0 && results.length === 0) {
+      throw ErrorHandler.createError(
+        'SCRAPER_ERROR',
+        `All scraping attempts failed: ${errors.map((e) => e.message).join(', ')}`,
+        { errors },
+        true,
+      );
+    }
+    return results;
+  }
+  /**
+   * Extract specific data using CSS selectors
+   */
+  async extractData(url, selectors, options = {}) {
+    const config = { ...this.defaultOptions, ...options };
+    return RetryLogic.execute(
+      async () => {
+        let page = null;
+        try {
+          page = await this.createPage();
+          await page.goto(url, {
+            waitUntil: config.waitForNetworkIdle ? 'networkidle' : 'domcontentloaded',
+            timeout: config.timeout,
+          });
+          if (config.waitForSelector) {
+            await page.waitForSelector(config.waitForSelector, {
+              timeout: config.timeout,
+            });
+          }
+          const results = {};
+          for (const [key, selector] of Object.entries(selectors)) {
+            try {
+              const element = await page.$(selector);
+              results[key] = element ? await element.textContent() : null;
+            } catch (error) {
+              console.warn(`Failed to extract data for selector ${selector}:`, error);
+              results[key] = null;
             }
+          }
+          return results;
+        } catch (error) {
+          throw ErrorHandler.wrapScraperError(error, `Failed to extract data from ${url}`);
+        } finally {
+          if (page) {
+            await page.close();
+          }
         }
-    }
-    /**
-     * Close the browser and cleanup resources
-     */
-    async dispose() {
-        if (this.browser) {
-            await this.browser.close();
-            this.browser = null;
+      },
+      {
+        retries: config.retries,
+        shouldRetry: (error) => ErrorHandler.isTemporaryError(error),
+      },
+    );
+  }
+  /**
+   * Perform login to a dashboard
+   */
+  async login(loginUrl, credentials, selectors, options = {}) {
+    const config = { ...this.defaultOptions, ...options };
+    return RetryLogic.execute(
+      async () => {
+        let page = null;
+        try {
+          page = await this.createPage();
+          await page.goto(loginUrl, {
+            waitUntil: 'domcontentloaded',
+            timeout: config.timeout,
+          });
+          // Fill login form
+          await page.fill(selectors.usernameField, credentials.username);
+          await page.fill(selectors.passwordField, credentials.password);
+          await page.click(selectors.submitButton);
+          // Wait for navigation or success indicator
+          if (selectors.successIndicator) {
+            await page.waitForSelector(selectors.successIndicator, {
+              timeout: config.timeout,
+            });
+          } else {
+            await page.waitForLoadState('domcontentloaded');
+          }
+          // Check if login was successful
+          const currentUrl = page.url();
+          const success = !currentUrl.includes('login') && !currentUrl.includes('error');
+          // Get session cookies
+          const cookies = await page.context().cookies();
+          return {
+            success,
+            cookies,
+            sessionData: {
+              url: currentUrl,
+              title: await page.title(),
+            },
+          };
+        } catch (error) {
+          throw ErrorHandler.wrapScraperError(error, 'Login failed');
+        } finally {
+          if (page) {
+            await page.close();
+          }
         }
+      },
+      {
+        retries: config.retries,
+        shouldRetry: (error) => ErrorHandler.isTemporaryError(error),
+      },
+    );
+  }
+  /**
+   * Check if a page is accessible
+   */
+  async checkAccessibility(url, timeout = 10000) {
+    const startTime = Date.now();
+    let page = null;
+    try {
+      page = await this.createPage();
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+        timeout,
+      });
+      const loadTime = Date.now() - startTime;
+      return {
+        accessible: true,
+        statusCode: response?.status(),
+        loadTime,
+      };
+    } catch (error) {
+      const loadTime = Date.now() - startTime;
+      return {
+        accessible: false,
+        loadTime,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    } finally {
+      if (page) {
+        await page.close();
+      }
     }
-    /**
-     * Get browser info
-     */
-    getBrowserInfo() {
-        return {
-            type: this.defaultOptions.browser,
-            version: this.browserType.name(),
-            isConnected: this.browser !== null && this.browser.isConnected()
-        };
+  }
+  /**
+   * Close the browser and cleanup resources
+   */
+  async dispose() {
+    if (this.browser) {
+      await this.browser.close();
+      this.browser = null;
     }
+  }
+  /**
+   * Get browser info
+   */
+  getBrowserInfo() {
+    return {
+      type: this.defaultOptions.browser,
+      version: this.browserType.name(),
+      isConnected: this.browser !== null && this.browser.isConnected(),
+    };
+  }
 }

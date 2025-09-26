@@ -4,10 +4,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation';
 import ErrorBoundary from './src/components/ErrorBoundary';
 export default function App() {
-    return (<ErrorBoundary>
+  return (
+    <ErrorBoundary>
       <SafeAreaProvider>
         <AppNavigator />
-        <StatusBar style="light" backgroundColor="#1a1a2e"/>
+        <StatusBar style="light" backgroundColor="#1a1a2e" />
       </SafeAreaProvider>
-    </ErrorBoundary>);
+    </ErrorBoundary>
+  );
 }

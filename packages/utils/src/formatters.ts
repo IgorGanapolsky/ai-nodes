@@ -27,10 +27,7 @@ export interface FormatDateOptions {
 /**
  * Format currency values
  */
-export function formatCurrency(
-  amount: number,
-  options: FormatCurrencyOptions = {}
-): string {
+export function formatCurrency(amount: number, options: FormatCurrencyOptions = {}): string {
   const {
     currency = 'USD',
     locale = 'en-US',
@@ -51,11 +48,7 @@ export function formatCurrency(
 /**
  * Format cryptocurrency values with appropriate precision
  */
-export function formatCrypto(
-  amount: number,
-  symbol: string = '',
-  decimals: number = 8
-): string {
+export function formatCrypto(amount: number, symbol: string = '', decimals: number = 8): string {
   // For very small amounts, show more decimals
   let displayDecimals = decimals;
   if (amount > 0 && amount < 0.01) {
@@ -79,10 +72,7 @@ export function formatCrypto(
 /**
  * Format percentage values
  */
-export function formatPercentage(
-  value: number,
-  options: FormatNumberOptions = {}
-): string {
+export function formatPercentage(value: number, options: FormatNumberOptions = {}): string {
   const {
     locale = 'en-US',
     minimumFractionDigits = 2,
@@ -119,10 +109,7 @@ export function formatPercentageChange(value: number): {
 /**
  * Format large numbers with appropriate suffixes
  */
-export function formatLargeNumber(
-  value: number,
-  options: FormatNumberOptions = {}
-): string {
+export function formatLargeNumber(value: number, options: FormatNumberOptions = {}): string {
   const {
     locale = 'en-US',
     minimumFractionDigits = 0,
@@ -157,10 +144,7 @@ export function formatNumberWithSuffix(value: number, decimals: number = 2): str
 /**
  * Format date values with various options
  */
-export function formatDate(
-  date: Date | string | number,
-  options: FormatDateOptions = {}
-): string {
+export function formatDate(date: Date | string | number, options: FormatDateOptions = {}): string {
   const {
     format: formatString = 'PPP',
     includeTime = false,
@@ -267,11 +251,7 @@ export function formatPhoneNumber(phoneNumber: string, countryCode: string = 'US
 /**
  * Truncate string with ellipsis
  */
-export function truncateString(
-  str: string,
-  maxLength: number,
-  ellipsis: string = '...'
-): string {
+export function truncateString(str: string, maxLength: number, ellipsis: string = '...'): string {
   if (str.length <= maxLength) return str;
   return str.slice(0, maxLength - ellipsis.length) + ellipsis;
 }
@@ -283,7 +263,7 @@ export function truncateMiddle(
   str: string,
   startLength: number = 6,
   endLength: number = 4,
-  ellipsis: string = '...'
+  ellipsis: string = '...',
 ): string {
   if (str.length <= startLength + endLength + ellipsis.length) return str;
   return str.slice(0, startLength) + ellipsis + str.slice(-endLength);
@@ -295,7 +275,7 @@ export function truncateMiddle(
 export function formatWalletAddress(
   address: string,
   startLength: number = 6,
-  endLength: number = 4
+  endLength: number = 4,
 ): string {
   return truncateMiddle(address, startLength, endLength);
 }
@@ -303,11 +283,7 @@ export function formatWalletAddress(
 /**
  * Format hash (transaction, block, etc.) with truncation
  */
-export function formatHash(
-  hash: string,
-  startLength: number = 8,
-  endLength: number = 6
-): string {
+export function formatHash(hash: string, startLength: number = 8, endLength: number = 6): string {
   return truncateMiddle(hash, startLength, endLength);
 }
 
@@ -343,7 +319,7 @@ export function formatVolume(volume: number): string {
 export function formatApiResponse<T>(
   data: T,
   message: string = 'Success',
-  success: boolean = true
+  success: boolean = true,
 ): {
   success: boolean;
   message: string;
@@ -364,7 +340,7 @@ export function formatApiResponse<T>(
 export function formatErrorResponse(
   message: string,
   code?: string,
-  details?: any
+  details?: any,
 ): {
   success: boolean;
   error: {
@@ -391,7 +367,7 @@ export function formatErrorResponse(
 export function formatPaginationMeta(
   page: number,
   limit: number,
-  total: number
+  total: number,
 ): {
   page: number;
   limit: number;
@@ -419,7 +395,7 @@ export function formatListResponse<T>(
   page: number,
   limit: number,
   total: number,
-  message: string = 'Success'
+  message: string = 'Success',
 ): {
   success: boolean;
   message: string;

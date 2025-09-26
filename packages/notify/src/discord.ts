@@ -23,10 +23,7 @@ export class DiscordNotifier {
       try {
         this.webhook = new WebhookClient({ url: this.config.webhookUrl });
       } catch (error) {
-        throw new DiscordNotificationError(
-          'Invalid Discord webhook URL',
-          error as Error
-        );
+        throw new DiscordNotificationError('Invalid Discord webhook URL', error as Error);
       }
     }
   }
@@ -78,10 +75,7 @@ export class DiscordNotifier {
         avatarURL: this.config.avatarUrl,
       });
     } catch (error) {
-      throw new DiscordNotificationError(
-        'Failed to send Discord notification',
-        error as Error
-      );
+      throw new DiscordNotificationError('Failed to send Discord notification', error as Error);
     }
   }
 
@@ -99,16 +93,14 @@ export class DiscordNotifier {
       thumbnail?: string;
       image?: string;
       url?: string;
-    } = {}
+    } = {},
   ): Promise<void> {
     if (!this.webhook) {
       throw new DiscordNotificationError('Discord webhook not configured');
     }
 
     try {
-      const embed = new EmbedBuilder()
-        .setTitle(title)
-        .setTimestamp(new Date());
+      const embed = new EmbedBuilder().setTitle(title).setTimestamp(new Date());
 
       // Set description if provided
       if (options.description) {
@@ -155,10 +147,7 @@ export class DiscordNotifier {
         avatarURL: this.config.avatarUrl,
       });
     } catch (error) {
-      throw new DiscordNotificationError(
-        'Failed to send Discord embed',
-        error as Error
-      );
+      throw new DiscordNotificationError('Failed to send Discord embed', error as Error);
     }
   }
 
@@ -170,7 +159,7 @@ export class DiscordNotifier {
     period: string,
     totalEarnings: number,
     nodeCount: number,
-    topNode?: string
+    topNode?: string,
   ): Promise<void> {
     const fields: Field[] = [
       {
@@ -198,16 +187,11 @@ export class DiscordNotifier {
       });
     }
 
-    await this.sendEmbed(
-      owner,
-      '📈 Statement Summary',
-      fields,
-      {
-        description: `Here's your earnings summary for ${period}`,
-        color: 'success',
-        footer: 'Statement Generated',
-      }
-    );
+    await this.sendEmbed(owner, '📈 Statement Summary', fields, {
+      description: `Here's your earnings summary for ${period}`,
+      color: 'success',
+      footer: 'Statement Generated',
+    });
   }
 
   /**
@@ -219,7 +203,7 @@ export class DiscordNotifier {
     alertMessage: string,
     severity: 'low' | 'medium' | 'high' | 'critical',
     nodeName?: string,
-    nodeType?: string
+    nodeType?: string,
   ): Promise<void> {
     const fields: Field[] = [];
 
@@ -252,16 +236,11 @@ export class DiscordNotifier {
       critical: '🚨',
     };
 
-    await this.sendEmbed(
-      owner,
-      `${severityEmoji[severity]} ${alertTitle}`,
-      fields,
-      {
-        description: alertMessage,
-        color: severity,
-        footer: 'Alert Generated',
-      }
-    );
+    await this.sendEmbed(owner, `${severityEmoji[severity]} ${alertTitle}`, fields, {
+      description: alertMessage,
+      color: severity,
+      footer: 'Alert Generated',
+    });
   }
 
   /**
@@ -272,7 +251,7 @@ export class DiscordNotifier {
     nodeName: string,
     nodeType: string,
     oldStatus: string,
-    newStatus: string
+    newStatus: string,
   ): Promise<void> {
     const statusEmoji = {
       online: '🟢',
@@ -281,7 +260,8 @@ export class DiscordNotifier {
       error: '🔴',
     };
 
-    const getStatusEmoji = (status: string) => statusEmoji[status as keyof typeof statusEmoji] || '⚪';
+    const getStatusEmoji = (status: string) =>
+      statusEmoji[status as keyof typeof statusEmoji] || '⚪';
 
     const fields: Field[] = [
       {
@@ -301,17 +281,13 @@ export class DiscordNotifier {
       },
     ];
 
-    const color = newStatus === 'online' ? 'success' : newStatus === 'offline' ? 'critical' : 'medium';
+    const color =
+      newStatus === 'online' ? 'success' : newStatus === 'offline' ? 'critical' : 'medium';
 
-    await this.sendEmbed(
-      owner,
-      '🔄 Node Status Changed',
-      fields,
-      {
-        color,
-        footer: 'Status Update',
-      }
-    );
+    await this.sendEmbed(owner, '🔄 Node Status Changed', fields, {
+      color,
+      footer: 'Status Update',
+    });
   }
 
   /**
@@ -336,19 +312,15 @@ export class DiscordNotifier {
 
     fields.push({
       name: '🚀 Getting Started',
-      value: 'Your notification system is now active. You\'ll receive updates about your nodes here.',
+      value:
+        "Your notification system is now active. You'll receive updates about your nodes here.",
       inline: false,
     });
 
-    await this.sendEmbed(
-      owner,
-      '🎉 Welcome to DePIN Autopilot!',
-      fields,
-      {
-        color: 'success',
-        footer: 'Welcome Message',
-      }
-    );
+    await this.sendEmbed(owner, '🎉 Welcome to DePIN Autopilot!', fields, {
+      color: 'success',
+      footer: 'Welcome Message',
+    });
   }
 
   /**
@@ -361,10 +333,7 @@ export class DiscordNotifier {
       try {
         this.webhook = new WebhookClient({ url: config.webhookUrl });
       } catch (error) {
-        throw new DiscordNotificationError(
-          'Invalid Discord webhook URL',
-          error as Error
-        );
+        throw new DiscordNotificationError('Invalid Discord webhook URL', error as Error);
       }
     }
   }
@@ -375,8 +344,8 @@ export class DiscordNotifier {
   private formatFieldName(key: string): string {
     return key
       .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, str => str.toUpperCase())
-      .replace(/\b\w/g, l => l.toUpperCase());
+      .replace(/^./, (str) => str.toUpperCase())
+      .replace(/\b\w/g, (l) => l.toUpperCase());
   }
 
   /**
@@ -390,10 +359,7 @@ export class DiscordNotifier {
     try {
       return await this.webhook.fetch();
     } catch (error) {
-      throw new DiscordNotificationError(
-        'Failed to fetch webhook info',
-        error as Error
-      );
+      throw new DiscordNotificationError('Failed to fetch webhook info', error as Error);
     }
   }
 

@@ -23,28 +23,27 @@ export { NatixConnector } from './connectors/NatixConnector';
 // Factory for creating connectors
 export * from './factory';
 // Convenience exports for commonly used items
-export { ConnectorFactory, ConnectorNetwork, createConnector, createAllConnectors } from './factory';
+export {
+  ConnectorFactory,
+  ConnectorNetwork,
+  createConnector,
+  createAllConnectors,
+} from './factory';
 // Version info
 export const VERSION = '1.0.0';
 // Package metadata
 export const PACKAGE_INFO = {
-    name: '@depinautopilot/connectors',
-    version: VERSION,
-    description: 'Complete mock DePIN connectors with deterministic data generation',
-    supportedConnectors: [
-        'ionet',
-        'nosana',
-        'render',
-        'grass',
-        'natix'
-    ],
-    features: [
-        'deterministic mock data generation',
-        'realistic device metrics',
-        'pricing optimization suggestions',
-        'occupancy tracking',
-        'typescript support',
-        'factory pattern',
-        'network-specific custom metrics'
-    ]
+  name: '@depinautopilot/connectors',
+  version: VERSION,
+  description: 'Complete mock DePIN connectors with deterministic data generation',
+  supportedConnectors: ['ionet', 'nosana', 'render', 'grass', 'natix'],
+  features: [
+    'deterministic mock data generation',
+    'realistic device metrics',
+    'pricing optimization suggestions',
+    'occupancy tracking',
+    'typescript support',
+    'factory pattern',
+    'network-specific custom metrics',
+  ],
 };

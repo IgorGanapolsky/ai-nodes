@@ -20,7 +20,11 @@ export interface RevenueShareReport {
   byNode: Record<string, { count: number; amount: number }>;
 }
 
-export class RevenueShareRepository extends BaseRepository<typeof revenueShares, RevenueShare, NewRevenueShare> {
+export class RevenueShareRepository extends BaseRepository<
+  typeof revenueShares,
+  RevenueShare,
+  NewRevenueShare
+> {
   protected table = revenueShares;
 
   // Find revenue shares by node
@@ -30,7 +34,7 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
       pagination?: PaginationOptions;
       filters?: Omit<RevenueShareFilters, 'nodeId'>;
       dateRange?: { start: Date; end: Date };
-    } = {}
+    } = {},
   ): Promise<QueryResult<RevenueShare>> {
     const filters = { ...options.filters, nodeId };
 
@@ -39,7 +43,11 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
         this.table.timestamp,
         options.dateRange.start,
         options.dateRange.end,
-        { filters, pagination: options.pagination, sort: { column: 'timestamp', direction: 'desc' } }
+        {
+          filters,
+          pagination: options.pagination,
+          sort: { column: 'timestamp', direction: 'desc' },
+        },
       );
     }
 
@@ -56,7 +64,7 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<RevenueShareFilters, 'period'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<RevenueShare>> {
     return this.findMany({
       filters: { ...options.filters, period },
@@ -70,7 +78,7 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<RevenueShareFilters, 'paidOut'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<RevenueShare>> {
     return this.findMany({
       filters: { ...options.filters, paidOut: false },
@@ -85,7 +93,7 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<RevenueShareFilters, 'recipientId'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<RevenueShare>> {
     return this.findMany({
       filters: { ...options.filters, recipientId },
@@ -96,7 +104,7 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
 
   // Create revenue share with automatic calculations
   async createRevenueShare(
-    shareData: Omit<NewRevenueShare, 'id' | 'amount' | 'timestamp' | 'createdAt' | 'updatedAt'>
+    shareData: Omit<NewRevenueShare, 'id' | 'amount' | 'timestamp' | 'createdAt' | 'updatedAt'>,
   ): Promise<RevenueShare> {
     const calculatedAmount = (shareData.totalEarnings * shareData.percentage) / 100;
 
@@ -144,7 +152,7 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
       percentage: number;
       recipientId?: string;
       recipientAddress?: string;
-    }>
+    }>,
   ): Promise<RevenueShare[]> {
     const createdShares: RevenueShare[] = [];
 
@@ -161,8 +169,8 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
             and(
               eq(sql`node_id`, config.nodeId),
               sql`timestamp >= ${Math.floor(periodStart.getTime() / 1000)}`,
-              sql`timestamp <= ${Math.floor(periodEnd.getTime() / 1000)}`
-            )
+              sql`timestamp <= ${Math.floor(periodEnd.getTime() / 1000)}`,
+            ),
           );
 
         nodeEarnings.set(config.nodeId, earningsResult[0]?.total || 0);
@@ -193,21 +201,23 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
   // Get revenue share report
   async getRevenueShareReport(
     filters: RevenueShareFilters = {},
-    dateRange?: { start: Date; end: Date }
+    dateRange?: { start: Date; end: Date },
   ): Promise<RevenueShareReport> {
     let whereConditions = [];
 
     // Apply filters
     if (filters.nodeId) {
       if (Array.isArray(filters.nodeId)) {
-        whereConditions.push(or(...filters.nodeId.map(id => eq(this.table.nodeId, id))));
+        whereConditions.push(or(...filters.nodeId.map((id) => eq(this.table.nodeId, id))));
       } else {
         whereConditions.push(eq(this.table.nodeId, filters.nodeId));
       }
     }
     if (filters.shareType) {
       if (Array.isArray(filters.shareType)) {
-        whereConditions.push(or(...filters.shareType.map(type => eq(this.table.shareType, type))));
+        whereConditions.push(
+          or(...filters.shareType.map((type) => eq(this.table.shareType, type))),
+        );
       } else {
         whereConditions.push(eq(this.table.shareType, filters.shareType));
       }
@@ -223,8 +233,8 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
       whereConditions.push(
         and(
           sql`${this.table.periodStart} >= ${startTimestamp}`,
-          sql`${this.table.periodEnd} <= ${endTimestamp}`
-        )
+          sql`${this.table.periodEnd} <= ${endTimestamp}`,
+        ),
       );
     }
 
@@ -244,13 +254,21 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
           total: sum(this.table.amount),
         })
         .from(this.table)
-        .where(whereClause ? and(whereClause, eq(this.table.paidOut, true)) : eq(this.table.paidOut, true)),
+        .where(
+          whereClause
+            ? and(whereClause, eq(this.table.paidOut, true))
+            : eq(this.table.paidOut, true),
+        ),
       this.db
         .select({
           total: sum(this.table.amount),
         })
         .from(this.table)
-        .where(whereClause ? and(whereClause, eq(this.table.paidOut, false)) : eq(this.table.paidOut, false)),
+        .where(
+          whereClause
+            ? and(whereClause, eq(this.table.paidOut, false))
+            : eq(this.table.paidOut, false),
+        ),
     ]);
 
     // Get breakdown by share type
@@ -291,24 +309,33 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
       totalAmount: totalStats[0]?.total || 0,
       paidAmount: paidStats[0]?.total || 0,
       unpaidAmount: unpaidStats[0]?.total || 0,
-      byShareType: shareTypeStats.reduce((acc, { shareType, count, amount }) => {
-        acc[shareType] = { count: count || 0, amount: amount || 0 };
-        return acc;
-      }, {} as Record<string, { count: number; amount: number }>),
-      byPeriod: periodStats.reduce((acc, { period, count, amount }) => {
-        acc[period] = { count: count || 0, amount: amount || 0 };
-        return acc;
-      }, {} as Record<string, { count: number; amount: number }>),
-      byNode: nodeStats.reduce((acc, { nodeId, count, amount }) => {
-        acc[nodeId] = { count: count || 0, amount: amount || 0 };
-        return acc;
-      }, {} as Record<string, { count: number; amount: number }>),
+      byShareType: shareTypeStats.reduce(
+        (acc, { shareType, count, amount }) => {
+          acc[shareType] = { count: count || 0, amount: amount || 0 };
+          return acc;
+        },
+        {} as Record<string, { count: number; amount: number }>,
+      ),
+      byPeriod: periodStats.reduce(
+        (acc, { period, count, amount }) => {
+          acc[period] = { count: count || 0, amount: amount || 0 };
+          return acc;
+        },
+        {} as Record<string, { count: number; amount: number }>,
+      ),
+      byNode: nodeStats.reduce(
+        (acc, { nodeId, count, amount }) => {
+          acc[nodeId] = { count: count || 0, amount: amount || 0 };
+          return acc;
+        },
+        {} as Record<string, { count: number; amount: number }>,
+      ),
     };
   }
 
   // Get pending payouts summary
   async getPendingPayouts(
-    groupBy: 'shareType' | 'recipient' | 'period' = 'shareType'
+    groupBy: 'shareType' | 'recipient' | 'period' = 'shareType',
   ): Promise<Array<{ group: string; count: number; totalAmount: number; currency: string }>> {
     const groupColumn = {
       shareType: this.table.shareType,
@@ -328,7 +355,7 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
       .groupBy(groupColumn, this.table.currency)
       .orderBy(desc(sum(this.table.amount)));
 
-    return results.map(result => ({
+    return results.map((result) => ({
       group: result.group || 'unknown',
       count: result.count || 0,
       totalAmount: result.totalAmount || 0,
@@ -340,7 +367,7 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
   async getRevenueShareProjections(
     nodeId: string,
     shareConfigs: Array<{ shareType: string; percentage: number }>,
-    projectionDays: number = 30
+    projectionDays: number = 30,
   ): Promise<Array<{ shareType: string; projectedAmount: number; percentage: number }>> {
     // Get historical earnings for the node to calculate average daily earnings
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -349,18 +376,13 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
     const historicalEarnings = await this.db
       .select({ total: sum(sql`amount`) })
       .from(sql`earnings`)
-      .where(
-        and(
-          eq(sql`node_id`, nodeId),
-          sql`timestamp >= ${thirtyDaysTimestamp}`
-        )
-      );
+      .where(and(eq(sql`node_id`, nodeId), sql`timestamp >= ${thirtyDaysTimestamp}`));
 
     const totalHistoricalEarnings = historicalEarnings[0]?.total || 0;
     const dailyAverageEarnings = totalHistoricalEarnings / 30;
     const projectedTotalEarnings = dailyAverageEarnings * projectionDays;
 
-    return shareConfigs.map(config => ({
+    return shareConfigs.map((config) => ({
       shareType: config.shareType,
       projectedAmount: (projectedTotalEarnings * config.percentage) / 100,
       percentage: config.percentage,
@@ -370,14 +392,16 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
   // Get revenue share history for analytics
   async getRevenueShareHistory(
     period: 'month' | 'quarter' | 'year' = 'month',
-    limit: number = 12
-  ): Promise<Array<{
-    period: string;
-    totalShares: number;
-    totalAmount: number;
-    paidAmount: number;
-    averagePercentage: number;
-  }>> {
+    limit: number = 12,
+  ): Promise<
+    Array<{
+      period: string;
+      totalShares: number;
+      totalAmount: number;
+      paidAmount: number;
+      averagePercentage: number;
+    }>
+  > {
     const periodFormat = {
       month: sql`strftime('%Y-%m', datetime(${this.table.periodStart}, 'unixepoch'))`,
       quarter: sql`strftime('%Y-Q', datetime(${this.table.periodStart}, 'unixepoch')) || ((strftime('%m', datetime(${this.table.periodStart}, 'unixepoch')) - 1) / 3 + 1)`,
@@ -397,7 +421,7 @@ export class RevenueShareRepository extends BaseRepository<typeof revenueShares,
       .orderBy(desc(periodFormat[period]))
       .limit(limit);
 
-    return results.map(result => ({
+    return results.map((result) => ({
       period: result.period as string,
       totalShares: result.totalShares || 0,
       totalAmount: result.totalAmount || 0,

@@ -28,7 +28,7 @@ export type MarketConditions = z.infer<typeof MarketConditions>;
 // Pricing strategy options
 export const PricingStrategy = z.enum([
   'conservative', // Small, safe adjustments
-  'aggressive',   // Larger adjustments for faster optimization
+  'aggressive', // Larger adjustments for faster optimization
   'market_based', // Based on competitor pricing
   'utilization_driven', // Purely based on utilization targets
 ]);
@@ -50,7 +50,7 @@ export function suggestPriceAdjustment(
   currentPrice: number,
   queueDepth: number = 0,
   strategy: PricingStrategy = 'conservative',
-  marketConditions?: MarketConditions
+  marketConditions?: MarketConditions,
 ): PricingSuggestion {
   // Validate inputs
   if (currentUtilization < 0 || currentUtilization > 1) {
@@ -176,7 +176,7 @@ function applyMarketConditions(baseAdjustment: number, conditions: MarketConditi
 
   // Apply seasonality if provided
   if (conditions.seasonality !== undefined) {
-    const seasonalMultiplier = 0.8 + (conditions.seasonality * 0.4); // 0.8 to 1.2 range
+    const seasonalMultiplier = 0.8 + conditions.seasonality * 0.4; // 0.8 to 1.2 range
     adjustment *= seasonalMultiplier;
   }
 
@@ -200,7 +200,7 @@ export function calculateOptimalPrice(
   currentPrice: number,
   currentUtilization: number,
   demandElasticity: number,
-  targetUtilization: number
+  targetUtilization: number,
 ): number {
   if (demandElasticity >= 0) {
     throw new Error('Demand elasticity should typically be negative');
@@ -233,7 +233,7 @@ export function generatePricingRoadmap(
   targets: {
     utilization: number;
     revenue: number;
-  }
+  },
 ): {
   immediate: PricingSuggestion;
   shortTerm: PricingSuggestion;
@@ -245,7 +245,7 @@ export function generatePricingRoadmap(
     targets.utilization,
     currentMetrics.price,
     currentMetrics.queueDepth,
-    'aggressive'
+    'aggressive',
   );
 
   // Short-term (1-4 weeks): Balanced approach
@@ -255,7 +255,7 @@ export function generatePricingRoadmap(
     targets.utilization,
     shortTermPrice,
     Math.floor(currentMetrics.queueDepth * 0.7), // Assume queue will reduce
-    'conservative'
+    'conservative',
   );
 
   // Long-term (1-3 months): Revenue optimization
@@ -265,7 +265,7 @@ export function generatePricingRoadmap(
     targets.utilization,
     longTermPrice,
     0, // Assume queue will be managed
-    'market_based'
+    'market_based',
   );
 
   return {

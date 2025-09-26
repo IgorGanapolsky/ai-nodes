@@ -69,7 +69,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
       pagination?: PaginationOptions;
       dateRange?: { start: Date; end: Date };
       filters?: Omit<MetricsFilters, 'nodeId'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Metric>> {
     const filters = { ...options.filters, nodeId };
 
@@ -78,7 +78,11 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
         this.table.timestamp,
         options.dateRange.start,
         options.dateRange.end,
-        { filters, pagination: options.pagination, sort: { column: 'timestamp', direction: 'desc' } }
+        {
+          filters,
+          pagination: options.pagination,
+          sort: { column: 'timestamp', direction: 'desc' },
+        },
       );
     }
 
@@ -111,7 +115,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
           SELECT MAX(timestamp)
           FROM ${this.table} AS m2
           WHERE m2.node_id = ${this.table.nodeId}
-        )`
+        )`,
       )
       .orderBy(desc(this.table.timestamp));
 
@@ -124,7 +128,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
     interval: 'minute' | 'hour' | 'day',
     startDate: Date,
     endDate: Date,
-    metricTypes?: Array<'cpu' | 'memory' | 'storage' | 'network'>
+    metricTypes?: Array<'cpu' | 'memory' | 'storage' | 'network'>,
   ): Promise<MetricsTimeSeries[]> {
     const nodeIdArray = Array.isArray(nodeIds) ? nodeIds : [nodeIds];
     const startTimestamp = Math.floor(startDate.getTime() / 1000);
@@ -144,9 +148,9 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
     };
 
     const whereClause = and(
-      or(...nodeIdArray.map(nodeId => eq(this.table.nodeId, nodeId))),
+      or(...nodeIdArray.map((nodeId) => eq(this.table.nodeId, nodeId))),
       gte(this.table.timestamp, startTimestamp),
-      lte(this.table.timestamp, endTimestamp)
+      lte(this.table.timestamp, endTimestamp),
     );
 
     const results = await this.db
@@ -183,16 +187,16 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
   async getAggregatedMetrics(
     nodeIds: string | string[],
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<MetricsAggregation[]> {
     const nodeIdArray = Array.isArray(nodeIds) ? nodeIds : [nodeIds];
     const startTimestamp = Math.floor(startDate.getTime() / 1000);
     const endTimestamp = Math.floor(endDate.getTime() / 1000);
 
     const whereClause = and(
-      or(...nodeIdArray.map(nodeId => eq(this.table.nodeId, nodeId))),
+      or(...nodeIdArray.map((nodeId) => eq(this.table.nodeId, nodeId))),
       gte(this.table.timestamp, startTimestamp),
-      lte(this.table.timestamp, endTimestamp)
+      lte(this.table.timestamp, endTimestamp),
     );
 
     const results = await this.db
@@ -214,7 +218,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
       .where(whereClause)
       .groupBy(this.table.nodeId);
 
-    return results.map(result => ({
+    return results.map((result) => ({
       nodeId: result.nodeId,
       avgCpuUsage: result.avgCpuUsage || 0,
       maxCpuUsage: result.maxCpuUsage || 0,
@@ -238,7 +242,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
       storageUsage?: number;
       networkLatency?: number;
       uptimeMin?: number;
-    } = {}
+    } = {},
   ): Promise<PerformanceAlert[]> {
     const defaultThresholds = {
       cpuUsage: 80,
@@ -273,7 +277,8 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
           alertType: 'memory',
           currentValue: metric.memoryUsage,
           threshold: defaultThresholds.memoryUsage,
-          severity: metric.memoryUsage > defaultThresholds.memoryUsage * 1.1 ? 'critical' : 'warning',
+          severity:
+            metric.memoryUsage > defaultThresholds.memoryUsage * 1.1 ? 'critical' : 'warning',
           timestamp: metric.timestamp,
         });
       }
@@ -285,7 +290,8 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
           alertType: 'storage',
           currentValue: metric.storageUsage,
           threshold: defaultThresholds.storageUsage,
-          severity: metric.storageUsage > defaultThresholds.storageUsage * 1.05 ? 'critical' : 'warning',
+          severity:
+            metric.storageUsage > defaultThresholds.storageUsage * 1.05 ? 'critical' : 'warning',
           timestamp: metric.timestamp,
         });
       }
@@ -297,7 +303,8 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
           alertType: 'network',
           currentValue: metric.networkLatency,
           threshold: defaultThresholds.networkLatency,
-          severity: metric.networkLatency > defaultThresholds.networkLatency * 2 ? 'critical' : 'warning',
+          severity:
+            metric.networkLatency > defaultThresholds.networkLatency * 2 ? 'critical' : 'warning',
           timestamp: metric.timestamp,
         });
       }
@@ -329,7 +336,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
       const uniqueNodes = await this.db
         .selectDistinct({ nodeId: this.table.nodeId })
         .from(this.table);
-      nodes = uniqueNodes.map(n => n.nodeId);
+      nodes = uniqueNodes.map((n) => n.nodeId);
     }
 
     const healthScores: NodeHealthScore[] = [];
@@ -353,8 +360,12 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
 
       // Calculate individual scores (0-100, higher is better)
       const cpuScore = latestMetric.cpuUsage ? Math.max(0, 100 - latestMetric.cpuUsage) : 100;
-      const memoryScore = latestMetric.memoryUsage ? Math.max(0, 100 - latestMetric.memoryUsage) : 100;
-      const storageScore = latestMetric.storageUsage ? Math.max(0, 100 - latestMetric.storageUsage) : 100;
+      const memoryScore = latestMetric.memoryUsage
+        ? Math.max(0, 100 - latestMetric.memoryUsage)
+        : 100;
+      const storageScore = latestMetric.storageUsage
+        ? Math.max(0, 100 - latestMetric.storageUsage)
+        : 100;
 
       // Network score based on latency (lower latency = higher score)
       const networkScore = latestMetric.networkLatency
@@ -367,13 +378,12 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
         : 0;
 
       // Overall health score (weighted average)
-      const healthScore = (
+      const healthScore =
         cpuScore * 0.25 +
         memoryScore * 0.25 +
         storageScore * 0.25 +
         networkScore * 0.15 +
-        uptimeScore * 0.10
-      );
+        uptimeScore * 0.1;
 
       healthScores.push({
         nodeId,
@@ -393,7 +403,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
   // Get resource utilization trends
   async getResourceTrends(
     nodeId: string,
-    days: number = 7
+    days: number = 7,
   ): Promise<{
     cpu: { trend: 'increasing' | 'decreasing' | 'stable'; change: number };
     memory: { trend: 'increasing' | 'decreasing' | 'stable'; change: number };
@@ -415,7 +425,7 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
 
       if (Math.abs(changePercent) < 5) return { trend: 'stable' as const, change: changePercent };
       return {
-        trend: changePercent > 0 ? 'increasing' as const : 'decreasing' as const,
+        trend: changePercent > 0 ? ('increasing' as const) : ('decreasing' as const),
         change: changePercent,
       };
     };
@@ -457,11 +467,11 @@ export class MetricsRepository extends BaseRepository<typeof metrics, Metric, Ne
     const totalMemory = latestMetrics.reduce((sum, m) => sum + (m.memoryUsage || 0), 0);
     const totalStorage = latestMetrics.reduce((sum, m) => sum + (m.storageUsage || 0), 0);
 
-    const highCpuNodes = latestMetrics.filter(m => (m.cpuUsage || 0) > 80).length;
-    const highMemoryNodes = latestMetrics.filter(m => (m.memoryUsage || 0) > 85).length;
-    const highStorageNodes = latestMetrics.filter(m => (m.storageUsage || 0) > 90).length;
+    const highCpuNodes = latestMetrics.filter((m) => (m.cpuUsage || 0) > 80).length;
+    const highMemoryNodes = latestMetrics.filter((m) => (m.memoryUsage || 0) > 85).length;
+    const highStorageNodes = latestMetrics.filter((m) => (m.storageUsage || 0) > 90).length;
 
-    const lastUpdated = Math.max(...latestMetrics.map(m => m.timestamp));
+    const lastUpdated = Math.max(...latestMetrics.map((m) => m.timestamp));
 
     return {
       totalNodes: latestMetrics.length,

@@ -38,56 +38,68 @@ export const pullCommand = new Command('pull')
         }
 
         // Display summary statistics
-        console.log('\n' + createTable(
-          [
-            { title: 'Metric', key: 'metric' },
-            { title: 'Value', key: 'value' }
-          ],
-          [
-            { metric: 'Total Devices', value: summary.totalDevices.toString() },
-            { metric: 'Online Devices', value: chalk.green(summary.onlineDevices.toString()) },
-            { metric: 'Offline Devices', value: chalk.red((summary.totalDevices - summary.onlineDevices).toString()) },
-            { metric: '24h Revenue', value: formatters.currency(summary.totalRevenue24h) },
-            { metric: '7d Revenue', value: formatters.currency(summary.totalRevenue7d) },
-            { metric: 'Avg Utilization', value: formatters.percentage(summary.averageUtilization) },
-            { metric: 'Last Updated', value: formatters.date(summary.lastUpdated) }
-          ],
-          { title: 'Network Summary' }
-        ));
+        console.log(
+          '\n' +
+            createTable(
+              [
+                { title: 'Metric', key: 'metric' },
+                { title: 'Value', key: 'value' },
+              ],
+              [
+                { metric: 'Total Devices', value: summary.totalDevices.toString() },
+                { metric: 'Online Devices', value: chalk.green(summary.onlineDevices.toString()) },
+                {
+                  metric: 'Offline Devices',
+                  value: chalk.red((summary.totalDevices - summary.onlineDevices).toString()),
+                },
+                { metric: '24h Revenue', value: formatters.currency(summary.totalRevenue24h) },
+                { metric: '7d Revenue', value: formatters.currency(summary.totalRevenue7d) },
+                {
+                  metric: 'Avg Utilization',
+                  value: formatters.percentage(summary.averageUtilization),
+                },
+                { metric: 'Last Updated', value: formatters.date(summary.lastUpdated) },
+              ],
+              { title: 'Network Summary' },
+            ),
+        );
 
         // Get detailed device metrics
         const devices = await api.getDevices();
 
         if (devices.length > 0) {
-          const deviceStats = devices.map(device => ({
+          const deviceStats = devices.map((device) => ({
             id: device.id.substring(0, 8) + '...',
             name: device.name,
             status: device.status,
             grossRevenue24h: device.metrics?.grossRevenue24h || 0,
             grossRevenue7d: device.metrics?.grossRevenue7d || 0,
             utilization: device.metrics?.utilization || 0,
-            owner: device.ownerId.substring(0, 8) + '...'
+            owner: device.ownerId.substring(0, 8) + '...',
           }));
 
-          console.log('\n' + createTable(
-            [
-              { title: 'ID', key: 'id' },
-              { title: 'Device', key: 'name' },
-              { title: 'Owner', key: 'owner' },
-              { title: 'Status', key: 'status', color: formatters.status },
-              { title: '24h Gross', key: 'grossRevenue24h', color: formatters.currency },
-              { title: '7d Gross', key: 'grossRevenue7d', color: formatters.currency },
-              { title: 'Utilization', key: 'utilization', color: formatters.percentage }
-            ],
-            deviceStats,
-            { title: 'Device Metrics' }
-          ));
+          console.log(
+            '\n' +
+              createTable(
+                [
+                  { title: 'ID', key: 'id' },
+                  { title: 'Device', key: 'name' },
+                  { title: 'Owner', key: 'owner' },
+                  { title: 'Status', key: 'status', color: formatters.status },
+                  { title: '24h Gross', key: 'grossRevenue24h', color: formatters.currency },
+                  { title: '7d Gross', key: 'grossRevenue7d', color: formatters.currency },
+                  { title: 'Utilization', key: 'utilization', color: formatters.percentage },
+                ],
+                deviceStats,
+                { title: 'Device Metrics' },
+              ),
+          );
 
           // Show alerts and warnings
           const alerts = generateAlerts(devices);
           if (alerts.length > 0) {
             console.log('\n' + chalk.bold.yellow('⚠️  Alerts:'));
-            alerts.forEach(alert => {
+            alerts.forEach((alert) => {
               console.log(`  ${alert.icon} ${alert.message}`);
             });
           }
@@ -101,7 +113,6 @@ export const pullCommand = new Command('pull')
             });
           }
         }
-
       } catch (error) {
         spinner.fail('Failed to fetch metrics');
         console.error(chalk.red('Error:'), error instanceof Error ? error.message : error);
@@ -138,31 +149,31 @@ export const pullCommand = new Command('pull')
 function generateAlerts(devices: Device[]): Array<{ icon: string; message: string }> {
   const alerts = [];
 
-  const offlineDevices = devices.filter(d => d.status === 'offline');
+  const offlineDevices = devices.filter((d) => d.status === 'offline');
   if (offlineDevices.length > 0) {
     alerts.push({
       icon: '🔴',
-      message: `${offlineDevices.length} device(s) offline: ${offlineDevices.map(d => d.name).join(', ')}`
+      message: `${offlineDevices.length} device(s) offline: ${offlineDevices.map((d) => d.name).join(', ')}`,
     });
   }
 
-  const lowUtilizationDevices = devices.filter(d => d.metrics && d.metrics.utilization < 30);
+  const lowUtilizationDevices = devices.filter((d) => d.metrics && d.metrics.utilization < 30);
   if (lowUtilizationDevices.length > 0) {
     alerts.push({
       icon: '📉',
-      message: `${lowUtilizationDevices.length} device(s) with low utilization (<30%)`
+      message: `${lowUtilizationDevices.length} device(s) with low utilization (<30%)`,
     });
   }
 
-  const maintenanceDevices = devices.filter(d => d.status === 'maintenance');
+  const maintenanceDevices = devices.filter((d) => d.status === 'maintenance');
   if (maintenanceDevices.length > 0) {
     alerts.push({
       icon: '🔧',
-      message: `${maintenanceDevices.length} device(s) in maintenance mode`
+      message: `${maintenanceDevices.length} device(s) in maintenance mode`,
     });
   }
 
-  const staleDevices = devices.filter(d => {
+  const staleDevices = devices.filter((d) => {
     const lastSeen = new Date(d.lastSeen);
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
     return lastSeen < fiveMinutesAgo && d.status === 'online';
@@ -171,7 +182,7 @@ function generateAlerts(devices: Device[]): Array<{ icon: string; message: strin
   if (staleDevices.length > 0) {
     alerts.push({
       icon: '⏰',
-      message: `${staleDevices.length} device(s) haven't reported in >5 minutes`
+      message: `${staleDevices.length} device(s) haven't reported in >5 minutes`,
     });
   }
 
@@ -183,13 +194,17 @@ function generateRecommendations(summary: any, devices: Device[]): string[] {
 
   // Overall utilization recommendations
   if (summary.averageUtilization < 50) {
-    recommendations.push('Consider marketing or pricing adjustments to increase overall network utilization');
+    recommendations.push(
+      'Consider marketing or pricing adjustments to increase overall network utilization',
+    );
   } else if (summary.averageUtilization > 90) {
-    recommendations.push('Network is highly utilized - consider adding more devices to handle demand');
+    recommendations.push(
+      'Network is highly utilized - consider adding more devices to handle demand',
+    );
   }
 
   // Revenue growth recommendations
-  const onlineDevices = devices.filter(d => d.status === 'online');
+  const onlineDevices = devices.filter((d) => d.status === 'online');
   if (onlineDevices.length > 0) {
     const avgRevenue = summary.totalRevenue24h / onlineDevices.length;
     if (avgRevenue < 1.0) {
@@ -198,18 +213,22 @@ function generateRecommendations(summary: any, devices: Device[]): string[] {
   }
 
   // Offline device recommendations
-  const offlineCount = devices.filter(d => d.status === 'offline').length;
+  const offlineCount = devices.filter((d) => d.status === 'offline').length;
   const offlineRatio = offlineCount / Math.max(devices.length, 1);
   if (offlineRatio > 0.2) {
-    recommendations.push('High offline rate detected - check device connectivity and maintenance schedules');
+    recommendations.push(
+      'High offline rate detected - check device connectivity and maintenance schedules',
+    );
   }
 
   // Specific device recommendations
-  const underperformingDevices = devices.filter(d =>
-    d.status === 'online' && d.metrics && d.metrics.utilization < 25
+  const underperformingDevices = devices.filter(
+    (d) => d.status === 'online' && d.metrics && d.metrics.utilization < 25,
   );
   if (underperformingDevices.length > 0) {
-    recommendations.push(`${underperformingDevices.length} online devices have very low utilization - investigate or consider reprovisioning`);
+    recommendations.push(
+      `${underperformingDevices.length} online devices have very low utilization - investigate or consider reprovisioning`,
+    );
   }
 
   return recommendations;

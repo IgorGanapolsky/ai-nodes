@@ -6,7 +6,7 @@ import {
   Period,
   NodeMetrics,
   PricingStrategy,
-  OptimizationParams
+  OptimizationParams,
 } from '../interfaces';
 import { BaseConnector } from './BaseConnector';
 
@@ -20,20 +20,20 @@ export class OwnAIConnector extends BaseConnector {
     JOBS: '/api/v1/jobs',
     EARNINGS: '/api/v1/earnings',
     MODELS: '/api/v1/models',
-    UTILIZATION: '/api/v1/utilization'
+    UTILIZATION: '/api/v1/utilization',
   };
 
   private static readonly SCRAPER_SELECTORS = {
     nodeStatus: '.compute-node-status',
     earnings: '.earnings-dashboard',
     jobs: '.job-statistics',
-    models: '.hosted-models'
+    models: '.hosted-models',
   };
 
   constructor(config: ConnectorConfig) {
     super(ConnectorType.OWNAI, {
       baseUrl: 'https://api.ownai.network',
-      ...config
+      ...config,
     });
   }
 
@@ -64,9 +64,9 @@ export class OwnAIConnector extends BaseConnector {
     }
 
     try {
-      const endpoint = nodeId ?
-        `${OwnAIConnector.API_ENDPOINTS.NODES}/${nodeId}` :
-        OwnAIConnector.API_ENDPOINTS.NODES;
+      const endpoint = nodeId
+        ? `${OwnAIConnector.API_ENDPOINTS.NODES}/${nodeId}`
+        : OwnAIConnector.API_ENDPOINTS.NODES;
 
       const response = await this.makeRequest<any>('GET', endpoint);
 
@@ -90,12 +90,12 @@ export class OwnAIConnector extends BaseConnector {
       const params = new URLSearchParams({
         start_date: period.start.toISOString(),
         end_date: period.end.toISOString(),
-        ...(nodeId && { node_id: nodeId })
+        ...(nodeId && { node_id: nodeId }),
       });
 
       const response = await this.makeRequest<any>(
         'GET',
-        `${OwnAIConnector.API_ENDPOINTS.EARNINGS}?${params}`
+        `${OwnAIConnector.API_ENDPOINTS.EARNINGS}?${params}`,
       );
 
       return this.mapApiResponseToEarnings(response, period);
@@ -112,8 +112,14 @@ export class OwnAIConnector extends BaseConnector {
 
     try {
       const [jobsResponse, utilizationResponse] = await Promise.all([
-        this.makeRequest<any>('GET', `${OwnAIConnector.API_ENDPOINTS.JOBS}${nodeId ? `?node_id=${nodeId}` : ''}`),
-        this.makeRequest<any>('GET', `${OwnAIConnector.API_ENDPOINTS.UTILIZATION}${nodeId ? `?node_id=${nodeId}` : ''}`)
+        this.makeRequest<any>(
+          'GET',
+          `${OwnAIConnector.API_ENDPOINTS.JOBS}${nodeId ? `?node_id=${nodeId}` : ''}`,
+        ),
+        this.makeRequest<any>(
+          'GET',
+          `${OwnAIConnector.API_ENDPOINTS.UTILIZATION}${nodeId ? `?node_id=${nodeId}` : ''}`,
+        ),
       ]);
 
       if (nodeId) {
@@ -137,14 +143,10 @@ export class OwnAIConnector extends BaseConnector {
         node_specs: params.nodeSpecs,
         target_utilization: params.targetUtilization,
         pricing_strategy: params.priceStrategy,
-        ...(nodeId && { node_id: nodeId })
+        ...(nodeId && { node_id: nodeId }),
       };
 
-      const response = await this.makeRequest<any>(
-        'POST',
-        '/api/v1/pricing/optimize',
-        requestData
-      );
+      const response = await this.makeRequest<any>('POST', '/api/v1/pricing/optimize', requestData);
 
       return this.mapApiResponseToPricingStrategy(response);
     } catch (error) {
@@ -162,7 +164,7 @@ export class OwnAIConnector extends BaseConnector {
       return {
         valid: false,
         permissions: [],
-        limitations: ['No API key provided']
+        limitations: ['No API key provided'],
       };
     }
 
@@ -171,27 +173,23 @@ export class OwnAIConnector extends BaseConnector {
       return {
         valid: true,
         permissions: ['read_nodes', 'read_jobs', 'read_earnings', 'manage_models'],
-        limitations: ['Cannot modify node hardware configuration']
+        limitations: ['Cannot modify node hardware configuration'],
       };
     } catch (error) {
       return {
         valid: false,
         permissions: [],
-        limitations: ['Invalid or expired API key']
+        limitations: ['Invalid or expired API key'],
       };
     }
   }
 
   async getNodeIds(): Promise<string[]> {
     try {
-      const nodes = await this.getNodeStatus() as NodeStatus[];
-      return nodes.map(node => node.id);
+      const nodes = (await this.getNodeStatus()) as NodeStatus[];
+      return nodes.map((node) => node.id);
     } catch (error) {
-      return [
-        'OWNAI-compute-001',
-        'OWNAI-compute-002',
-        'OWNAI-compute-003'
-      ];
+      return ['OWNAI-compute-001', 'OWNAI-compute-002', 'OWNAI-compute-003'];
     }
   }
 
@@ -208,36 +206,38 @@ export class OwnAIConnector extends BaseConnector {
         cpu: apiData.cpu_usage || 0,
         memory: apiData.memory_usage || 0,
         storage: apiData.storage_usage || 0,
-        network: apiData.network_speed || 0
+        network: apiData.network_speed || 0,
       },
       location: {
         country: apiData.location?.country || 'Unknown',
         region: apiData.location?.region || 'Unknown',
         latitude: apiData.location?.latitude,
-        longitude: apiData.location?.longitude
+        longitude: apiData.location?.longitude,
       },
       version: apiData.client_version || 'unknown',
       specs: {
         cpu: {
           cores: apiData.hardware?.cpu_cores || 0,
           model: apiData.hardware?.cpu_model || 'Unknown',
-          frequency: apiData.hardware?.cpu_frequency || 0
+          frequency: apiData.hardware?.cpu_frequency || 0,
         },
         memory: {
           total: apiData.hardware?.memory_gb || 0,
-          available: apiData.hardware?.memory_available || 0
+          available: apiData.hardware?.memory_available || 0,
         },
         storage: {
           total: apiData.hardware?.storage_gb || 0,
           available: apiData.hardware?.storage_available || 0,
-          type: apiData.hardware?.storage_type || 'SSD'
+          type: apiData.hardware?.storage_type || 'SSD',
         },
-        gpu: apiData.hardware?.gpu ? {
-          model: apiData.hardware.gpu.model,
-          memory: apiData.hardware.gpu.vram_gb,
-          compute: apiData.hardware.gpu.compute_power
-        } : undefined
-      }
+        gpu: apiData.hardware?.gpu
+          ? {
+              model: apiData.hardware.gpu.model,
+              memory: apiData.hardware.gpu.vram_gb,
+              compute: apiData.hardware.gpu.compute_power,
+            }
+          : undefined,
+      },
     };
   }
 
@@ -252,7 +252,7 @@ export class OwnAIConnector extends BaseConnector {
       breakdown: {
         compute: total * 0.8, // AI inference earnings
         staking: total * 0.1, // Staking rewards
-        rewards: total * 0.1  // Network participation
+        rewards: total * 0.1, // Network participation
       },
       transactions: earnings.map((earning: any) => ({
         id: earning.transaction_id || earning.id,
@@ -260,10 +260,10 @@ export class OwnAIConnector extends BaseConnector {
         amount: earning.amount || 0,
         type: 'earnings' as const,
         description: `AI job: ${earning.model_name || 'LLM inference'} (${earning.tokens_processed || 0} tokens)`,
-        txHash: earning.tx_hash
+        txHash: earning.tx_hash,
       })),
       projectedMonthly: total * (30 / this.getPeriodDays(period)),
-      projectedYearly: total * (365 / this.getPeriodDays(period))
+      projectedYearly: total * (365 / this.getPeriodDays(period)),
     };
   }
 
@@ -279,31 +279,31 @@ export class OwnAIConnector extends BaseConnector {
         tasksActive: activeJobs.length,
         tasksFailed: failedJobs.length,
         averageTaskDuration: this.calculateAverageJobDuration(completedJobs),
-        successRate: jobs.length > 0 ? (completedJobs.length / jobs.length) * 100 : 0
+        successRate: jobs.length > 0 ? (completedJobs.length / jobs.length) * 100 : 0,
       },
       resource_utilization: {
         cpu: utilizationData.cpu_usage || 0,
         memory: utilizationData.memory_usage || 0,
         storage: utilizationData.storage_usage || 0,
         bandwidth: utilizationData.bandwidth_usage || 0,
-        gpu: utilizationData.gpu_usage || 0
+        gpu: utilizationData.gpu_usage || 0,
       },
       earnings: {
         hourly: jobsData.earnings?.hourly || 0,
         daily: jobsData.earnings?.daily || 0,
         weekly: jobsData.earnings?.weekly || 0,
-        monthly: jobsData.earnings?.monthly || 0
+        monthly: jobsData.earnings?.monthly || 0,
       },
       network: {
         latency: utilizationData.network_latency || 30,
         throughput: utilizationData.network_throughput || 200,
-        uptime: utilizationData.uptime_percentage || 99
+        uptime: utilizationData.uptime_percentage || 99,
       },
       reputation: {
         score: jobsData.reputation?.score || 9.0,
         rank: jobsData.reputation?.rank || 250,
-        totalNodes: jobsData.reputation?.total_nodes || 5000
-      }
+        totalNodes: jobsData.reputation?.total_nodes || 5000,
+      },
     };
   }
 
@@ -314,18 +314,18 @@ export class OwnAIConnector extends BaseConnector {
         memory: apiData.pricing?.memory_per_gb_hour || 0,
         storage: apiData.pricing?.storage_per_gb_hour || 0,
         bandwidth: apiData.pricing?.bandwidth_per_gb || 0,
-        gpu: apiData.pricing?.gpu_per_hour || 0
+        gpu: apiData.pricing?.gpu_per_hour || 0,
       },
       market: {
         average: apiData.market?.average_rate || 0,
         minimum: apiData.market?.min_rate || 0,
-        maximum: apiData.market?.max_rate || 0
+        maximum: apiData.market?.max_rate || 0,
       },
       optimization: {
         suggestion: apiData.optimization?.suggestion || 'Optimize GPU models for better efficiency',
         expectedIncrease: apiData.optimization?.expected_increase || 0,
-        confidenceScore: apiData.optimization?.confidence || 0.8
-      }
+        confidenceScore: apiData.optimization?.confidence || 0.8,
+      },
     };
   }
 
@@ -359,6 +359,9 @@ export class OwnAIConnector extends BaseConnector {
   }
 
   private getPeriodDays(period: Period): number {
-    return Math.max(1, Math.ceil((period.end.getTime() - period.start.getTime()) / (1000 * 60 * 60 * 24)));
+    return Math.max(
+      1,
+      Math.ceil((period.end.getTime() - period.start.getTime()) / (1000 * 60 * 60 * 24)),
+    );
   }
 }

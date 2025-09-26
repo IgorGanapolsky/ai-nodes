@@ -114,19 +114,24 @@ class APIClient {
       (error) => {
         console.error('[API] Request error:', error);
         return Promise.reject(error);
-      }
+      },
     );
 
     // Response interceptor
     this.client.interceptors.response.use(
       (response) => {
         const duration = Date.now() - (response.config.metadata?.startTime || Date.now());
-        console.log(`[API] ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url} (${duration}ms)`);
+        console.log(
+          `[API] ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url} (${duration}ms)`,
+        );
         return response;
       },
       (error) => {
         const duration = Date.now() - (error.config?.metadata?.startTime || Date.now());
-        console.error(`[API] ${error.response?.status || 'ERROR'} ${error.config?.method?.toUpperCase()} ${error.config?.url} (${duration}ms)`, error.message);
+        console.error(
+          `[API] ${error.response?.status || 'ERROR'} ${error.config?.method?.toUpperCase()} ${error.config?.url} (${duration}ms)`,
+          error.message,
+        );
 
         // Transform error for better handling
         const transformedError = {
@@ -136,7 +141,7 @@ class APIClient {
         };
 
         return Promise.reject(transformedError);
-      }
+      },
     );
   }
 
@@ -146,7 +151,9 @@ class APIClient {
 
   // Owners API
   async getOwners(params?: OwnersQuery): Promise<PaginatedResponse<Owner>> {
-    const response: AxiosResponse<PaginatedResponse<Owner>> = await this.client.get('/v1/owners', { params });
+    const response: AxiosResponse<PaginatedResponse<Owner>> = await this.client.get('/v1/owners', {
+      params,
+    });
     return response.data;
   }
 
@@ -161,27 +168,42 @@ class APIClient {
   }
 
   async getOwnerMetrics(id: string, timeframe?: string): Promise<OwnerMetrics> {
-    const response: AxiosResponse<OwnerMetrics> = await this.client.get(`/v1/owners/${id}/metrics`, {
-      params: { timeframe }
-    });
+    const response: AxiosResponse<OwnerMetrics> = await this.client.get(
+      `/v1/owners/${id}/metrics`,
+      {
+        params: { timeframe },
+      },
+    );
     return response.data;
   }
 
   async getOwnerChartData(id: string, timeframe: string): Promise<ChartDataResponse> {
-    const response: AxiosResponse<ChartDataResponse> = await this.client.get(`/v1/owners/${id}/chart`, {
-      params: { timeframe }
-    });
+    const response: AxiosResponse<ChartDataResponse> = await this.client.get(
+      `/v1/owners/${id}/chart`,
+      {
+        params: { timeframe },
+      },
+    );
     return response.data;
   }
 
   // Devices API
   async getDevices(params?: DevicesQuery): Promise<PaginatedResponse<Device>> {
-    const response: AxiosResponse<PaginatedResponse<Device>> = await this.client.get('/v1/devices', { params });
+    const response: AxiosResponse<PaginatedResponse<Device>> = await this.client.get(
+      '/v1/devices',
+      { params },
+    );
     return response.data;
   }
 
-  async getOwnerDevices(ownerId: string, params?: Omit<DevicesQuery, 'ownerId'>): Promise<PaginatedResponse<Device>> {
-    const response: AxiosResponse<PaginatedResponse<Device>> = await this.client.get(`/v1/owners/${ownerId}/devices`, { params });
+  async getOwnerDevices(
+    ownerId: string,
+    params?: Omit<DevicesQuery, 'ownerId'>,
+  ): Promise<PaginatedResponse<Device>> {
+    const response: AxiosResponse<PaginatedResponse<Device>> = await this.client.get(
+      `/v1/owners/${ownerId}/devices`,
+      { params },
+    );
     return response.data;
   }
 
@@ -192,12 +214,20 @@ class APIClient {
 
   // Alerts API
   async getAlerts(params?: AlertsQuery): Promise<PaginatedResponse<Alert>> {
-    const response: AxiosResponse<PaginatedResponse<Alert>> = await this.client.get('/v1/alerts', { params });
+    const response: AxiosResponse<PaginatedResponse<Alert>> = await this.client.get('/v1/alerts', {
+      params,
+    });
     return response.data;
   }
 
-  async getOwnerAlerts(ownerId: string, params?: Omit<AlertsQuery, 'ownerId'>): Promise<PaginatedResponse<Alert>> {
-    const response: AxiosResponse<PaginatedResponse<Alert>> = await this.client.get(`/v1/owners/${ownerId}/alerts`, { params });
+  async getOwnerAlerts(
+    ownerId: string,
+    params?: Omit<AlertsQuery, 'ownerId'>,
+  ): Promise<PaginatedResponse<Alert>> {
+    const response: AxiosResponse<PaginatedResponse<Alert>> = await this.client.get(
+      `/v1/owners/${ownerId}/alerts`,
+      { params },
+    );
     return response.data;
   }
 
@@ -211,12 +241,17 @@ class APIClient {
 
   // Statements API
   async getOwnerStatements(ownerId: string): Promise<Statement[]> {
-    const response: AxiosResponse<Statement[]> = await this.client.get(`/v1/owners/${ownerId}/statements`);
+    const response: AxiosResponse<Statement[]> = await this.client.get(
+      `/v1/owners/${ownerId}/statements`,
+    );
     return response.data;
   }
 
   async generateStatement(request: GenerateStatementRequest): Promise<GenerateStatementResponse> {
-    const response: AxiosResponse<GenerateStatementResponse> = await this.client.post('/v1/statements/generate', request);
+    const response: AxiosResponse<GenerateStatementResponse> = await this.client.post(
+      '/v1/statements/generate',
+      request,
+    );
     return response.data;
   }
 

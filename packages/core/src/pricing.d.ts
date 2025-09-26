@@ -1,42 +1,51 @@
 import { z } from 'zod';
-export declare const PricingSuggestion: z.ZodObject<{
+export declare const PricingSuggestion: z.ZodObject<
+  {
     currentPrice: z.ZodNumber;
     suggestedPrice: z.ZodNumber;
     adjustmentPercent: z.ZodNumber;
     adjustmentAmount: z.ZodNumber;
     reason: z.ZodString;
     confidence: z.ZodEnum<{
-        low: "low";
-        medium: "medium";
-        high: "high";
+      low: 'low';
+      medium: 'medium';
+      high: 'high';
     }>;
     priority: z.ZodEnum<{
-        low: "low";
-        medium: "medium";
-        high: "high";
+      low: 'low';
+      medium: 'medium';
+      high: 'high';
     }>;
-    expectedImpact: z.ZodObject<{
+    expectedImpact: z.ZodObject<
+      {
         utilizationChange: z.ZodNumber;
         revenueChange: z.ZodNumber;
-    }, z.core.$strip>;
-}, z.core.$strip>;
+      },
+      z.core.$strip
+    >;
+  },
+  z.core.$strip
+>;
 export type PricingSuggestion = z.infer<typeof PricingSuggestion>;
-export declare const MarketConditions: z.ZodObject<{
+export declare const MarketConditions: z.ZodObject<
+  {
     demandLevel: z.ZodEnum<{
-        low: "low";
-        medium: "medium";
-        high: "high";
+      low: 'low';
+      medium: 'medium';
+      high: 'high';
     }>;
     competitorPricing: z.ZodOptional<z.ZodNumber>;
     seasonality: z.ZodOptional<z.ZodNumber>;
     networkCongestion: z.ZodOptional<z.ZodNumber>;
-}, z.core.$strip>;
+  },
+  z.core.$strip
+>;
 export type MarketConditions = z.infer<typeof MarketConditions>;
 export declare const PricingStrategy: z.ZodEnum<{
-    conservative: "conservative";
-    aggressive: "aggressive";
-    market_based: "market_based";
-    utilization_driven: "utilization_driven";
+  conservative: 'conservative';
+  aggressive: 'aggressive';
+  market_based: 'market_based';
+  utilization_driven: 'utilization_driven';
 }>;
 export type PricingStrategy = z.infer<typeof PricingStrategy>;
 /**
@@ -49,7 +58,14 @@ export type PricingStrategy = z.infer<typeof PricingStrategy>;
  * @param marketConditions Optional market conditions
  * @returns Pricing suggestion
  */
-export declare function suggestPriceAdjustment(currentUtilization: number, targetUtilization: number, currentPrice: number, queueDepth?: number, strategy?: PricingStrategy, marketConditions?: MarketConditions): PricingSuggestion;
+export declare function suggestPriceAdjustment(
+  currentUtilization: number,
+  targetUtilization: number,
+  currentPrice: number,
+  queueDepth?: number,
+  strategy?: PricingStrategy,
+  marketConditions?: MarketConditions,
+): PricingSuggestion;
 /**
  * Calculate optimal price point based on demand elasticity
  * @param currentPrice Current price per hour
@@ -58,24 +74,32 @@ export declare function suggestPriceAdjustment(currentUtilization: number, targe
  * @param targetUtilization Target utilization (0-1)
  * @returns Optimal price suggestion
  */
-export declare function calculateOptimalPrice(currentPrice: number, currentUtilization: number, demandElasticity: number, targetUtilization: number): number;
+export declare function calculateOptimalPrice(
+  currentPrice: number,
+  currentUtilization: number,
+  demandElasticity: number,
+  targetUtilization: number,
+): number;
 /**
  * Generate pricing recommendations for different time horizons
  * @param currentMetrics Current node performance metrics
  * @param targets Performance targets
  * @returns Short, medium, and long-term pricing recommendations
  */
-export declare function generatePricingRoadmap(currentMetrics: {
+export declare function generatePricingRoadmap(
+  currentMetrics: {
     utilization: number;
     price: number;
     queueDepth: number;
     revenueRunRate: number;
-}, targets: {
+  },
+  targets: {
     utilization: number;
     revenue: number;
-}): {
-    immediate: PricingSuggestion;
-    shortTerm: PricingSuggestion;
-    longTerm: PricingSuggestion;
+  },
+): {
+  immediate: PricingSuggestion;
+  shortTerm: PricingSuggestion;
+  longTerm: PricingSuggestion;
 };
 //# sourceMappingURL=pricing.d.ts.map

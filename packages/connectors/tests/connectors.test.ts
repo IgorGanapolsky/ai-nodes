@@ -15,10 +15,10 @@ describe('DePIN Connectors', () => {
         ConnectorNetwork.NOSANA,
         ConnectorNetwork.RENDER,
         ConnectorNetwork.GRASS,
-        ConnectorNetwork.NATIX
+        ConnectorNetwork.NATIX,
       ];
 
-      networks.forEach(network => {
+      networks.forEach((network) => {
         const connector = createConnector(network);
         expect(connector).toBeDefined();
       });
@@ -115,7 +115,7 @@ describe('DePIN Connectors', () => {
   describe('Apply Pricing', () => {
     test('should apply pricing in dry run mode', async () => {
       const connector = createConnector(ConnectorNetwork.IONET);
-      const result = await connector.applyPricing(deviceId, 1.50, true);
+      const result = await connector.applyPricing(deviceId, 1.5, true);
 
       expect(typeof result).toBe('boolean');
       expect(result).toBe(true); // Dry run should always succeed

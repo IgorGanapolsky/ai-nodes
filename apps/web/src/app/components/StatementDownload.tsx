@@ -56,7 +56,11 @@ interface StatementDownloadProps {
   showHistory?: boolean;
 }
 
-export function StatementDownload({ ownerId, ownerName, showHistory = false }: StatementDownloadProps) {
+export function StatementDownload({
+  ownerId,
+  ownerName,
+  showHistory = false,
+}: StatementDownloadProps) {
   const [selectedPeriod, setSelectedPeriod] = useState('current_month');
   const [selectedFormat, setSelectedFormat] = useState<'pdf' | 'csv' | 'json'>('pdf');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -130,11 +134,26 @@ export function StatementDownload({ ownerId, ownerName, showHistory = false }: S
   const getStatusBadge = (status: Statement['status']) => {
     switch (status) {
       case 'generated':
-        return <Badge className="gap-1"><CheckCircle className="h-3 w-3" />Ready</Badge>;
+        return (
+          <Badge className="gap-1">
+            <CheckCircle className="h-3 w-3" />
+            Ready
+          </Badge>
+        );
       case 'processing':
-        return <Badge variant="secondary" className="gap-1"><Clock className="h-3 w-3" />Processing</Badge>;
+        return (
+          <Badge variant="secondary" className="gap-1">
+            <Clock className="h-3 w-3" />
+            Processing
+          </Badge>
+        );
       case 'error':
-        return <Badge variant="destructive" className="gap-1"><AlertCircle className="h-3 w-3" />Error</Badge>;
+        return (
+          <Badge variant="destructive" className="gap-1">
+            <AlertCircle className="h-3 w-3" />
+            Error
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -149,9 +168,7 @@ export function StatementDownload({ ownerId, ownerName, showHistory = false }: S
             <Download className="h-5 w-5" />
             Generate Statement
           </CardTitle>
-          <CardDescription>
-            Create a new earnings statement for {ownerName}
-          </CardDescription>
+          <CardDescription>Create a new earnings statement for {ownerName}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -177,7 +194,10 @@ export function StatementDownload({ ownerId, ownerName, showHistory = false }: S
             {/* Format Selection */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Format</label>
-              <Select value={selectedFormat} onValueChange={(value: 'pdf' | 'csv' | 'json') => setSelectedFormat(value)}>
+              <Select
+                value={selectedFormat}
+                onValueChange={(value: 'pdf' | 'csv' | 'json') => setSelectedFormat(value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -218,9 +238,7 @@ export function StatementDownload({ ownerId, ownerName, showHistory = false }: S
               <FileText className="h-5 w-5" />
               Statement History
             </CardTitle>
-            <CardDescription>
-              Previously generated statements for {ownerName}
-            </CardDescription>
+            <CardDescription>Previously generated statements for {ownerName}</CardDescription>
           </CardHeader>
           <CardContent>
             {statementsLoading ? (
@@ -245,12 +263,16 @@ export function StatementDownload({ ownerId, ownerName, showHistory = false }: S
                     {statements.map((statement) => (
                       <TableRow key={statement.id}>
                         <TableCell className="font-medium">
-                          {statement.period.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          {statement.period
+                            .replace('_', ' ')
+                            .replace(/\b\w/g, (l) => l.toUpperCase())}
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">
                             <div>{formatDate(statement.startDate)}</div>
-                            <div className="text-muted-foreground">to {formatDate(statement.endDate)}</div>
+                            <div className="text-muted-foreground">
+                              to {formatDate(statement.endDate)}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -267,9 +289,7 @@ export function StatementDownload({ ownerId, ownerName, showHistory = false }: S
                             </span>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          {getStatusBadge(statement.status)}
-                        </TableCell>
+                        <TableCell>{getStatusBadge(statement.status)}</TableCell>
                         <TableCell>
                           <div className="text-sm text-muted-foreground">
                             {formatDate(statement.generatedAt)}

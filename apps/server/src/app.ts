@@ -1,6 +1,8 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
+import swagger from '@fastify/swagger';
+import swaggerUi from '@fastify/swagger-ui';
 import type { FastifyInstance } from 'fastify';
 
 // Import route modules
@@ -26,6 +28,22 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   await app.register(helmet, {
     contentSecurityPolicy: false,
+  });
+
+  // OpenAPI/Swagger for API docs
+  await app.register(swagger, {
+    openapi: {
+      info: {
+        title: 'DePIN Autopilot API',
+        version: '1.0.0',
+        description: 'Fastify API for owners, devices, metrics, actions, and statements.',
+      },
+      servers: [{ url: `http://localhost:${process.env.PORT || 4000}` }],
+    },
+  });
+
+  await app.register(swaggerUi, {
+    routePrefix: '/docs',
   });
 
   // Register routes

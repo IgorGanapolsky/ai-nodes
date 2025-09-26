@@ -41,6 +41,7 @@ This repository includes an advanced self-healing CI system that automatically d
 ### Trigger Conditions
 
 The self-healing system activates when:
+
 - The main CI workflow fails
 - Manual trigger via workflow_dispatch
 - Specific failure patterns are detected
@@ -120,9 +121,9 @@ notifications:
   github:
     create_issues: true
     labels:
-      - "ci-failure"
-      - "auto-heal"
-      - "needs-review"
+      - 'ci-failure'
+      - 'auto-heal'
+      - 'needs-review'
 ```
 
 ## 🛠️ Manual Usage
@@ -161,6 +162,7 @@ node .github/scripts/healing-utils.js all
 ### Success Tracking
 
 The system tracks:
+
 - Healing attempt frequency
 - Success rates by failure type
 - Time to resolve issues
@@ -170,6 +172,7 @@ The system tracks:
 ### GitHub Issues
 
 When complex issues occur:
+
 - Automatic GitHub issues are created
 - Detailed diagnosis reports are included
 - Suggested manual fixes are provided
@@ -190,6 +193,7 @@ The system includes several safety measures:
 ### File Protection
 
 These files are never automatically modified:
+
 - `package.json` (only lockfile updates)
 - Core configuration files
 - Security-related files
@@ -222,19 +226,19 @@ strategies:
   dependencies:
     conflicts:
       react:
-        strategy: "pin_to_latest_stable"
-        version: "^18.3.0"
+        strategy: 'pin_to_latest_stable'
+        version: '^18.3.0'
 
   lint:
     eslint:
       auto_fix: true
       ignore_patterns:
-        - "*.d.ts"
-        - "build/"
+        - '*.d.ts'
+        - 'build/'
 
   types:
     typescript:
-      suppression_method: "comment"
+      suppression_method: 'comment'
       add_type_assertions: true
 
   tests:
@@ -269,6 +273,7 @@ ai_diagnosis:
 ### Monitoring
 
 Track these KPIs:
+
 - Mean Time To Recovery (MTTR)
 - Healing success rate by category
 - False positive rate
@@ -320,6 +325,7 @@ If you encounter issues:
 ### Architecture
 
 The system consists of:
+
 - **Main Workflow** (`.github/workflows/self-heal.yml`)
 - **Healing Utilities** (`.github/scripts/healing-utils.js`)
 - **Configuration** (`.github/self-heal.config.yml`)
@@ -335,16 +341,17 @@ The system consists of:
 
 ```yaml
 permissions:
-  contents: write      # For creating commits and branches
+  contents: write # For creating commits and branches
   pull-requests: write # For creating healing PRs
-  actions: write       # For triggering workflow re-runs
-  checks: read         # For reading CI status
-  issues: write        # For creating diagnostic issues
+  actions: write # For triggering workflow re-runs
+  checks: read # For reading CI status
+  issues: write # For creating diagnostic issues
 ```
 
 ## 🔮 Future Enhancements
 
 Planned improvements:
+
 - Machine learning for better failure prediction
 - Integration with external monitoring tools
 - Advanced dependency vulnerability healing
@@ -353,4 +360,4 @@ Planned improvements:
 
 ---
 
-*This self-healing CI system is designed to maintain high availability while learning from failures. It's a safety net that helps maintain productivity, but should not replace good development practices.*
+_This self-healing CI system is designed to maintain high availability while learning from failures. It's a safety net that helps maintain productivity, but should not replace good development practices._

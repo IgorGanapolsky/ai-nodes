@@ -138,7 +138,7 @@ export interface OnPaceCalculation {
 export function calculateOnPaceStatus(
   actualEarnings: number,
   targetEarnings: number,
-  periodProgress?: number // 0-1, how much of the period has elapsed
+  periodProgress?: number, // 0-1, how much of the period has elapsed
 ): OnPaceCalculation {
   if (targetEarnings <= 0) {
     return {
@@ -260,7 +260,7 @@ export function getUptimeStatus(uptime: number): {
  */
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
-  waitFor: number
+  waitFor: number,
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
 

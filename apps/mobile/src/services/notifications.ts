@@ -86,7 +86,7 @@ export class NotificationService {
     title: string,
     body: string,
     data?: any,
-    channelId: string = 'default'
+    channelId: string = 'default',
   ): Promise<string> {
     return await Notifications.scheduleNotificationAsync({
       content: {
@@ -105,7 +105,7 @@ export class NotificationService {
       'Node Offline',
       `${nodeName} has gone offline. Check your node status.`,
       { type: 'node_offline', nodeId },
-      'alerts'
+      'alerts',
     );
   }
 
@@ -114,7 +114,7 @@ export class NotificationService {
       'Earnings Target Reached',
       `You've earned $${amount.toFixed(2)}! Target: $${target.toFixed(2)}`,
       { type: 'earnings_target', amount, target },
-      'earnings'
+      'earnings',
     );
   }
 
@@ -123,7 +123,7 @@ export class NotificationService {
       'Low Performance Warning',
       `${nodeName} performance is at ${performance}%. Consider maintenance.`,
       { type: 'low_performance', nodeName, performance },
-      'alerts'
+      'alerts',
     );
   }
 
@@ -132,7 +132,7 @@ export class NotificationService {
       'Auto-Reinvest Complete',
       `Successfully reinvested $${amount.toFixed(2)} into new nodes.`,
       { type: 'reinvest_complete', amount },
-      'earnings'
+      'earnings',
     );
   }
 
@@ -165,7 +165,7 @@ export class NotificationService {
   }
 
   addNotificationResponseReceivedListener(
-    listener: (response: Notifications.NotificationResponse) => void
+    listener: (response: Notifications.NotificationResponse) => void,
   ) {
     return Notifications.addNotificationResponseReceivedListener(listener);
   }

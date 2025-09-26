@@ -58,7 +58,7 @@ class DatabaseBackup {
 
       // Get all tables
       const allTables = await this.getAllTables();
-      const backupTables = tables || allTables.filter(table => !excludeTables.includes(table));
+      const backupTables = tables || allTables.filter((table) => !excludeTables.includes(table));
 
       console.log(`📊 Backing up ${backupTables.length} tables: ${backupTables.join(', ')}`);
 
@@ -114,21 +114,24 @@ class DatabaseBackup {
       console.log('✅ Backup completed successfully!');
       console.log(`📁 Backup saved to: ${finalBackupPath}`);
       console.log(`📊 Total size: ${this.formatBytes(finalStats.size)}`);
-      console.log(`📈 Total records: ${Object.values(recordCounts).reduce((sum, count) => sum + count, 0)}`);
+      console.log(
+        `📈 Total records: ${Object.values(recordCounts).reduce((sum, count) => sum + count, 0)}`,
+      );
 
       return { backupPath: finalBackupPath, metadata };
-
     } catch (error) {
       console.error('❌ Backup failed:', error);
       throw error;
     }
   }
 
-  async listBackups(backupDir?: string): Promise<Array<{
-    path: string;
-    metadata: BackupMetadata;
-    created: Date;
-  }>> {
+  async listBackups(backupDir?: string): Promise<
+    Array<{
+      path: string;
+      metadata: BackupMetadata;
+      created: Date;
+    }>
+  > {
     const dir = backupDir || path.join(process.cwd(), 'backups');
 
     try {
@@ -166,12 +169,12 @@ class DatabaseBackup {
   async cleanupOldBackups(
     retentionDays: number = 30,
     keepMinimum: number = 5,
-    backupDir?: string
+    backupDir?: string,
   ): Promise<number> {
     const backups = await this.listBackups(backupDir);
     const cutoffDate = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000);
 
-    const oldBackups = backups.filter(backup => backup.created < cutoffDate);
+    const oldBackups = backups.filter((backup) => backup.created < cutoffDate);
     const toDelete = oldBackups.slice(keepMinimum);
 
     let deletedCount = 0;
@@ -214,7 +217,7 @@ class DatabaseBackup {
     const sqlStatements = result
       .map((row: any) => row.sql)
       .filter(Boolean)
-      .map(sql => `${sql};`);
+      .map((sql) => `${sql};`);
 
     return '-- Schema\n' + sqlStatements.join('\n') + '\n\n-- Data\n';
   }
@@ -237,7 +240,7 @@ class DatabaseBackup {
     sql += `DELETE FROM ${tableName};\n`;
 
     const insertStatements = rows.map((row: any) => {
-      const values = columnNames.map(col => {
+      const values = columnNames.map((col) => {
         const value = row[col];
         if (value === null) return 'NULL';
         if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
@@ -300,7 +303,9 @@ async function main() {
       console.log(`     Created: ${backup.created.toLocaleString()}`);
       console.log(`     Size: ${backup.metadata.size} bytes`);
       console.log(`     Tables: ${backup.metadata.tables.length}`);
-      console.log(`     Records: ${Object.values(backup.metadata.recordCounts).reduce((sum, count) => sum + count, 0)}`);
+      console.log(
+        `     Records: ${Object.values(backup.metadata.recordCounts).reduce((sum, count) => sum + count, 0)}`,
+      );
       console.log();
     });
 
@@ -311,7 +316,9 @@ async function main() {
     const retentionDays = parseInt(args[args.indexOf('--retention') + 1]) || 30;
     const keepMinimum = parseInt(args[args.indexOf('--keep') + 1]) || 5;
 
-    console.log(`🧹 Cleaning up backups older than ${retentionDays} days (keeping minimum ${keepMinimum})`);
+    console.log(
+      `🧹 Cleaning up backups older than ${retentionDays} days (keeping minimum ${keepMinimum})`,
+    );
     const deletedCount = await backup.cleanupOldBackups(retentionDays, keepMinimum);
     console.log(`✅ Deleted ${deletedCount} old backups`);
     return;

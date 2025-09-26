@@ -1,19 +1,25 @@
 import { z } from 'zod';
-export declare const RevShareResult: z.ZodObject<{
+export declare const RevShareResult: z.ZodObject<
+  {
     myCutUsd: z.ZodNumber;
     ownerCutUsd: z.ZodNumber;
     grossUsd: z.ZodNumber;
     revSharePct: z.ZodNumber;
-}, z.core.$strip>;
+  },
+  z.core.$strip
+>;
 export type RevShareResult = z.infer<typeof RevShareResult>;
-export declare const UtilizationResult: z.ZodObject<{
+export declare const UtilizationResult: z.ZodObject<
+  {
     targetUtilization: z.ZodNumber;
     requiredHours: z.ZodNumber;
     totalHours: z.ZodNumber;
     targetMonthlyGross: z.ZodNumber;
     currentPricePerHour: z.ZodNumber;
     daysInMonth: z.ZodNumber;
-}, z.core.$strip>;
+  },
+  z.core.$strip
+>;
 export type UtilizationResult = z.infer<typeof UtilizationResult>;
 /**
  * Calculate revenue sharing between operator and node owner
@@ -29,7 +35,11 @@ export declare function computeRevShare(grossUsd: number, revSharePct: number): 
  * @param daysInMonth Number of days in the month (default: 30)
  * @returns Target utilization calculation result
  */
-export declare function calculateTargetUtilization(targetMonthlyGross: number, currentPricePerHour: number, daysInMonth?: number): UtilizationResult;
+export declare function calculateTargetUtilization(
+  targetMonthlyGross: number,
+  currentPricePerHour: number,
+  daysInMonth?: number,
+): UtilizationResult;
 /**
  * Calculate actual monthly gross revenue based on utilization and pricing
  * @param utilizationPct Current utilization percentage (0-1)
@@ -37,7 +47,11 @@ export declare function calculateTargetUtilization(targetMonthlyGross: number, c
  * @param daysInMonth Number of days in the month (default: 30)
  * @returns Projected monthly gross revenue
  */
-export declare function calculateMonthlyGross(utilizationPct: number, pricePerHour: number, daysInMonth?: number): number;
+export declare function calculateMonthlyGross(
+  utilizationPct: number,
+  pricePerHour: number,
+  daysInMonth?: number,
+): number;
 /**
  * Calculate revenue gap between target and current performance
  * @param targetMonthlyGross Target monthly gross revenue
@@ -46,10 +60,15 @@ export declare function calculateMonthlyGross(utilizationPct: number, pricePerHo
  * @param daysInMonth Number of days in the month
  * @returns Revenue gap information
  */
-export declare function calculateRevenueGap(targetMonthlyGross: number, currentUtilization: number, currentPricePerHour: number, daysInMonth?: number): {
-    revenueGapUsd: number;
-    currentMonthlyGross: number;
-    gapPercentage: number;
-    isTargetMet: boolean;
+export declare function calculateRevenueGap(
+  targetMonthlyGross: number,
+  currentUtilization: number,
+  currentPricePerHour: number,
+  daysInMonth?: number,
+): {
+  revenueGapUsd: number;
+  currentMonthlyGross: number;
+  gapPercentage: number;
+  isTargetMet: boolean;
 };
 //# sourceMappingURL=revenue.d.ts.map

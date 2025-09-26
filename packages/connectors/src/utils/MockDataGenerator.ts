@@ -6,7 +6,7 @@ import {
   NodeMetrics,
   PricingStrategy,
   Period,
-  ConnectorType
+  ConnectorType,
 } from '../interfaces/types';
 
 /**
@@ -14,23 +14,44 @@ import {
  */
 export class MockDataGenerator {
   private static readonly SAMPLE_COUNTRIES = [
-    'United States', 'Germany', 'Singapore', 'Canada', 'Japan',
-    'United Kingdom', 'Netherlands', 'France', 'Australia', 'South Korea'
+    'United States',
+    'Germany',
+    'Singapore',
+    'Canada',
+    'Japan',
+    'United Kingdom',
+    'Netherlands',
+    'France',
+    'Australia',
+    'South Korea',
   ];
 
   private static readonly SAMPLE_REGIONS = [
-    'us-east-1', 'eu-west-1', 'ap-southeast-1', 'us-west-2',
-    'eu-central-1', 'ap-northeast-1', 'ca-central-1'
+    'us-east-1',
+    'eu-west-1',
+    'ap-southeast-1',
+    'us-west-2',
+    'eu-central-1',
+    'ap-northeast-1',
+    'ca-central-1',
   ];
 
   private static readonly GPU_MODELS = [
-    'NVIDIA RTX 4090', 'NVIDIA RTX 4080', 'NVIDIA RTX 3090',
-    'NVIDIA A100', 'NVIDIA H100', 'AMD RX 7900 XTX'
+    'NVIDIA RTX 4090',
+    'NVIDIA RTX 4080',
+    'NVIDIA RTX 3090',
+    'NVIDIA A100',
+    'NVIDIA H100',
+    'AMD RX 7900 XTX',
   ];
 
   private static readonly CPU_MODELS = [
-    'Intel i9-13900K', 'AMD Ryzen 9 7950X', 'Intel Xeon Gold 6248R',
-    'AMD EPYC 7742', 'Apple M2 Ultra', 'Intel i7-13700K'
+    'Intel i9-13900K',
+    'AMD Ryzen 9 7950X',
+    'Intel Xeon Gold 6248R',
+    'AMD EPYC 7742',
+    'Apple M2 Ultra',
+    'Intel i7-13700K',
   ];
 
   /**
@@ -67,30 +88,32 @@ export class MockDataGenerator {
    * Generate mock node specifications
    */
   static generateNodeSpecs(connectorType: ConnectorType): NodeSpecs {
-    const hasGpu = [ConnectorType.IONET, ConnectorType.RENDER, ConnectorType.OWNAI].includes(connectorType);
+    const hasGpu = [ConnectorType.IONET, ConnectorType.RENDER, ConnectorType.OWNAI].includes(
+      connectorType,
+    );
 
     return {
       cpu: {
         cores: this.randomChoice([8, 16, 24, 32, 64]),
         model: this.randomChoice(this.CPU_MODELS),
-        frequency: this.random(2.5, 5.0)
+        frequency: this.random(2.5, 5.0),
       },
       memory: {
         total: this.randomChoice([16, 32, 64, 128, 256]),
-        available: this.random(12, 24)
+        available: this.random(12, 24),
       },
       storage: {
         total: this.randomChoice([512, 1000, 2000, 4000]),
         available: this.random(100, 500),
-        type: this.randomChoice(['SSD', 'NVMe'])
+        type: this.randomChoice(['SSD', 'NVMe']),
       },
       ...(hasGpu && {
         gpu: {
           model: this.randomChoice(this.GPU_MODELS),
           memory: this.randomChoice([8, 12, 16, 24, 48, 80]),
-          compute: this.random(20, 165) // TFLOPS
-        }
-      })
+          compute: this.random(20, 165), // TFLOPS
+        },
+      }),
     };
   }
 
@@ -104,25 +127,25 @@ export class MockDataGenerator {
     return {
       id: this.generateNodeId(connectorType),
       name: `Node-${this.randomInt(1000, 9999)}`,
-      status: isOnline ?
-        this.randomChoice(['online', 'online', 'online', 'maintenance']) as any :
-        'offline',
+      status: isOnline
+        ? (this.randomChoice(['online', 'online', 'online', 'maintenance']) as any)
+        : 'offline',
       uptime: this.randomInt(3600, 2592000), // 1 hour to 30 days
       lastSeen: new Date(Date.now() - this.randomInt(0, 300000)), // Within last 5 minutes
       health: {
         cpu: this.random(20, 85),
         memory: this.random(30, 75),
         storage: this.random(15, 60),
-        network: this.random(100, 1000)
+        network: this.random(100, 1000),
       },
       location: {
         country: this.randomChoice(this.SAMPLE_COUNTRIES),
         region: this.randomChoice(this.SAMPLE_REGIONS),
         latitude: this.random(-90, 90),
-        longitude: this.random(-180, 180)
+        longitude: this.random(-180, 180),
       },
       version: `v${this.randomInt(1, 3)}.${this.randomInt(0, 9)}.${this.randomInt(0, 9)}`,
-      specs
+      specs,
     };
   }
 
@@ -133,7 +156,13 @@ export class MockDataGenerator {
     const transactions: Transaction[] = [];
 
     for (let i = 0; i < count; i++) {
-      const type = this.randomChoice(['earnings', 'earnings', 'earnings', 'bonus', 'staking_reward']) as any;
+      const type = this.randomChoice([
+        'earnings',
+        'earnings',
+        'earnings',
+        'bonus',
+        'staking_reward',
+      ]) as any;
       const amount = type === 'earnings' ? this.random(0.1, 5.0) : this.random(5.0, 50.0);
 
       transactions.push({
@@ -142,7 +171,7 @@ export class MockDataGenerator {
         amount,
         type,
         description: this.generateTransactionDescription(type, amount),
-        txHash: `0x${Math.random().toString(16).substring(2, 66)}`
+        txHash: `0x${Math.random().toString(16).substring(2, 66)}`,
       });
     }
 
@@ -171,7 +200,9 @@ export class MockDataGenerator {
    * Generate mock earnings
    */
   static generateEarnings(period: Period, connectorType: ConnectorType): Earnings {
-    const daysInPeriod = Math.ceil((period.end.getTime() - period.start.getTime()) / (1000 * 60 * 60 * 24));
+    const daysInPeriod = Math.ceil(
+      (period.end.getTime() - period.start.getTime()) / (1000 * 60 * 60 * 24),
+    );
     const dailyEarnings = this.random(1, 20);
     const total = dailyEarnings * daysInPeriod;
 
@@ -185,26 +216,26 @@ export class MockDataGenerator {
       case ConnectorType.OWNAI:
         breakdown = {
           compute: total * 0.8,
-          rewards: total * 0.2
+          rewards: total * 0.2,
         };
         break;
       case ConnectorType.GRASS:
         breakdown = {
           bandwidth: total * 0.9,
-          rewards: total * 0.1
+          rewards: total * 0.1,
         };
         break;
       case ConnectorType.NOSANA:
         breakdown = {
           compute: total * 0.7,
-          staking: total * 0.3
+          staking: total * 0.3,
         };
         break;
       default:
         breakdown = {
           compute: total * 0.6,
           storage: total * 0.2,
-          rewards: total * 0.2
+          rewards: total * 0.2,
         };
     }
 
@@ -215,7 +246,7 @@ export class MockDataGenerator {
       breakdown,
       transactions,
       projectedMonthly: dailyEarnings * 30,
-      projectedYearly: dailyEarnings * 365
+      projectedYearly: dailyEarnings * 365,
     };
   }
 
@@ -257,31 +288,31 @@ export class MockDataGenerator {
         tasksActive,
         tasksFailed,
         averageTaskDuration: this.random(60, 3600),
-        successRate: ((tasksCompleted / (tasksCompleted + tasksFailed)) * 100)
+        successRate: (tasksCompleted / (tasksCompleted + tasksFailed)) * 100,
       },
       resource_utilization: {
         cpu: this.random(20, 85),
         memory: this.random(30, 75),
         storage: this.random(15, 60),
         bandwidth: this.random(50, 500),
-        ...(this.hasGpu(connectorType) && { gpu: this.random(40, 95) })
+        ...(this.hasGpu(connectorType) && { gpu: this.random(40, 95) }),
       },
       earnings: {
         hourly: this.random(0.5, 5.0),
         daily: this.random(10, 100),
         weekly: this.random(70, 700),
-        monthly: this.random(300, 3000)
+        monthly: this.random(300, 3000),
       },
       network: {
         latency: this.random(10, 100),
         throughput: this.random(100, 1000),
-        uptime: this.random(95, 99.9)
+        uptime: this.random(95, 99.9),
       },
       reputation: {
         score: this.random(7.5, 9.8),
         rank: this.randomInt(1, 10000),
-        totalNodes: this.randomInt(50000, 200000)
-      }
+        totalNodes: this.randomInt(50000, 200000),
+      },
     };
   }
 
@@ -304,23 +335,23 @@ export class MockDataGenerator {
         memory: basePrice * 0.1,
         storage: basePrice * 0.05,
         bandwidth: basePrice * 0.01,
-        ...(this.hasGpu(connectorType) && { gpu: basePrice * 10 })
+        ...(this.hasGpu(connectorType) && { gpu: basePrice * 10 }),
       },
       market: {
         average: basePrice * this.random(0.9, 1.1),
         minimum: basePrice * this.random(0.5, 0.8),
-        maximum: basePrice * this.random(1.2, 2.0)
+        maximum: basePrice * this.random(1.2, 2.0),
       },
       optimization: {
         suggestion: this.randomChoice([
           'Increase pricing by 15% to match market average',
           'Lower pricing by 10% to increase demand',
           'Current pricing is optimal',
-          'Consider premium pricing for high-spec nodes'
+          'Consider premium pricing for high-spec nodes',
         ]),
         expectedIncrease: this.random(-10, 25),
-        confidenceScore: this.random(0.6, 0.95)
-      }
+        confidenceScore: this.random(0.6, 0.95),
+      },
     };
   }
 

@@ -18,7 +18,7 @@ export const NotificationType = z.enum([
   'high_utilization',
   'low_utilization',
   'maintenance_reminder',
-  'custom'
+  'custom',
 ]);
 export type NotificationType = z.infer<typeof NotificationType>;
 
@@ -44,12 +44,12 @@ export interface Field {
 
 // Discord embed color mapping
 export const EmbedColors = {
-  low: 0x95a5a6,      // Gray
-  medium: 0xf39c12,   // Orange
-  high: 0xe74c3c,     // Red
+  low: 0x95a5a6, // Gray
+  medium: 0xf39c12, // Orange
+  high: 0xe74c3c, // Red
   critical: 0x8b0000, // Dark red
-  success: 0x27ae60,  // Green
-  info: 0x3498db,     // Blue
+  success: 0x27ae60, // Green
+  info: 0x3498db, // Blue
 } as const;
 
 // Notification preferences per owner
@@ -80,7 +80,7 @@ export interface NotificationPreferences {
   quiet_hours?: {
     enabled: boolean;
     start: string; // HH:mm format
-    end: string;   // HH:mm format
+    end: string; // HH:mm format
     timezone: string;
   };
 }
@@ -226,7 +226,7 @@ export class NotificationError extends Error {
   constructor(
     message: string,
     public channel: NotificationChannel,
-    public originalError?: Error
+    public originalError?: Error,
   ) {
     super(message);
     this.name = 'NotificationError';

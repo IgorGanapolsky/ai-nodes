@@ -45,14 +45,21 @@ export declare function generateSha512(data: string): string;
 /**
  * Hash password with salt using scrypt
  */
-export declare function hashPassword(password: string, salt?: Buffer): {
-    hash: string;
-    salt: string;
+export declare function hashPassword(
+  password: string,
+  salt?: Buffer,
+): {
+  hash: string;
+  salt: string;
 };
 /**
  * Verify password against hash
  */
-export declare function verifyPassword(password: string, hashedPassword: string, salt: string): boolean;
+export declare function verifyPassword(
+  password: string,
+  hashedPassword: string,
+  salt: string,
+): boolean;
 /**
  * Generate API key with prefix
  */
@@ -136,11 +143,20 @@ export declare function generateEntropy(bits?: number): Buffer;
 /**
  * Generate a HMAC signature
  */
-export declare function generateHmacSignature(data: string, secret: string, algorithm?: string): string;
+export declare function generateHmacSignature(
+  data: string,
+  secret: string,
+  algorithm?: string,
+): string;
 /**
  * Verify HMAC signature
  */
-export declare function verifyHmacSignature(data: string, signature: string, secret: string, algorithm?: string): boolean;
+export declare function verifyHmacSignature(
+  data: string,
+  signature: string,
+  secret: string,
+  algorithm?: string,
+): boolean;
 /**
  * Generate database-safe ID (alphanumeric only)
  */

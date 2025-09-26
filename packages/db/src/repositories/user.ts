@@ -27,7 +27,7 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<UserFilters, 'role'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<User>> {
     return this.findMany({
       filters: { ...options.filters, role },
@@ -49,7 +49,10 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
   }
 
   // Update user
-  async updateUser(userId: string, userData: Partial<Omit<NewUser, 'id' | 'createdAt'>>): Promise<User | null> {
+  async updateUser(
+    userId: string,
+    userData: Partial<Omit<NewUser, 'id' | 'createdAt'>>,
+  ): Promise<User | null> {
     const updateData = {
       ...userData,
       updatedAt: new Date(),
@@ -78,10 +81,9 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
       .where(eq(this.table.email, email.toLowerCase()));
 
     if (excludeUserId) {
-      query = query.where(and(
-        eq(this.table.email, email.toLowerCase()),
-        sql`${this.table.id} != ${excludeUserId}`
-      ));
+      query = query.where(
+        and(eq(this.table.email, email.toLowerCase()), sql`${this.table.id} != ${excludeUserId}`),
+      );
     }
 
     const result = await query.limit(1);
@@ -95,9 +97,7 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
     recentSignups: number;
   }> {
     // Get total count
-    const totalResult = await this.db
-      .select({ count: count() })
-      .from(this.table);
+    const totalResult = await this.db.select({ count: count() }).from(this.table);
 
     // Get role breakdown
     const roleResult = await this.db
@@ -119,10 +119,13 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
 
     return {
       total: totalResult[0]?.count || 0,
-      byRole: roleResult.reduce((acc, { role, count }) => {
-        acc[role] = count;
-        return acc;
-      }, {} as Record<string, number>),
+      byRole: roleResult.reduce(
+        (acc, { role, count }) => {
+          acc[role] = count;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
       recentSignups: recentResult[0]?.count || 0,
     };
   }
@@ -133,18 +136,16 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
     options: {
       pagination?: PaginationOptions;
       filters?: UserFilters;
-    } = {}
+    } = {},
   ): Promise<QueryResult<User>> {
     const searchTerm = `%${query.toLowerCase()}%`;
 
-    let whereConditions = [
-      sql`lower(${this.table.email}) LIKE ${searchTerm}`
-    ];
+    let whereConditions = [sql`lower(${this.table.email}) LIKE ${searchTerm}`];
 
     // Add additional filters
     if (options.filters?.role) {
       if (Array.isArray(options.filters.role)) {
-        whereConditions.push(or(...options.filters.role.map(r => eq(this.table.role, r))));
+        whereConditions.push(or(...options.filters.role.map((r) => eq(this.table.role, r))));
       } else {
         whereConditions.push(eq(this.table.role, options.filters.role));
       }
@@ -183,7 +184,7 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
     options: {
       pagination?: PaginationOptions;
       filters?: UserFilters;
-    } = {}
+    } = {},
   ): Promise<QueryResult<User & { nodeCount: number }>> {
     const { pagination = {}, filters = {} } = options;
     const limit = pagination.limit || 50;
@@ -193,7 +194,7 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
 
     if (filters.role) {
       if (Array.isArray(filters.role)) {
-        whereConditions.push(or(...filters.role.map(r => eq(this.table.role, r))));
+        whereConditions.push(or(...filters.role.map((r) => eq(this.table.role, r))));
       } else {
         whereConditions.push(eq(this.table.role, filters.role));
       }
@@ -249,9 +250,7 @@ export class UserRepository extends BaseRepository<typeof users, User, NewUser> 
   }
 
   // Get user activity summary
-  async getUserActivity(
-    userId: string
-  ): Promise<{
+  async getUserActivity(userId: string): Promise<{
     nodeCount: number;
     totalEarnings: number;
     activeAlerts: number;

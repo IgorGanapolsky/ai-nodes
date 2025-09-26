@@ -77,11 +77,15 @@ export declare function validateAndNormalizePhone(phone: string): string;
 /**
  * Create validation middleware for request bodies
  */
-export declare function createValidationMiddleware<T>(schema: z.ZodSchema<T>): (req: any, res: any, next: any) => any;
+export declare function createValidationMiddleware<T>(
+  schema: z.ZodSchema<T>,
+): (req: any, res: any, next: any) => any;
 /**
  * Create validation middleware for query parameters
  */
-export declare function createQueryValidationMiddleware<T>(schema: z.ZodSchema<T>): (req: any, res: any, next: any) => any;
+export declare function createQueryValidationMiddleware<T>(
+  schema: z.ZodSchema<T>,
+): (req: any, res: any, next: any) => any;
 /**
  * Validate array of items against schema
  */
@@ -93,14 +97,20 @@ export declare function validatePartial<T>(data: unknown, schema: z.ZodSchema<T>
 /**
  * Transform and validate data with custom transformations
  */
-export declare function transformAndValidate<T, U>(data: T, transformer: (data: T) => unknown, schema: z.ZodSchema<U>): U;
-export type ValidationResult<T> = {
-    success: true;
-    data: T;
-} | {
-    success: false;
-    errors: z.ZodError;
-};
+export declare function transformAndValidate<T, U>(
+  data: T,
+  transformer: (data: T) => unknown,
+  schema: z.ZodSchema<U>,
+): U;
+export type ValidationResult<T> =
+  | {
+      success: true;
+      data: T;
+    }
+  | {
+      success: false;
+      errors: z.ZodError;
+    };
 /**
  * Safe validation that returns result instead of throwing
  */

@@ -8,24 +8,24 @@ const config = new Conf({
   schema: {
     apiUrl: {
       type: 'string',
-      default: 'http://localhost:3001'
+      default: 'http://localhost:3001',
     },
     defaultTimeframe: {
       type: 'string',
-      default: '24h'
+      default: '24h',
     },
     theme: {
       type: 'string',
-      default: 'auto'
+      default: 'auto',
     },
     notifications: {
       type: 'object',
       properties: {
         enabled: { type: 'boolean', default: true },
-        level: { type: 'string', default: 'medium' }
-      }
-    }
-  }
+        level: { type: 'string', default: 'medium' },
+      },
+    },
+  },
 });
 
 export const configCommand = new Command('config')
@@ -49,7 +49,7 @@ export const configCommand = new Command('config')
         Object.entries(settings).forEach(([key, value]) => {
           console.log(`${chalk.yellow(key)}: ${JSON.stringify(value)}`);
         });
-      })
+      }),
   )
   .addCommand(
     new Command('get')
@@ -62,7 +62,7 @@ export const configCommand = new Command('config')
           return;
         }
         console.log(JSON.stringify(value));
-      })
+      }),
   )
   .addCommand(
     new Command('set')
@@ -82,79 +82,81 @@ export const configCommand = new Command('config')
           config.set(key, parsedValue);
           console.log(chalk.green(`✅ Set ${key} = ${JSON.stringify(parsedValue)}`));
         } catch (error) {
-          console.error(chalk.red(`Failed to set configuration: ${error instanceof Error ? error.message : 'Unknown error'}`));
+          console.error(
+            chalk.red(
+              `Failed to set configuration: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            ),
+          );
         }
-      })
+      }),
   )
   .addCommand(
-    new Command('setup')
-      .description('Interactive configuration setup')
-      .action(async () => {
-        console.log(chalk.cyan('🔧 DePIN Autopilot Configuration Setup'));
-        console.log(chalk.gray('Configure your CLI preferences:\n'));
+    new Command('setup').description('Interactive configuration setup').action(async () => {
+      console.log(chalk.cyan('🔧 DePIN Autopilot Configuration Setup'));
+      console.log(chalk.gray('Configure your CLI preferences:\n'));
 
-        const answers = await inquirer.prompt([
-          {
-            type: 'input',
-            name: 'apiUrl',
-            message: 'API Server URL:',
-            default: config.get('apiUrl'),
-            validate: (input) => {
-              try {
-                new URL(input);
-                return true;
-              } catch {
-                return 'Please enter a valid URL';
-              }
+      const answers = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'apiUrl',
+          message: 'API Server URL:',
+          default: config.get('apiUrl'),
+          validate: (input) => {
+            try {
+              new URL(input);
+              return true;
+            } catch {
+              return 'Please enter a valid URL';
             }
           },
+        },
+        {
+          type: 'list',
+          name: 'defaultTimeframe',
+          message: 'Default metrics timeframe:',
+          choices: ['1h', '24h', '7d', '30d'],
+          default: config.get('defaultTimeframe'),
+        },
+        {
+          type: 'list',
+          name: 'theme',
+          message: 'Color theme:',
+          choices: ['auto', 'light', 'dark'],
+          default: config.get('theme'),
+        },
+        {
+          type: 'confirm',
+          name: 'notificationsEnabled',
+          message: 'Enable notifications:',
+          default: config.get('notifications.enabled'),
+        },
+      ]);
+
+      if (answers.notificationsEnabled) {
+        const notificationLevel = await inquirer.prompt([
           {
             type: 'list',
-            name: 'defaultTimeframe',
-            message: 'Default metrics timeframe:',
-            choices: ['1h', '24h', '7d', '30d'],
-            default: config.get('defaultTimeframe')
+            name: 'level',
+            message: 'Notification level:',
+            choices: ['low', 'medium', 'high', 'critical'],
+            default: config.get('notifications.level'),
           },
-          {
-            type: 'list',
-            name: 'theme',
-            message: 'Color theme:',
-            choices: ['auto', 'light', 'dark'],
-            default: config.get('theme')
-          },
-          {
-            type: 'confirm',
-            name: 'notificationsEnabled',
-            message: 'Enable notifications:',
-            default: config.get('notifications.enabled')
-          }
         ]);
+        answers.notificationsLevel = notificationLevel.level;
+      }
 
-        if (answers.notificationsEnabled) {
-          const notificationLevel = await inquirer.prompt([
-            {
-              type: 'list',
-              name: 'level',
-              message: 'Notification level:',
-              choices: ['low', 'medium', 'high', 'critical'],
-              default: config.get('notifications.level')
-            }
-          ]);
-          answers.notificationsLevel = notificationLevel.level;
-        }
+      // Save configuration
+      config.set('apiUrl', answers.apiUrl);
+      config.set('defaultTimeframe', answers.defaultTimeframe);
+      config.set('theme', answers.theme);
+      config.set('notifications.enabled', answers.notificationsEnabled);
+      if (answers.notificationsLevel) {
+        config.set('notifications.level', answers.notificationsLevel);
+      }
 
-        // Save configuration
-        config.set('apiUrl', answers.apiUrl);
-        config.set('defaultTimeframe', answers.defaultTimeframe);
-        config.set('theme', answers.theme);
-        config.set('notifications.enabled', answers.notificationsEnabled);
-        if (answers.notificationsLevel) {
-          config.set('notifications.level', answers.notificationsLevel);
-        }
-
-        console.log(chalk.green('\n✅ Configuration saved successfully!'));
-        console.log(chalk.gray(`Config file: ${config.path}`));
-      })
+      console.log(chalk.green('\n✅ Configuration saved successfully!'));
+      console.log(chalk.gray(`Config file: ${config.path}`));
+    }),
   )
   .addCommand(
     new Command('reset')
@@ -167,8 +169,8 @@ export const configCommand = new Command('config')
               type: 'confirm',
               name: 'confirmed',
               message: 'Are you sure you want to reset all configuration to defaults?',
-              default: false
-            }
+              default: false,
+            },
           ]);
 
           if (!confirmed) {
@@ -179,14 +181,12 @@ export const configCommand = new Command('config')
 
         config.clear();
         console.log(chalk.green('✅ Configuration reset to defaults'));
-      })
+      }),
   )
   .addCommand(
-    new Command('path')
-      .description('Show configuration file path')
-      .action(() => {
-        console.log(config.path);
-      })
+    new Command('path').description('Show configuration file path').action(() => {
+      console.log(config.path);
+    }),
   );
 
 export { config };

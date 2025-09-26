@@ -38,24 +38,37 @@ export const metricsCommand = new Command('metrics')
             ['Average CPU Usage', `${summary.averageCpu.toFixed(1)}%`],
             ['Average Memory Usage', `${summary.averageMemory.toFixed(1)}%`],
             ['Total Storage', `${summary.totalStorage.toFixed(1)} TB`],
-            ['Active Alerts', summary.alertsCount > 0 ? chalk.red(summary.alertsCount.toString()) : chalk.green('0')],
-            ['Performance Score', getPerformanceColor(summary.performanceScore)(`${summary.performanceScore.toFixed(1)}/100`)]
+            [
+              'Active Alerts',
+              summary.alertsCount > 0
+                ? chalk.red(summary.alertsCount.toString())
+                : chalk.green('0'),
+            ],
+            [
+              'Performance Score',
+              getPerformanceColor(summary.performanceScore)(
+                `${summary.performanceScore.toFixed(1)}/100`,
+              ),
+            ],
           ];
 
           console.log(table(metricsTable));
-
         } catch (error) {
           spinner.fail('Failed to fetch metrics summary');
           console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
         }
-      })
+      }),
   )
   .addCommand(
     new Command('node')
       .description('Show detailed metrics for a specific node')
       .argument('<nodeId>', 'Node ID')
       .option('-t, --timeframe <timeframe>', 'Time frame (1h, 24h, 7d, 30d)', '24h')
-      .option('-m, --metrics <metrics>', 'Specific metrics to show (cpu,memory,storage,earnings)', 'all')
+      .option(
+        '-m, --metrics <metrics>',
+        'Specific metrics to show (cpu,memory,storage,earnings)',
+        'all',
+      )
       .option('--json', 'Output as JSON')
       .action(async (nodeId, options) => {
         const spinner = ora(`Fetching metrics for node ${nodeId}...`).start();
@@ -81,17 +94,33 @@ export const metricsCommand = new Command('metrics')
             memory: metrics.memory[metrics.memory.length - 1]?.value || 0,
             storage: metrics.storage[metrics.storage.length - 1]?.value || 0,
             earnings: metrics.earnings[metrics.earnings.length - 1]?.value || 0,
-            networkLatency: metrics.networkLatency[metrics.networkLatency.length - 1]?.value || 0
+            networkLatency: metrics.networkLatency[metrics.networkLatency.length - 1]?.value || 0,
           };
 
           const currentTable = [
             ['Metric', 'Current Value', 'Status'],
-            ['Uptime', `${latestMetrics.uptime.toFixed(1)}%`, getUptimeStatus(latestMetrics.uptime)],
+            [
+              'Uptime',
+              `${latestMetrics.uptime.toFixed(1)}%`,
+              getUptimeStatus(latestMetrics.uptime),
+            ],
             ['CPU Usage', `${latestMetrics.cpu.toFixed(1)}%`, getCpuStatus(latestMetrics.cpu)],
-            ['Memory Usage', `${latestMetrics.memory.toFixed(1)}%`, getMemoryStatus(latestMetrics.memory)],
-            ['Storage Used', `${latestMetrics.storage.toFixed(1)}%`, getStorageStatus(latestMetrics.storage)],
+            [
+              'Memory Usage',
+              `${latestMetrics.memory.toFixed(1)}%`,
+              getMemoryStatus(latestMetrics.memory),
+            ],
+            [
+              'Storage Used',
+              `${latestMetrics.storage.toFixed(1)}%`,
+              getStorageStatus(latestMetrics.storage),
+            ],
             ['Total Earnings', `${latestMetrics.earnings.toFixed(4)} tokens`, '💰'],
-            ['Network Latency', `${latestMetrics.networkLatency.toFixed(0)}ms`, getLatencyStatus(latestMetrics.networkLatency)]
+            [
+              'Network Latency',
+              `${latestMetrics.networkLatency.toFixed(0)}ms`,
+              getLatencyStatus(latestMetrics.networkLatency),
+            ],
           ];
 
           console.log(table(currentTable));
@@ -102,12 +131,11 @@ export const metricsCommand = new Command('metrics')
           showTrendIndicator('CPU', metrics.cpu);
           showTrendIndicator('Memory', metrics.memory);
           showTrendIndicator('Earnings', metrics.earnings);
-
         } catch (error) {
           spinner.fail(`Failed to fetch metrics for node ${nodeId}`);
           console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
         }
-      })
+      }),
   )
   .addCommand(
     new Command('alerts')
@@ -122,7 +150,7 @@ export const metricsCommand = new Command('metrics')
           const apiClient = new ApiClient();
           const response = await apiClient.getAlerts({
             severity: options.severity,
-            status: options.status
+            status: options.status,
           });
 
           spinner.stop();
@@ -140,11 +168,9 @@ export const metricsCommand = new Command('metrics')
           console.log(chalk.cyan(`\n🚨 Active Alerts (${response.total})`));
           console.log(chalk.gray('─'.repeat(70)));
 
-          const alertsTable = [
-            ['Severity', 'Node', 'Type', 'Message', 'Time']
-          ];
+          const alertsTable = [['Severity', 'Node', 'Type', 'Message', 'Time']];
 
-          response.alerts.forEach(alert => {
+          response.alerts.forEach((alert) => {
             const severityColor = getSeverityColor(alert.severity);
             const timeAgo = getTimeAgo(new Date(alert.timestamp));
 
@@ -153,17 +179,16 @@ export const metricsCommand = new Command('metrics')
               alert.nodeId,
               alert.type,
               alert.message.length > 40 ? alert.message.substring(0, 37) + '...' : alert.message,
-              timeAgo
+              timeAgo,
             ]);
           });
 
           console.log(table(alertsTable));
-
         } catch (error) {
           spinner.fail('Failed to fetch alerts');
           console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
         }
-      })
+      }),
   );
 
 function getPerformanceColor(score: number) {
@@ -204,11 +229,16 @@ function getLatencyStatus(latency: number): string {
 
 function getSeverityColor(severity: string) {
   switch (severity) {
-    case 'critical': return chalk.red.bold;
-    case 'high': return chalk.red;
-    case 'medium': return chalk.yellow;
-    case 'low': return chalk.blue;
-    default: return chalk.gray;
+    case 'critical':
+      return chalk.red.bold;
+    case 'high':
+      return chalk.red;
+    case 'medium':
+      return chalk.yellow;
+    case 'low':
+      return chalk.blue;
+    default:
+      return chalk.gray;
   }
 }
 
@@ -220,7 +250,9 @@ function showTrendIndicator(name: string, data: Array<{ timestamp: string; value
   const trendIcon = trend > 0 ? '📈' : trend < 0 ? '📉' : '➡️';
   const trendColor = trend > 0 ? chalk.green : trend < 0 ? chalk.red : chalk.gray;
 
-  console.log(`  ${trendIcon} ${name}: ${trendColor(trend > 0 ? '+' : '')}${trendColor(trend.toFixed(2))}`);
+  console.log(
+    `  ${trendIcon} ${name}: ${trendColor(trend > 0 ? '+' : '')}${trendColor(trend.toFixed(2))}`,
+  );
 }
 
 function getTimeAgo(date: Date): string {

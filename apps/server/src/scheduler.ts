@@ -55,21 +55,25 @@ export class Scheduler {
     const jobName = 'connector-polling';
 
     // Run every hour at minute 0 (e.g., 1:00, 2:00, 3:00)
-    const task = cron.schedule('0 * * * *', async () => {
-      try {
-        this.app.log.info('Starting hourly connector polling...');
+    const task = cron.schedule(
+      '0 * * * *',
+      async () => {
+        try {
+          this.app.log.info('Starting hourly connector polling...');
 
-        // TODO: Replace with actual connector polling logic
-        await this.pollConnectors();
+          // TODO: Replace with actual connector polling logic
+          await this.pollConnectors();
 
-        this.app.log.info('Connector polling completed successfully');
-      } catch (error) {
-        this.app.log.error('Error during connector polling:', error);
-      }
-    }, {
-      scheduled: true,
-      timezone: 'UTC'
-    });
+          this.app.log.info('Connector polling completed successfully');
+        } catch (error) {
+          this.app.log.error('Error during connector polling:', error);
+        }
+      },
+      {
+        scheduled: true,
+        timezone: 'UTC',
+      },
+    );
 
     this.jobs.set(jobName, task);
     this.app.log.info(`Scheduled ${jobName}: every hour at minute 0`);
@@ -82,20 +86,24 @@ export class Scheduler {
     const jobName = 'alert-generation';
 
     // Run every 15 minutes
-    const task = cron.schedule('*/15 * * * *', async () => {
-      try {
-        this.app.log.info('Starting alert generation check...');
+    const task = cron.schedule(
+      '*/15 * * * *',
+      async () => {
+        try {
+          this.app.log.info('Starting alert generation check...');
 
-        await this.checkAndGenerateAlerts();
+          await this.checkAndGenerateAlerts();
 
-        this.app.log.info('Alert generation check completed');
-      } catch (error) {
-        this.app.log.error('Error during alert generation:', error);
-      }
-    }, {
-      scheduled: true,
-      timezone: 'UTC'
-    });
+          this.app.log.info('Alert generation check completed');
+        } catch (error) {
+          this.app.log.error('Error during alert generation:', error);
+        }
+      },
+      {
+        scheduled: true,
+        timezone: 'UTC',
+      },
+    );
 
     this.jobs.set(jobName, task);
     this.app.log.info(`Scheduled ${jobName}: every 15 minutes`);
@@ -108,20 +116,24 @@ export class Scheduler {
     const jobName = 'weekly-statements';
 
     // Run every Monday at 9:00 AM UTC
-    const task = cron.schedule('0 9 * * 1', async () => {
-      try {
-        this.app.log.info('Starting weekly statement generation...');
+    const task = cron.schedule(
+      '0 9 * * 1',
+      async () => {
+        try {
+          this.app.log.info('Starting weekly statement generation...');
 
-        await this.generateWeeklyStatements();
+          await this.generateWeeklyStatements();
 
-        this.app.log.info('Weekly statement generation completed');
-      } catch (error) {
-        this.app.log.error('Error during weekly statement generation:', error);
-      }
-    }, {
-      scheduled: true,
-      timezone: 'UTC'
-    });
+          this.app.log.info('Weekly statement generation completed');
+        } catch (error) {
+          this.app.log.error('Error during weekly statement generation:', error);
+        }
+      },
+      {
+        scheduled: true,
+        timezone: 'UTC',
+      },
+    );
 
     this.jobs.set(jobName, task);
     this.app.log.info(`Scheduled ${jobName}: Mondays at 9:00 AM UTC`);
@@ -134,20 +146,24 @@ export class Scheduler {
     const jobName = 'daily-cleanup';
 
     // Run every day at 2:00 AM UTC
-    const task = cron.schedule('0 2 * * *', async () => {
-      try {
-        this.app.log.info('Starting daily cleanup tasks...');
+    const task = cron.schedule(
+      '0 2 * * *',
+      async () => {
+        try {
+          this.app.log.info('Starting daily cleanup tasks...');
 
-        await this.performDailyCleanup();
+          await this.performDailyCleanup();
 
-        this.app.log.info('Daily cleanup completed');
-      } catch (error) {
-        this.app.log.error('Error during daily cleanup:', error);
-      }
-    }, {
-      scheduled: true,
-      timezone: 'UTC'
-    });
+          this.app.log.info('Daily cleanup completed');
+        } catch (error) {
+          this.app.log.error('Error during daily cleanup:', error);
+        }
+      },
+      {
+        scheduled: true,
+        timezone: 'UTC',
+      },
+    );
 
     this.jobs.set(jobName, task);
     this.app.log.info(`Scheduled ${jobName}: daily at 2:00 AM UTC`);
@@ -160,20 +176,24 @@ export class Scheduler {
     const jobName = 'performance-optimization';
 
     // Run every 6 hours
-    const task = cron.schedule('0 */6 * * *', async () => {
-      try {
-        this.app.log.info('Starting performance optimization check...');
+    const task = cron.schedule(
+      '0 */6 * * *',
+      async () => {
+        try {
+          this.app.log.info('Starting performance optimization check...');
 
-        await this.checkPerformanceOptimization();
+          await this.checkPerformanceOptimization();
 
-        this.app.log.info('Performance optimization check completed');
-      } catch (error) {
-        this.app.log.error('Error during performance optimization check:', error);
-      }
-    }, {
-      scheduled: true,
-      timezone: 'UTC'
-    });
+          this.app.log.info('Performance optimization check completed');
+        } catch (error) {
+          this.app.log.error('Error during performance optimization check:', error);
+        }
+      },
+      {
+        scheduled: true,
+        timezone: 'UTC',
+      },
+    );
 
     this.jobs.set(jobName, task);
     this.app.log.info(`Scheduled ${jobName}: every 6 hours`);
@@ -198,7 +218,9 @@ export class Scheduler {
         const isOnline = Math.random() > 0.1; // 90% chance of being online
         const utilization = Math.random() * 100;
 
-        this.app.log.debug(`Polled device ${device.id}: online=${isOnline}, utilization=${utilization.toFixed(1)}%`);
+        this.app.log.debug(
+          `Polled device ${device.id}: online=${isOnline}, utilization=${utilization.toFixed(1)}%`,
+        );
 
         // TODO: Update device status in database
         // TODO: Trigger alerts if device goes offline or utilization is abnormal
@@ -208,7 +230,9 @@ export class Scheduler {
         }
 
         if (utilization < 20) {
-          this.app.log.warn(`Device ${device.id} (${device.name}) has low utilization: ${utilization.toFixed(1)}%`);
+          this.app.log.warn(
+            `Device ${device.id} (${device.name}) has low utilization: ${utilization.toFixed(1)}%`,
+          );
         }
       } catch (error) {
         this.app.log.error(`Error polling device ${device.id}:`, error);
@@ -262,7 +286,6 @@ export class Scheduler {
       if (alertsGenerated.length > 0) {
         this.app.log.info(`Generated ${alertsGenerated.length} new alerts`);
       }
-
     } catch (error) {
       this.app.log.error('Error in alert generation:', error);
     }
@@ -364,11 +387,15 @@ export class Scheduler {
       const maintenanceCandidates = await this.getMaintenanceCandidates();
 
       if (repricingCandidates.length > 0) {
-        this.app.log.info(`Found ${repricingCandidates.length} devices that may benefit from repricing`);
+        this.app.log.info(
+          `Found ${repricingCandidates.length} devices that may benefit from repricing`,
+        );
       }
 
       if (maintenanceCandidates.length > 0) {
-        this.app.log.info(`Found ${maintenanceCandidates.length} devices that may need maintenance`);
+        this.app.log.info(
+          `Found ${maintenanceCandidates.length} devices that may need maintenance`,
+        );
       }
     } catch (error) {
       this.app.log.error('Error during performance optimization check:', error);

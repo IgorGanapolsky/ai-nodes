@@ -91,7 +91,7 @@ export function loadConfig(): Config {
 
       throw new Error(
         `Configuration validation failed. Missing or invalid fields: ${missingFields.join(', ')}\n` +
-        `Full validation errors: ${JSON.stringify(error.issues, null, 2)}`
+          `Full validation errors: ${JSON.stringify(error.issues, null, 2)}`,
       );
     }
     throw error;
@@ -139,7 +139,12 @@ export function getDatabaseUrl(): string {
 /**
  * Get Redis connection configuration
  */
-export function getRedisConfig(): { url?: string; host?: string; port?: number; password?: string } {
+export function getRedisConfig(): {
+  url?: string;
+  host?: string;
+  port?: number;
+  password?: string;
+} {
   const config = loadConfig();
   return {
     url: config.REDIS_URL,
@@ -155,7 +160,7 @@ export function getRedisConfig(): { url?: string; host?: string; port?: number; 
 export function getCorsOrigins(): string[] {
   const origins = getConfigValue('CORS_ORIGINS');
   if (!origins) return ['*'];
-  return origins.split(',').map(origin => origin.trim());
+  return origins.split(',').map((origin) => origin.trim());
 }
 
 // Export the config schema for external validation

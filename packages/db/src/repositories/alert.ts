@@ -30,7 +30,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
       pagination?: PaginationOptions;
       filters?: Omit<AlertFilters, 'nodeId'>;
       includeResolved?: boolean;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Alert>> {
     const filters = { ...options.filters, nodeId };
 
@@ -50,7 +50,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<AlertFilters, 'resolved'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Alert>> {
     return this.findMany({
       filters: { ...options.filters, resolved: false },
@@ -65,7 +65,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<AlertFilters, 'severity'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Alert>> {
     return this.findMany({
       filters: { ...options.filters, severity },
@@ -79,13 +79,15 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<AlertFilters, 'severity'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Alert>> {
     return this.findBySeverity('critical', options);
   }
 
   // Create alert with automatic notification flagging
-  async createAlert(alertData: Omit<NewAlert, 'id' | 'timestamp' | 'createdAt' | 'updatedAt'>): Promise<Alert> {
+  async createAlert(
+    alertData: Omit<NewAlert, 'id' | 'timestamp' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Alert> {
     const newAlert: NewAlert = {
       ...alertData,
       timestamp: new Date(),
@@ -143,21 +145,21 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     // Apply filters
     if (filters.nodeId) {
       if (Array.isArray(filters.nodeId)) {
-        whereConditions.push(or(...filters.nodeId.map(id => eq(this.table.nodeId, id))));
+        whereConditions.push(or(...filters.nodeId.map((id) => eq(this.table.nodeId, id))));
       } else {
         whereConditions.push(eq(this.table.nodeId, filters.nodeId));
       }
     }
     if (filters.type) {
       if (Array.isArray(filters.type)) {
-        whereConditions.push(or(...filters.type.map(type => eq(this.table.type, type))));
+        whereConditions.push(or(...filters.type.map((type) => eq(this.table.type, type))));
       } else {
         whereConditions.push(eq(this.table.type, filters.type));
       }
     }
     if (filters.severity) {
       if (Array.isArray(filters.severity)) {
-        whereConditions.push(or(...filters.severity.map(sev => eq(this.table.severity, sev))));
+        whereConditions.push(or(...filters.severity.map((sev) => eq(this.table.severity, sev))));
       } else {
         whereConditions.push(eq(this.table.severity, filters.severity));
       }
@@ -210,10 +212,13 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     const total = totalResult[0]?.count || 0;
     const unresolved = unresolvedResult[0]?.count || 0;
 
-    const severityBreakdown = severityResult.reduce((acc, { severity, count }) => {
-      acc[severity] = count;
-      return acc;
-    }, {} as Record<string, number>);
+    const severityBreakdown = severityResult.reduce(
+      (acc, { severity, count }) => {
+        acc[severity] = count;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     return {
       total,
@@ -222,14 +227,20 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
       high: severityBreakdown.high || 0,
       medium: severityBreakdown.medium || 0,
       low: severityBreakdown.low || 0,
-      byType: typeResult.reduce((acc, { type, count }) => {
-        acc[type] = count;
-        return acc;
-      }, {} as Record<string, number>),
-      byNode: nodeResult.reduce((acc, { nodeId, count }) => {
-        acc[nodeId] = count;
-        return acc;
-      }, {} as Record<string, number>),
+      byType: typeResult.reduce(
+        (acc, { type, count }) => {
+          acc[type] = count;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
+      byNode: nodeResult.reduce(
+        (acc, { nodeId, count }) => {
+          acc[nodeId] = count;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
     };
   }
 
@@ -239,7 +250,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     options: {
       pagination?: PaginationOptions;
       filters?: AlertFilters;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Alert>> {
     const cutoffDate = new Date(Date.now() - hours * 60 * 60 * 1000);
     const cutoffTimestamp = Math.floor(cutoffDate.getTime() / 1000);
@@ -256,21 +267,23 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     // Apply additional filters
     if (options.filters?.nodeId) {
       if (Array.isArray(options.filters.nodeId)) {
-        whereConditions.push(or(...options.filters.nodeId.map(id => eq(this.table.nodeId, id))));
+        whereConditions.push(or(...options.filters.nodeId.map((id) => eq(this.table.nodeId, id))));
       } else {
         whereConditions.push(eq(this.table.nodeId, options.filters.nodeId));
       }
     }
     if (options.filters?.type) {
       if (Array.isArray(options.filters.type)) {
-        whereConditions.push(or(...options.filters.type.map(type => eq(this.table.type, type))));
+        whereConditions.push(or(...options.filters.type.map((type) => eq(this.table.type, type))));
       } else {
         whereConditions.push(eq(this.table.type, options.filters.type));
       }
     }
     if (options.filters?.severity) {
       if (Array.isArray(options.filters.severity)) {
-        whereConditions.push(or(...options.filters.severity.map(sev => eq(this.table.severity, sev))));
+        whereConditions.push(
+          or(...options.filters.severity.map((sev) => eq(this.table.severity, sev))),
+        );
       } else {
         whereConditions.push(eq(this.table.severity, options.filters.severity));
       }
@@ -309,8 +322,10 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
 
   // Get alert trends
   async getAlertTrends(
-    days: number = 7
-  ): Promise<Array<{ date: string; total: number; critical: number; high: number; resolved: number }>> {
+    days: number = 7,
+  ): Promise<
+    Array<{ date: string; total: number; critical: number; high: number; resolved: number }>
+  > {
     const endDate = new Date();
     const startDate = new Date(endDate.getTime() - days * 24 * 60 * 60 * 1000);
     const startTimestamp = Math.floor(startDate.getTime() / 1000);
@@ -328,13 +343,13 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
       .where(
         and(
           sql`${this.table.timestamp} >= ${startTimestamp}`,
-          sql`${this.table.timestamp} <= ${endTimestamp}`
-        )
+          sql`${this.table.timestamp} <= ${endTimestamp}`,
+        ),
       )
       .groupBy(sql`date(${this.table.timestamp}, 'unixepoch')`)
       .orderBy(sql`date(${this.table.timestamp}, 'unixepoch')`);
 
-    return results.map(result => ({
+    return results.map((result) => ({
       date: result.date,
       total: result.total || 0,
       critical: result.critical || 0,
@@ -346,7 +361,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
   // Auto-resolve alerts based on conditions
   async autoResolveStaleAlerts(
     staleHours: number = 48,
-    resolvedBy: string = 'system'
+    resolvedBy: string = 'system',
   ): Promise<number> {
     const cutoffDate = new Date(Date.now() - staleHours * 60 * 60 * 1000);
     const cutoffTimestamp = Math.floor(cutoffDate.getTime() / 1000);
@@ -356,13 +371,10 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
       .select({ id: this.table.id })
       .from(this.table)
       .where(
-        and(
-          eq(this.table.resolved, false),
-          sql`${this.table.timestamp} < ${cutoffTimestamp}`
-        )
+        and(eq(this.table.resolved, false), sql`${this.table.timestamp} < ${cutoffTimestamp}`),
       );
 
-    const alertIds = staleAlerts.map(alert => alert.id);
+    const alertIds = staleAlerts.map((alert) => alert.id);
     return this.bulkResolveAlerts(alertIds, resolvedBy);
   }
 
@@ -371,12 +383,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     return this.db
       .select()
       .from(this.table)
-      .where(
-        and(
-          eq(this.table.resolved, false),
-          eq(this.table.notificationSent, false)
-        )
-      )
+      .where(and(eq(this.table.resolved, false), eq(this.table.notificationSent, false)))
       .orderBy(desc(this.table.severity), desc(this.table.timestamp));
   }
 
@@ -384,7 +391,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
   async findDuplicateAlerts(
     nodeId: string,
     type: string,
-    windowMinutes: number = 30
+    windowMinutes: number = 30,
   ): Promise<Alert[]> {
     const cutoffDate = new Date(Date.now() - windowMinutes * 60 * 1000);
     const cutoffTimestamp = Math.floor(cutoffDate.getTime() / 1000);
@@ -397,8 +404,8 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
           eq(this.table.nodeId, nodeId),
           eq(this.table.type, type),
           eq(this.table.resolved, false),
-          sql`${this.table.timestamp} >= ${cutoffTimestamp}`
-        )
+          sql`${this.table.timestamp} >= ${cutoffTimestamp}`,
+        ),
       )
       .orderBy(desc(this.table.timestamp));
   }

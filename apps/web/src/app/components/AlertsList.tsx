@@ -80,7 +80,10 @@ const getAlertColor = (type: Alert['type'], severity: Alert['severity']) => {
   return 'text-blue-600 dark:text-blue-400';
 };
 
-const getBadgeVariant = (type: Alert['type'], severity: Alert['severity']): 'default' | 'secondary' | 'destructive' => {
+const getBadgeVariant = (
+  type: Alert['type'],
+  severity: Alert['severity'],
+): 'default' | 'secondary' | 'destructive' => {
   if (severity === 'critical' || type === 'critical') return 'destructive';
   if (type === 'warning') return 'default';
   return 'secondary';
@@ -101,11 +104,11 @@ export function AlertsList({
   const handleAcknowledge = async (alertId: string) => {
     if (!onAcknowledge) return;
 
-    setLoadingActions(prev => new Set(prev).add(alertId));
+    setLoadingActions((prev) => new Set(prev).add(alertId));
     try {
       await onAcknowledge(alertId);
     } finally {
-      setLoadingActions(prev => {
+      setLoadingActions((prev) => {
         const newSet = new Set(prev);
         newSet.delete(alertId);
         return newSet;
@@ -116,11 +119,11 @@ export function AlertsList({
   const handleResolve = async (alertId: string) => {
     if (!onResolve) return;
 
-    setLoadingActions(prev => new Set(prev).add(alertId));
+    setLoadingActions((prev) => new Set(prev).add(alertId));
     try {
       await onResolve(alertId);
     } finally {
-      setLoadingActions(prev => {
+      setLoadingActions((prev) => {
         const newSet = new Set(prev);
         newSet.delete(alertId);
         return newSet;
@@ -160,10 +163,10 @@ export function AlertsList({
               alert.resolved
                 ? 'opacity-60 bg-muted/30'
                 : alert.acknowledged
-                ? 'border-l-4 border-l-blue-500'
-                : alert.severity === 'critical'
-                ? 'border-l-4 border-l-red-500'
-                : ''
+                  ? 'border-l-4 border-l-blue-500'
+                  : alert.severity === 'critical'
+                    ? 'border-l-4 border-l-red-500'
+                    : ''
             }`}
           >
             <CardContent className="p-4">
@@ -212,9 +215,7 @@ export function AlertsList({
                           {alert.deviceName}
                         </div>
                       )}
-                      <div className="capitalize">
-                        {alert.category}
-                      </div>
+                      <div className="capitalize">{alert.category}</div>
                     </div>
                   </div>
                 </div>

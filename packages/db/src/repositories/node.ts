@@ -27,7 +27,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<NodeFilters, 'ownerId'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Node>> {
     return this.findMany({
       filters: { ...options.filters, ownerId },
@@ -41,7 +41,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<NodeFilters, 'type'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Node>> {
     return this.findMany({
       filters: { ...options.filters, type },
@@ -54,7 +54,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<NodeFilters, 'isOnline'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Node>> {
     return this.findMany({
       filters: { ...options.filters, isOnline: true },
@@ -68,7 +68,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     options: {
       pagination?: PaginationOptions;
       filters?: Omit<NodeFilters, 'isOnline'>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Node>> {
     return this.findMany({
       filters: { ...options.filters, isOnline: false },
@@ -83,7 +83,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     options: {
       pagination?: PaginationOptions;
       filters?: NodeFilters;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Node>> {
     const thresholdTimestamp = Math.floor((Date.now() - minutesThreshold * 60 * 1000) / 1000);
 
@@ -91,12 +91,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
       .select()
       .from(this.table)
       .where(
-        and(
-          or(
-            eq(this.table.lastSeen, null),
-            sql`${this.table.lastSeen} < ${thresholdTimestamp}`
-          )
-        )
+        and(or(eq(this.table.lastSeen, null), sql`${this.table.lastSeen} < ${thresholdTimestamp}`)),
       )
       .orderBy(desc(this.table.lastSeen))
       .limit(options.pagination?.limit || 50)
@@ -106,12 +101,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
       .select({ count: count() })
       .from(this.table)
       .where(
-        and(
-          or(
-            eq(this.table.lastSeen, null),
-            sql`${this.table.lastSeen} < ${thresholdTimestamp}`
-          )
-        )
+        and(or(eq(this.table.lastSeen, null), sql`${this.table.lastSeen} < ${thresholdTimestamp}`)),
       );
 
     const total = totalResult[0]?.count || 0;
@@ -144,7 +134,9 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
   }
 
   // Batch update online status for multiple nodes
-  async batchUpdateOnlineStatus(updates: Array<{ nodeId: string; isOnline: boolean }>): Promise<void> {
+  async batchUpdateOnlineStatus(
+    updates: Array<{ nodeId: string; isOnline: boolean }>,
+  ): Promise<void> {
     const timestamp = new Date();
 
     for (const { nodeId, isOnline } of updates) {
@@ -166,7 +158,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     }
     if (filters.type) {
       if (Array.isArray(filters.type)) {
-        whereConditions.push(or(...filters.type.map(t => eq(this.table.type, t))));
+        whereConditions.push(or(...filters.type.map((t) => eq(this.table.type, t))));
       } else {
         whereConditions.push(eq(this.table.type, filters.type));
       }
@@ -187,7 +179,11 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     const onlineResult = await this.db
       .select({ count: count() })
       .from(this.table)
-      .where(whereClause ? and(whereClause, eq(this.table.isOnline, true)) : eq(this.table.isOnline, true));
+      .where(
+        whereClause
+          ? and(whereClause, eq(this.table.isOnline, true))
+          : eq(this.table.isOnline, true),
+      );
 
     // Get status breakdown
     const statusResult = await this.db
@@ -216,14 +212,20 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
       total,
       online,
       offline: total - online,
-      byStatus: statusResult.reduce((acc, { status, count }) => {
-        acc[status] = count;
-        return acc;
-      }, {} as Record<string, number>),
-      byType: typeResult.reduce((acc, { type, count }) => {
-        acc[type] = count;
-        return acc;
-      }, {} as Record<string, number>),
+      byStatus: statusResult.reduce(
+        (acc, { status, count }) => {
+          acc[status] = count;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
+      byType: typeResult.reduce(
+        (acc, { type, count }) => {
+          acc[type] = count;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
     };
   }
 
@@ -233,15 +235,15 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     options: {
       pagination?: PaginationOptions;
       filters?: NodeFilters;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Node>> {
     const searchTerm = `%${query.toLowerCase()}%`;
 
     let whereConditions = [
       or(
         sql`lower(${this.table.name}) LIKE ${searchTerm}`,
-        sql`lower(${this.table.description}) LIKE ${searchTerm}`
-      )
+        sql`lower(${this.table.description}) LIKE ${searchTerm}`,
+      ),
     ];
 
     // Add additional filters
@@ -250,14 +252,14 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     }
     if (options.filters?.type) {
       if (Array.isArray(options.filters.type)) {
-        whereConditions.push(or(...options.filters.type.map(t => eq(this.table.type, t))));
+        whereConditions.push(or(...options.filters.type.map((t) => eq(this.table.type, t))));
       } else {
         whereConditions.push(eq(this.table.type, options.filters.type));
       }
     }
     if (options.filters?.status) {
       if (Array.isArray(options.filters.status)) {
-        whereConditions.push(or(...options.filters.status.map(s => eq(this.table.status, s))));
+        whereConditions.push(or(...options.filters.status.map((s) => eq(this.table.status, s))));
       } else {
         whereConditions.push(eq(this.table.status, options.filters.status));
       }
@@ -296,7 +298,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     options: {
       pagination?: PaginationOptions;
       filters?: NodeFilters;
-    } = {}
+    } = {},
   ): Promise<QueryResult<Node & { daysSinceLastSeen: number | null }>> {
     const { pagination = {}, filters = {} } = options;
     const limit = pagination.limit || 50;
@@ -309,7 +311,7 @@ export class NodeRepository extends BaseRepository<typeof nodes, Node, NewNode> 
     }
     if (filters.type) {
       if (Array.isArray(filters.type)) {
-        whereConditions.push(or(...filters.type.map(t => eq(this.table.type, t))));
+        whereConditions.push(or(...filters.type.map((t) => eq(this.table.type, t))));
       } else {
         whereConditions.push(eq(this.table.type, filters.type));
       }

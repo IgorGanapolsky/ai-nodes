@@ -19,6 +19,7 @@
 - [CLI Usage](#cli-usage)
 - [Security](#security)
 - [Contributing](#contributing)
+- [Roadmap](#roadmap)
 
 ## 🎯 Overview
 
@@ -109,6 +110,7 @@ pnpm demo
 ```
 
 This will:
+
 1. Seed database with demo owner and devices
 2. Pull metrics from mock connectors
 3. Display earnings and utilization
@@ -147,31 +149,38 @@ pnpm depinautopilot plan --owner demo@owner.test --target-monthly-gross 430
 
 ## 🌐 Supported Networks
 
-| Network | Type | Avg Rate/Hour | Status |
-|---------|------|---------------|--------|
-| io.net | GPU Compute | $1.50-$3.00 | ✅ Mock |
-| Nosana | CPU Compute | $0.40-$0.80 | ✅ Mock |
-| Render | 3D Rendering | $0.80-$2.00 | ✅ Mock |
-| Grass | Bandwidth | $0.10-$0.30 | ✅ Mock |
-| Natix | Mapping/Camera | $0.20-$0.50 | ✅ Mock |
+| Network | Type           | Avg Rate/Hour | Status  |
+| ------- | -------------- | ------------- | ------- |
+| io.net  | GPU Compute    | $1.50-$3.00   | ✅ Mock |
+| Nosana  | CPU Compute    | $0.40-$0.80   | ✅ Mock |
+| Render  | 3D Rendering   | $0.80-$2.00   | ✅ Mock |
+| Grass   | Bandwidth      | $0.10-$0.30   | ✅ Mock |
+| Natix   | Mapping/Camera | $0.20-$0.50   | ✅ Mock |
 
 **Note**: Mock connectors provide deterministic fake data. Real API integration requires adding keys to `.env`.
 
 ## 📡 API Documentation
 
 ### Base URL
+
 ```
 http://localhost:4000
 ```
 
+### Live Docs
+
+- OpenAPI/Swagger UI: `http://localhost:4000/docs`
+
 ### Key Endpoints
 
 #### Health Check
+
 ```http
 GET /health
 ```
 
 #### Owners Management
+
 ```http
 GET    /owners              # List all owners
 POST   /owners              # Create owner
@@ -181,6 +190,7 @@ DELETE /owners/:id          # Remove owner
 ```
 
 #### Device Operations
+
 ```http
 GET    /devices?ownerId=    # List devices
 POST   /devices             # Add device
@@ -190,18 +200,21 @@ DELETE /devices/:id         # Remove device
 ```
 
 #### Metrics & Analytics
+
 ```http
 GET /metrics?deviceId=&since=  # Get device metrics
 GET /metrics/live              # Real-time dashboard data
 ```
 
 #### Actions
+
 ```http
 POST /actions/reprice          # Dynamic pricing
 POST /actions/optimize         # Performance optimization
 ```
 
 #### Statements
+
 ```http
 POST /statements/generate      # Generate statement
 GET  /statements/:id/download  # Download CSV/PDF
@@ -210,6 +223,7 @@ GET  /statements/:id/download  # Download CSV/PDF
 ## 🖥️ CLI Usage
 
 ### Installation
+
 ```bash
 # Global installation (after build)
 npm link
@@ -219,6 +233,7 @@ depinautopilot --help
 ### Common Commands
 
 #### Owner Management
+
 ```bash
 # Add new owner
 depinautopilot owners add \
@@ -232,6 +247,7 @@ depinautopilot owners list
 ```
 
 #### Device Management
+
 ```bash
 # Add device
 depinautopilot devices add \
@@ -245,6 +261,7 @@ depinautopilot devices list --owner john@example.com
 ```
 
 #### Monitoring
+
 ```bash
 # Pull latest metrics (shows table)
 depinautopilot pull
@@ -254,6 +271,7 @@ depinautopilot pull --watch
 ```
 
 #### Planning & Optimization
+
 ```bash
 # Calculate required utilization
 depinautopilot plan \
@@ -268,6 +286,7 @@ depinautopilot reprice \
 ```
 
 #### Statements
+
 ```bash
 # Generate monthly statement
 depinautopilot statement \
@@ -331,6 +350,7 @@ docker run -d \
 - [Connector Guide](./docs/CONNECTORS.md)
 - [Deployment Guide](./docs/DEPLOYMENT.md)
 - [Revenue Calculator](./docs/REVENUE.md)
+- [Roadmap](./ROADMAP.md)
 
 ## 🤝 Contributing
 
@@ -351,6 +371,7 @@ MIT License - see [LICENSE](./LICENSE) file
 ## 🙏 Acknowledgments
 
 Built with:
+
 - [Fastify](https://www.fastify.io/) - Fast web framework
 - [Next.js](https://nextjs.org/) - React framework
 - [Drizzle ORM](https://orm.drizzle.team/) - TypeScript ORM

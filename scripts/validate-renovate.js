@@ -8,11 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const CONFIG_FILES = [
-  'renovate.json',
-  '.renovaterc',
-  '.github/renovate.json5'
-];
+const CONFIG_FILES = ['renovate.json', '.renovaterc', '.github/renovate.json5'];
 
 function validateRenovateConfig() {
   console.log('🤖 Validating Renovate configuration...\n');
@@ -43,7 +39,7 @@ function validateRenovateConfig() {
       // Basic validation
       if (configFile === 'renovate.json') {
         const requiredFields = ['automerge', 'schedule', 'prConcurrentLimit'];
-        const missingFields = requiredFields.filter(field => !(field in config));
+        const missingFields = requiredFields.filter((field) => !(field in config));
 
         if (missingFields.length > 0) {
           console.log(`  ❌ Missing required fields: ${missingFields.join(', ')}`);
@@ -58,7 +54,6 @@ function validateRenovateConfig() {
       } else {
         console.log(`  ✅ Valid JSON syntax`);
       }
-
     } catch (error) {
       console.log(`  ❌ Invalid JSON: ${error.message}`);
       allValid = false;

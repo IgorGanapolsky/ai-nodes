@@ -33,10 +33,10 @@ export declare function getDatabaseUrl(): string;
  * Get Redis connection configuration
  */
 export declare function getRedisConfig(): {
-    url?: string;
-    host?: string;
-    port?: number;
-    password?: string;
+  url?: string;
+  host?: string;
+  port?: number;
+  password?: string;
 };
 /**
  * Get CORS origins as array

@@ -84,8 +84,8 @@ export class ApiClient {
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'DePIN-Autopilot-CLI/1.0.0'
-      }
+        'User-Agent': 'DePIN-Autopilot-CLI/1.0.0',
+      },
     });
 
     // Request interceptor for logging
@@ -96,7 +96,7 @@ export class ApiClient {
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Response interceptor for error handling
@@ -114,7 +114,7 @@ export class ApiClient {
           // Something else happened
           throw new Error(`API Error: ${error.message}`);
         }
-      }
+      },
     );
   }
 
@@ -150,14 +150,14 @@ export class ApiClient {
 
   async getMetricsSummary(timeframe: string = '24h'): Promise<MetricsSummary> {
     const response = await this.client.get('/metrics/summary', {
-      params: { timeframe }
+      params: { timeframe },
     });
     return response.data;
   }
 
   async getNodeMetrics(nodeId: string, timeframe: string = '24h'): Promise<NodeMetrics> {
     const response = await this.client.get(`/metrics/nodes/${nodeId}`, {
-      params: { timeframe }
+      params: { timeframe },
     });
     return response.data;
   }
@@ -171,17 +171,20 @@ export class ApiClient {
     return response.data;
   }
 
-  async reportMetrics(nodeId: string, metrics: {
-    cpu?: number;
-    memory?: number;
-    storage?: number;
-    networkLatency?: number;
-    uptime?: number;
-    earnings?: number;
-  }): Promise<{ success: boolean; message: string }> {
+  async reportMetrics(
+    nodeId: string,
+    metrics: {
+      cpu?: number;
+      memory?: number;
+      storage?: number;
+      networkLatency?: number;
+      uptime?: number;
+      earnings?: number;
+    },
+  ): Promise<{ success: boolean; message: string }> {
     const response = await this.client.post(`/metrics/nodes/${nodeId}/report`, {
       metrics,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
     return response.data;
   }

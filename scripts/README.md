@@ -77,11 +77,13 @@ bash scripts/docker/docker-manage.sh start prod
 **Purpose**: Installs dependencies, sets up environment, initializes database, and configures the system.
 
 **Usage**:
+
 ```bash
 bash scripts/setup.sh
 ```
 
 **Features**:
+
 - ✅ Cross-platform support (Linux, macOS)
 - ✅ Automatic package manager detection
 - ✅ Node.js 20+ installation
@@ -95,11 +97,13 @@ bash scripts/setup.sh
 **Purpose**: Monitors system resources, Solana network status, and sends alerts.
 
 **Usage**:
+
 ```bash
 bash scripts/monitor.sh [node_id]
 ```
 
 **Features**:
+
 - ✅ System resource monitoring (CPU, memory, disk)
 - ✅ Solana network connectivity checks
 - ✅ Database logging
@@ -108,6 +112,7 @@ bash scripts/monitor.sh [node_id]
 - ✅ Automated cleanup
 
 **Configuration**:
+
 ```bash
 MONITORING_INTERVAL=900          # 15 minutes
 ALERT_THRESHOLD_CPU=80          # CPU alert threshold
@@ -120,11 +125,13 @@ ALERT_THRESHOLD_DISK=90         # Disk alert threshold
 **Purpose**: Automatically reinvests earnings when thresholds are met using Solana DeFi protocols.
 
 **Usage**:
+
 ```bash
 bash scripts/reinvest.sh
 ```
 
 **Features**:
+
 - ✅ Balance threshold checking
 - ✅ Jupiter DEX integration for swaps
 - ✅ Marinade Finance staking
@@ -133,6 +140,7 @@ bash scripts/reinvest.sh
 - ✅ Gas price optimization
 
 **Configuration**:
+
 ```bash
 REINVEST_THRESHOLD=100          # USD threshold
 MAX_GAS_PRICE=50               # Max gas price (gwei)
@@ -145,12 +153,14 @@ DRY_RUN=false                  # Enable dry-run mode
 **Purpose**: Creates encrypted backups with cloud storage support.
 
 **Usage**:
+
 ```bash
 bash scripts/backup.sh [type]
 # Types: full, database, config, incremental
 ```
 
 **Features**:
+
 - ✅ Multiple backup types
 - ✅ Encryption support (AES-256)
 - ✅ Compression (gzip)
@@ -159,6 +169,7 @@ bash scripts/backup.sh [type]
 - ✅ Checksum verification
 
 **Configuration**:
+
 ```bash
 BACKUP_RETENTION_DAYS=30        # Backup retention
 BACKUP_ENCRYPTION=true          # Enable encryption
@@ -170,12 +181,14 @@ BACKUP_S3_BUCKET=your-bucket    # S3 bucket name
 **Purpose**: Automates deployment to various cloud providers and VPS.
 
 **Usage**:
+
 ```bash
 bash scripts/deploy.sh <type> [target]
 # Types: vps, aws, gcp, digitalocean, docker
 ```
 
 **Features**:
+
 - ✅ Multi-cloud support (AWS, GCP, DigitalOcean)
 - ✅ VPS deployment
 - ✅ Docker containerization
@@ -184,6 +197,7 @@ bash scripts/deploy.sh <type> [target]
 - ✅ Post-deployment verification
 
 **Examples**:
+
 ```bash
 # Deploy to VPS
 bash scripts/deploy.sh vps 192.168.1.100
@@ -271,6 +285,7 @@ bash scripts/health-checks/basic.sh
 ```
 
 Checks:
+
 - System resources (CPU, memory, disk)
 - Database connectivity
 - Network connectivity
@@ -287,6 +302,7 @@ bash scripts/health-checks/solana.sh
 ```
 
 Checks:
+
 - Solana RPC health
 - Network status
 - Wallet balance
@@ -401,16 +417,19 @@ The system automatically creates the following tables:
 ### Common Issues
 
 1. **Permission Denied**
+
    ```bash
    chmod +x scripts/*.sh scripts/*/*.sh
    ```
 
 2. **Missing Dependencies**
+
    ```bash
    bash scripts/setup.sh  # Re-run setup
    ```
 
 3. **Database Issues**
+
    ```bash
    # Check database
    sqlite3 db/ai_nodes.db ".tables"
@@ -421,6 +440,7 @@ The system automatically creates the following tables:
    ```
 
 4. **Service Won't Start**
+
    ```bash
    # Check logs
    sudo journalctl -u ai-nodes-monitor -f

@@ -45,9 +45,7 @@ export function middleware(request: NextRequest) {
   ];
 
   // Check if path should skip authentication
-  const shouldSkipAuth = skipAuthPaths.some(path =>
-    pathname.startsWith(path)
-  );
+  const shouldSkipAuth = skipAuthPaths.some((path) => pathname.startsWith(path));
 
   if (shouldSkipAuth) {
     return NextResponse.next();

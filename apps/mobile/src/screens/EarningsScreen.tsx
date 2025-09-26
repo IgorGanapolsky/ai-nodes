@@ -39,13 +39,8 @@ const EarningsScreen: React.FC = () => {
     refreshEarnings,
   } = useEarnings(undefined, selectedTimeRange);
 
-  const {
-    triggerReinvest,
-    isReinvesting,
-    reinvestHistory,
-    totalReinvested,
-    successfulReinvests,
-  } = useReinvest();
+  const { triggerReinvest, isReinvesting, reinvestHistory, totalReinvested, successfulReinvests } =
+    useReinvest();
 
   const { settings } = useSettings();
 
@@ -89,9 +84,7 @@ const EarningsScreen: React.FC = () => {
   return (
     <ScrollView
       style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-      }
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
     >
       {/* Summary Cards */}
       <View style={styles.summaryContainer}>
@@ -102,10 +95,7 @@ const EarningsScreen: React.FC = () => {
         <View style={styles.summaryCard}>
           <Text style={styles.summaryValue}>{formatCurrency(todayEarnings)}</Text>
           <Text style={styles.summaryLabel}>Today</Text>
-          <Text style={[
-            styles.growthText,
-            { color: earningsGrowth >= 0 ? '#10B981' : '#EF4444' }
-          ]}>
+          <Text style={[styles.growthText, { color: earningsGrowth >= 0 ? '#10B981' : '#EF4444' }]}>
             {earningsGrowth >= 0 ? '↗' : '↘'} {formatPercentage(Math.abs(earningsGrowth))}
           </Text>
         </View>
@@ -115,7 +105,7 @@ const EarningsScreen: React.FC = () => {
       <View style={styles.timeRangeContainer}>
         <Text style={styles.sectionTitle}>Earnings Trend</Text>
         <View style={styles.timeRangeSelector}>
-          {timeRanges.map(range => (
+          {timeRanges.map((range) => (
             <TouchableOpacity
               key={range.key}
               style={[
@@ -124,10 +114,12 @@ const EarningsScreen: React.FC = () => {
               ]}
               onPress={() => setSelectedTimeRange(range.key)}
             >
-              <Text style={[
-                styles.timeRangeText,
-                selectedTimeRange === range.key && styles.timeRangeTextActive,
-              ]}>
+              <Text
+                style={[
+                  styles.timeRangeText,
+                  selectedTimeRange === range.key && styles.timeRangeTextActive,
+                ]}
+              >
                 {range.label}
               </Text>
             </TouchableOpacity>
@@ -141,7 +133,7 @@ const EarningsScreen: React.FC = () => {
           data={chartData}
           type="line"
           title="Earnings Over Time"
-          subtitle={`${timeRanges.find(r => r.key === selectedTimeRange)?.label} view`}
+          subtitle={`${timeRanges.find((r) => r.key === selectedTimeRange)?.label} view`}
         />
       )}
 
@@ -191,17 +183,15 @@ const EarningsScreen: React.FC = () => {
           {reinvestHistory.slice(0, 5).map((record, index) => (
             <View key={index} style={styles.historyItem}>
               <View style={styles.historyContent}>
-                <Text style={styles.historyAmount}>
-                  {formatCurrency(record.amount)}
-                </Text>
-                <Text style={styles.historyDate}>
-                  {formatDate(record.timestamp)}
-                </Text>
+                <Text style={styles.historyAmount}>{formatCurrency(record.amount)}</Text>
+                <Text style={styles.historyDate}>{formatDate(record.timestamp)}</Text>
               </View>
-              <View style={[
-                styles.historyStatus,
-                { backgroundColor: record.status === 'success' ? '#10B981' : '#EF4444' }
-              ]}>
+              <View
+                style={[
+                  styles.historyStatus,
+                  { backgroundColor: record.status === 'success' ? '#10B981' : '#EF4444' },
+                ]}
+              >
                 <Text style={styles.historyStatusText}>
                   {record.status === 'success' ? '✓' : '✗'}
                 </Text>
@@ -220,13 +210,9 @@ const EarningsScreen: React.FC = () => {
               <Text style={styles.transactionType}>
                 {earning.type.charAt(0).toUpperCase() + earning.type.slice(1)} Earnings
               </Text>
-              <Text style={styles.transactionDate}>
-                {formatDate(earning.timestamp)}
-              </Text>
+              <Text style={styles.transactionDate}>{formatDate(earning.timestamp)}</Text>
             </View>
-            <Text style={styles.transactionAmount}>
-              +{formatCurrency(earning.amount)}
-            </Text>
+            <Text style={styles.transactionAmount}>+{formatCurrency(earning.amount)}</Text>
           </View>
         ))}
       </View>

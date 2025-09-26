@@ -6,7 +6,13 @@ import { join } from 'path';
 import { format } from 'date-fns';
 
 // Database imports
-import { getDatabaseConnection, owners, devices, metrics, statements } from '../packages/db/src/client';
+import {
+  getDatabaseConnection,
+  owners,
+  devices,
+  metrics,
+  statements,
+} from '../packages/db/src/client';
 import { seedDatabase } from '../packages/db/src/seed';
 import type { Owner, Device, Metric } from '../packages/db/src/schema';
 
@@ -18,7 +24,7 @@ import type { IConnector, DeviceMetrics, DeviceOccupancy } from '../packages/con
 import {
   StatementRecord,
   generateStatementSummary,
-  exportStatementSummaryToCSV
+  exportStatementSummaryToCSV,
 } from '../packages/core/src/statements';
 
 /**
@@ -68,7 +74,6 @@ async function main() {
 
     console.log(chalk.green.bold('\n✅ Demo completed successfully!'));
     console.log(chalk.gray('━'.repeat(50)));
-
   } catch (error) {
     console.error(chalk.red.bold('\n❌ Demo failed:'), error);
     process.exit(1);
@@ -112,11 +117,11 @@ async function pullConnectorMetrics(): Promise<Map<string, DeviceMetrics[]>> {
 
     // Create mock connectors for io.net and nosana
     const ionetConnector = ConnectorFactory.createConnector({
-      network: ConnectorNetwork.IONET
+      network: ConnectorNetwork.IONET,
     });
 
     const nosanaConnector = ConnectorFactory.createConnector({
-      network: ConnectorNetwork.NOSANA
+      network: ConnectorNetwork.NOSANA,
     });
 
     console.log(chalk.dim('     • Created io.net connector'));
@@ -158,17 +163,17 @@ async function generateSummary(): Promise<DemoStats> {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const recentMetrics = await db.select()
-      .from(metrics);
+    const recentMetrics = await db.select().from(metrics);
 
     // Calculate totals
     const totalEarnings = recentMetrics.reduce((sum, metric) => {
       return sum + (metric.earningsUsd || 0);
     }, 0);
 
-    const totalUtilization = recentMetrics.reduce((sum, metric) => {
-      return sum + (metric.utilizationHours || 0);
-    }, 0) / recentMetrics.length;
+    const totalUtilization =
+      recentMetrics.reduce((sum, metric) => {
+        return sum + (metric.utilizationHours || 0);
+      }, 0) / recentMetrics.length;
 
     const weeklyEarnings = totalEarnings;
 
@@ -177,7 +182,7 @@ async function generateSummary(): Promise<DemoStats> {
       totalUtilization,
       totalDevices: deviceList.length,
       weeklyEarnings,
-      csvPath: ''
+      csvPath: '',
     };
 
     console.log(chalk.green('  ✅ Summary generated'));
@@ -203,20 +208,23 @@ async function generateWeeklyStatement(): Promise<string> {
     weekAgo.setDate(weekAgo.getDate() - 7);
 
     const deviceList = await db.select().from(devices);
-    const weeklyMetrics = await db.select()
-      .from(metrics);
+    const weeklyMetrics = await db.select().from(metrics);
 
     // Create statement records
     const records: StatementRecord[] = [];
 
     for (const device of deviceList) {
-      const deviceMetrics = weeklyMetrics.filter(m => m.deviceId === device.id);
+      const deviceMetrics = weeklyMetrics.filter((m) => m.deviceId === device.id);
 
       if (deviceMetrics.length > 0) {
         // Aggregate metrics for the week
         const totalEarnings = deviceMetrics.reduce((sum, m) => sum + (m.earningsUsd || 0), 0);
-        const totalUtilization = deviceMetrics.reduce((sum, m) => sum + (m.utilizationHours || 0), 0);
-        const avgUptime = deviceMetrics.reduce((sum, m) => sum + (m.uptime || 0), 0) / deviceMetrics.length;
+        const totalUtilization = deviceMetrics.reduce(
+          (sum, m) => sum + (m.utilizationHours || 0),
+          0,
+        );
+        const avgUptime =
+          deviceMetrics.reduce((sum, m) => sum + (m.uptime || 0), 0) / deviceMetrics.length;
 
         const record: StatementRecord = {
           date: new Date(),
@@ -233,7 +241,7 @@ async function generateWeeklyStatement(): Promise<string> {
           ownerCutUsd: totalEarnings * 0.85,
           uptime: avgUptime,
           region: device.region || 'Unknown',
-          notes: `Weekly statement for ${device.marketplace} device`
+          notes: `Weekly statement for ${device.marketplace} device`,
         };
 
         records.push(record);
@@ -246,7 +254,7 @@ async function generateWeeklyStatement(): Promise<string> {
     // Create CSV content
     const csvContent = exportStatementSummaryToCSV(summary, {
       currency: 'USD',
-      decimalPlaces: 2
+      decimalPlaces: 2,
     });
 
     // Ensure statements directory exists
@@ -273,7 +281,7 @@ async function generateWeeklyStatement(): Promise<string> {
 async function displayResults(
   stats: DemoStats,
   connectorMetrics: Map<string, DeviceMetrics[]>,
-  statementPath: string
+  statementPath: string,
 ) {
   const db = getDatabaseConnection();
 
@@ -300,7 +308,9 @@ async function displayResults(
     console.log(chalk.white(`  Status: ${statusColor(status)}`));
     console.log(chalk.white(`  Marketplace: ${chalk.cyan(device.marketplace)}`));
     console.log(chalk.white(`  Region: ${chalk.cyan(device.region || 'Unknown')}`));
-    console.log(chalk.white(`  Hourly Rate: ${chalk.cyan('$' + (device.hourlyPriceUsd || 0).toFixed(2))}`));
+    console.log(
+      chalk.white(`  Hourly Rate: ${chalk.cyan('$' + (device.hourlyPriceUsd || 0).toFixed(2))}`),
+    );
   }
 
   // Connector Metrics
@@ -311,13 +321,23 @@ async function displayResults(
       const latestMetrics = metricsArray[metricsArray.length - 1];
       console.log(chalk.white(`${network}:`));
       console.log(chalk.white(`  CPU Usage: ${chalk.cyan(latestMetrics.cpuUsage.toFixed(1))}%`));
-      console.log(chalk.white(`  Memory Usage: ${chalk.cyan(latestMetrics.memoryUsage.toFixed(1))}%`));
+      console.log(
+        chalk.white(`  Memory Usage: ${chalk.cyan(latestMetrics.memoryUsage.toFixed(1))}%`),
+      );
       console.log(chalk.white(`  Disk Usage: ${chalk.cyan(latestMetrics.diskUsage.toFixed(1))}%`));
-      console.log(chalk.white(`  Network In: ${chalk.cyan(latestMetrics.networkIn.toFixed(1))} MB/s`));
-      console.log(chalk.white(`  Network Out: ${chalk.cyan(latestMetrics.networkOut.toFixed(1))} MB/s`));
+      console.log(
+        chalk.white(`  Network In: ${chalk.cyan(latestMetrics.networkIn.toFixed(1))} MB/s`),
+      );
+      console.log(
+        chalk.white(`  Network Out: ${chalk.cyan(latestMetrics.networkOut.toFixed(1))} MB/s`),
+      );
 
       if (latestMetrics.customMetrics?.gpuUtilization) {
-        console.log(chalk.white(`  GPU Usage: ${chalk.cyan(latestMetrics.customMetrics.gpuUtilization.toFixed(1))}%`));
+        console.log(
+          chalk.white(
+            `  GPU Usage: ${chalk.cyan(latestMetrics.customMetrics.gpuUtilization.toFixed(1))}%`,
+          ),
+        );
       }
     }
   }
@@ -325,15 +345,21 @@ async function displayResults(
   // Last 7 Days Summary
   console.log(chalk.blue.bold('\n📊 Last 7 Days Summary'));
   console.log(chalk.white(`Total Devices: ${chalk.cyan(stats.totalDevices)}`));
-  console.log(chalk.white(`Weekly Earnings: ${chalk.green('$' + stats.weeklyEarnings.toFixed(2))}`));
-  console.log(chalk.white(`Average Utilization: ${chalk.cyan(stats.totalUtilization.toFixed(1))}%`));
+  console.log(
+    chalk.white(`Weekly Earnings: ${chalk.green('$' + stats.weeklyEarnings.toFixed(2))}`),
+  );
+  console.log(
+    chalk.white(`Average Utilization: ${chalk.cyan(stats.totalUtilization.toFixed(1))}%`),
+  );
 
   // Monthly projections
   const monthlyProjection = stats.weeklyEarnings * 4.33; // avg weeks per month
   const yearlyProjection = monthlyProjection * 12;
 
   console.log(chalk.blue.bold('\n🎯 Earnings Projections'));
-  console.log(chalk.white(`Monthly (projected): ${chalk.green('$' + monthlyProjection.toFixed(2))}`));
+  console.log(
+    chalk.white(`Monthly (projected): ${chalk.green('$' + monthlyProjection.toFixed(2))}`),
+  );
   console.log(chalk.white(`Yearly (projected): ${chalk.green('$' + yearlyProjection.toFixed(2))}`));
 
   // Statement Information

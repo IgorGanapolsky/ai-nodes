@@ -67,20 +67,22 @@ export class WebSocketService {
   private handleMessage(message: WebSocketMessage) {
     const listeners = this.listeners.get(message.type);
     if (listeners) {
-      listeners.forEach(listener => listener(message.data));
+      listeners.forEach((listener) => listener(message.data));
     }
 
     // Global listeners
     const globalListeners = this.listeners.get('*');
     if (globalListeners) {
-      globalListeners.forEach(listener => listener(message));
+      globalListeners.forEach((listener) => listener(message));
     }
   }
 
   private handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      console.log(
+        `Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`,
+      );
 
       setTimeout(() => {
         // Note: This would need the API key to be stored/passed somehow

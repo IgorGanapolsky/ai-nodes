@@ -59,7 +59,7 @@ function generateEarnings(nodeIds: string[]) {
   const currencies = ['USD', 'STORJ', 'FIL', 'XCH', 'AKT'];
   const earningTypes = ['storage', 'bandwidth', 'compute', 'staking', 'mining'] as const;
 
-  return nodeIds.flatMap(nodeId => {
+  return nodeIds.flatMap((nodeId) => {
     return Array.from({ length: 10 + Math.floor(Math.random() * 20) }, () => {
       const currency = currencies[Math.floor(Math.random() * currencies.length)];
       const earningType = earningTypes[Math.floor(Math.random() * earningTypes.length)];
@@ -84,7 +84,7 @@ function generateEarnings(nodeIds: string[]) {
 }
 
 function generateMetrics(nodeIds: string[]) {
-  return nodeIds.flatMap(nodeId => {
+  return nodeIds.flatMap((nodeId) => {
     return Array.from({ length: 48 }, (_, index) => {
       // Generate metrics for last 48 hours (one per hour)
       const timestamp = new Date(Date.now() - index * 60 * 60 * 1000);
@@ -122,10 +122,17 @@ function generateMetrics(nodeIds: string[]) {
 }
 
 function generateAlerts(nodeIds: string[]) {
-  const alertTypes = ['offline', 'high_cpu', 'high_memory', 'low_storage', 'network_issues', 'sync_error'] as const;
+  const alertTypes = [
+    'offline',
+    'high_cpu',
+    'high_memory',
+    'low_storage',
+    'network_issues',
+    'sync_error',
+  ] as const;
   const severities = ['low', 'medium', 'high', 'critical'] as const;
 
-  return nodeIds.flatMap(nodeId => {
+  return nodeIds.flatMap((nodeId) => {
     // Generate 0-3 alerts per node
     return Array.from({ length: Math.floor(Math.random() * 4) }, () => {
       const type = alertTypes[Math.floor(Math.random() * alertTypes.length)];
@@ -141,7 +148,9 @@ function generateAlerts(nodeIds: string[]) {
         message: `Node is experiencing ${type.replace('_', ' ')} issues`,
         details: JSON.stringify({ timestamp: timestamp.toISOString(), threshold: '80%' }),
         resolved,
-        resolvedAt: resolved ? new Date(timestamp.getTime() + Math.random() * 24 * 60 * 60 * 1000) : null,
+        resolvedAt: resolved
+          ? new Date(timestamp.getTime() + Math.random() * 24 * 60 * 60 * 1000)
+          : null,
         resolvedBy: resolved ? 'system' : null,
         notificationSent: true,
         notificationChannels: JSON.stringify(['email', 'slack']),
@@ -155,9 +164,9 @@ function generateRevenueShares(nodeIds: string[]) {
   const shareTypes = ['owner', 'platform', 'referral', 'maintenance'] as const;
   const periods = ['2024-01', '2024-02', '2024-03', '2023-12'];
 
-  return nodeIds.flatMap(nodeId => {
-    return periods.flatMap(period => {
-      return shareTypes.map(shareType => {
+  return nodeIds.flatMap((nodeId) => {
+    return periods.flatMap((period) => {
+      return shareTypes.map((shareType) => {
         const percentage = shareType === 'owner' ? 70 + Math.random() * 20 : 5 + Math.random() * 15;
         const totalEarnings = 100 + Math.random() * 900; // $100-1000
         const periodStart = new Date(`${period}-01`);
@@ -178,7 +187,8 @@ function generateRevenueShares(nodeIds: string[]) {
           recipientAddress: shareType !== 'owner' ? '0x1234567890abcdef' : null,
           paidOut: Math.random() > 0.3, // 70% paid
           paidAt: Math.random() > 0.3 ? new Date() : null,
-          transactionHash: Math.random() > 0.3 ? `0x${crypto.randomBytes(32).toString('hex')}` : null,
+          transactionHash:
+            Math.random() > 0.3 ? `0x${crypto.randomBytes(32).toString('hex')}` : null,
           notes: `Revenue share for ${period}`,
         };
       });
@@ -194,41 +204,55 @@ async function seedDatabase() {
 
     // Clear existing data (in reverse dependency order)
     console.log('🧹 Clearing existing data...');
-    await repositories.revenueShares.deleteMany(await repositories.revenueShares.findMany().then(r => r.data.map(s => s.id)));
-    await repositories.alerts.deleteMany(await repositories.alerts.findMany().then(r => r.data.map(a => a.id)));
-    await repositories.metrics.deleteMany(await repositories.metrics.findMany().then(r => r.data.map(m => m.id)));
-    await repositories.earnings.deleteMany(await repositories.earnings.findMany().then(r => r.data.map(e => e.id)));
-    await repositories.nodes.deleteMany(await repositories.nodes.findMany().then(r => r.data.map(n => n.id)));
-    await repositories.users.deleteMany(await repositories.users.findMany().then(r => r.data.map(u => u.id)));
+    await repositories.revenueShares.deleteMany(
+      await repositories.revenueShares.findMany().then((r) => r.data.map((s) => s.id)),
+    );
+    await repositories.alerts.deleteMany(
+      await repositories.alerts.findMany().then((r) => r.data.map((a) => a.id)),
+    );
+    await repositories.metrics.deleteMany(
+      await repositories.metrics.findMany().then((r) => r.data.map((m) => m.id)),
+    );
+    await repositories.earnings.deleteMany(
+      await repositories.earnings.findMany().then((r) => r.data.map((e) => e.id)),
+    );
+    await repositories.nodes.deleteMany(
+      await repositories.nodes.findMany().then((r) => r.data.map((n) => n.id)),
+    );
+    await repositories.users.deleteMany(
+      await repositories.users.findMany().then((r) => r.data.map((u) => u.id)),
+    );
 
     // Create users
     console.log('👥 Creating users...');
     const userData = generateUsers();
-    const users = await Promise.all(userData.map(user => repositories.users.create(user)));
+    const users = await Promise.all(userData.map((user) => repositories.users.create(user)));
     console.log(`✅ Created ${users.length} users`);
 
     // Create nodes
     console.log('🖥️  Creating nodes...');
-    const nodeData = generateNodes(users.map(u => u.id));
-    const nodes = await Promise.all(nodeData.map(node => repositories.nodes.create(node)));
+    const nodeData = generateNodes(users.map((u) => u.id));
+    const nodes = await Promise.all(nodeData.map((node) => repositories.nodes.create(node)));
     console.log(`✅ Created ${nodes.length} nodes`);
 
     // Create earnings
     console.log('💰 Creating earnings...');
-    const earningsData = generateEarnings(nodes.map(n => n.id));
-    const earnings = await Promise.all(earningsData.map(earning => repositories.earnings.create(earning)));
+    const earningsData = generateEarnings(nodes.map((n) => n.id));
+    const earnings = await Promise.all(
+      earningsData.map((earning) => repositories.earnings.create(earning)),
+    );
     console.log(`✅ Created ${earnings.length} earnings records`);
 
     // Create metrics
     console.log('📊 Creating metrics...');
-    const metricsData = generateMetrics(nodes.map(n => n.id));
+    const metricsData = generateMetrics(nodes.map((n) => n.id));
 
     // Process in batches to avoid overwhelming the database
     const batchSize = 100;
     let metricsCreated = 0;
     for (let i = 0; i < metricsData.length; i += batchSize) {
       const batch = metricsData.slice(i, i + batchSize);
-      await Promise.all(batch.map(metric => repositories.metrics.create(metric)));
+      await Promise.all(batch.map((metric) => repositories.metrics.create(metric)));
       metricsCreated += batch.length;
       console.log(`  📈 Created ${metricsCreated}/${metricsData.length} metrics records`);
     }
@@ -236,14 +260,16 @@ async function seedDatabase() {
 
     // Create alerts
     console.log('🚨 Creating alerts...');
-    const alertsData = generateAlerts(nodes.map(n => n.id));
-    const alerts = await Promise.all(alertsData.map(alert => repositories.alerts.create(alert)));
+    const alertsData = generateAlerts(nodes.map((n) => n.id));
+    const alerts = await Promise.all(alertsData.map((alert) => repositories.alerts.create(alert)));
     console.log(`✅ Created ${alerts.length} alerts`);
 
     // Create revenue shares
     console.log('💼 Creating revenue shares...');
-    const revenueSharesData = generateRevenueShares(nodes.map(n => n.id));
-    const revenueShares = await Promise.all(revenueSharesData.map(share => repositories.revenueShares.create(share)));
+    const revenueSharesData = generateRevenueShares(nodes.map((n) => n.id));
+    const revenueShares = await Promise.all(
+      revenueSharesData.map((share) => repositories.revenueShares.create(share)),
+    );
     console.log(`✅ Created ${revenueShares.length} revenue shares`);
 
     console.log('🎉 Database seeding completed successfully!');
@@ -254,7 +280,6 @@ async function seedDatabase() {
     console.log(`  📊 Metrics: ${metricsCreated}`);
     console.log(`  🚨 Alerts: ${alerts.length}`);
     console.log(`  💼 Revenue Shares: ${revenueShares.length}`);
-
   } catch (error) {
     console.error('❌ Seeding failed:', error);
     process.exit(1);

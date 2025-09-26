@@ -8,7 +8,7 @@ import {
   Period,
   NodeMetrics,
   PricingStrategy,
-  OptimizationParams
+  OptimizationParams,
 } from '../interfaces';
 import { RateLimiter, RetryLogic, ErrorHandler, MockDataGenerator } from '../utils';
 import { CacheManager } from '../cache';
@@ -36,18 +36,18 @@ export abstract class BaseConnector implements INodeConnector {
       retryDelay: 1000,
       rateLimit: {
         requests: 60,
-        window: 60000 // 1 minute
+        window: 60000, // 1 minute
       },
       cache: {
         enabled: true,
-        ttl: 300 // 5 minutes
+        ttl: 300, // 5 minutes
       },
       scraper: {
         enabled: false,
         headless: true,
-        timeout: 30000
+        timeout: 30000,
       },
-      ...config
+      ...config,
     };
 
     // Initialize HTTP client
@@ -56,10 +56,10 @@ export abstract class BaseConnector implements INodeConnector {
       timeout: this.config.timeout,
       headers: {
         'User-Agent': 'AI-Nodes-Connector/1.0.0',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-        ...(this.config.apiKey && { 'Authorization': `Bearer ${this.config.apiKey}` })
-      }
+        ...(this.config.apiKey && { Authorization: `Bearer ${this.config.apiKey}` }),
+      },
     });
 
     // Setup request/response interceptors
@@ -68,7 +68,7 @@ export abstract class BaseConnector implements INodeConnector {
     // Initialize rate limiter
     this.rateLimiter = new RateLimiter(
       this.config.rateLimit!.requests,
-      this.config.rateLimit!.requests / (this.config.rateLimit!.window / 1000)
+      this.config.rateLimit!.requests / (this.config.rateLimit!.window / 1000),
     );
 
     // Initialize cache manager
@@ -78,7 +78,7 @@ export abstract class BaseConnector implements INodeConnector {
     if (this.config.scraper?.enabled) {
       this.scraper = new PlaywrightScraper({
         headless: this.config.scraper.headless,
-        timeout: this.config.scraper.timeout
+        timeout: this.config.scraper.timeout,
       });
     }
   }
@@ -93,7 +93,7 @@ export abstract class BaseConnector implements INodeConnector {
         await this.rateLimiter.acquire();
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Response interceptor for error handling
@@ -101,7 +101,7 @@ export abstract class BaseConnector implements INodeConnector {
       (response) => response,
       (error) => {
         throw ErrorHandler.wrapApiError(error, `${this.type} API Error`);
-      }
+      },
     );
   }
 
@@ -126,17 +126,15 @@ export abstract class BaseConnector implements INodeConnector {
    */
   protected async validateConfig(): Promise<void> {
     if (this.requiresApiKey() && !this.config.apiKey) {
-      throw ErrorHandler.createConfigError(
-        'API key is required but not provided',
-        { connector: this.type }
-      );
+      throw ErrorHandler.createConfigError('API key is required but not provided', {
+        connector: this.type,
+      });
     }
 
     if (!this.config.baseUrl && this.requiresBaseUrl()) {
-      throw ErrorHandler.createConfigError(
-        'Base URL is required but not provided',
-        { connector: this.type }
-      );
+      throw ErrorHandler.createConfigError('Base URL is required but not provided', {
+        connector: this.type,
+      });
     }
   }
 
@@ -162,10 +160,15 @@ export abstract class BaseConnector implements INodeConnector {
     method: string,
     url: string,
     data?: any,
-    cacheTtl?: number
+    cacheTtl?: number,
   ): Promise<T> {
     if (!this.initialized) {
-      throw ErrorHandler.createError('CONNECTOR_NOT_INITIALIZED', 'Connector not initialized', {}, false);
+      throw ErrorHandler.createError(
+        'CONNECTOR_NOT_INITIALIZED',
+        'Connector not initialized',
+        {},
+        false,
+      );
     }
 
     const cacheKey = { method, url, data };
@@ -179,19 +182,22 @@ export abstract class BaseConnector implements INodeConnector {
     }
 
     // Make API request with retry logic
-    const response = await RetryLogic.execute(async () => {
-      const config: AxiosRequestConfig = {
-        method: method as any,
-        url,
-        ...(data && { data })
-      };
+    const response = await RetryLogic.execute(
+      async () => {
+        const config: AxiosRequestConfig = {
+          method: method as any,
+          url,
+          ...(data && { data }),
+        };
 
-      const result = await this.axiosInstance.request(config);
-      return result.data;
-    }, {
-      retries: this.config.retryAttempts,
-      minTimeout: this.config.retryDelay
-    });
+        const result = await this.axiosInstance.request(config);
+        return result.data;
+      },
+      {
+        retries: this.config.retryAttempts,
+        minTimeout: this.config.retryDelay,
+      },
+    );
 
     // Cache the response if enabled
     if (this.config.cache?.enabled) {
@@ -200,7 +206,7 @@ export abstract class BaseConnector implements INodeConnector {
         method,
         response,
         cacheTtl || this.config.cache.ttl,
-        cacheKey
+        cacheKey,
       );
     }
 
@@ -213,14 +219,14 @@ export abstract class BaseConnector implements INodeConnector {
   protected async scrapeData(
     url: string,
     selectors: Record<string, string>,
-    options?: Partial<ScrapingOptions>
+    options?: Partial<ScrapingOptions>,
   ): Promise<Record<string, string | null>> {
     if (!this.scraper) {
       throw ErrorHandler.createError(
         'SCRAPER_NOT_ENABLED',
         'Scraper is not enabled for this connector',
         { connector: this.type },
-        false
+        false,
       );
     }
 
@@ -290,7 +296,6 @@ export abstract class BaseConnector implements INodeConnector {
         errors.push('Rate limit nearly exhausted');
         status = status === 'healthy' ? 'degraded' : status;
       }
-
     } catch (error) {
       errors.push(error instanceof Error ? error.message : 'Unknown error');
       status = 'unhealthy';
@@ -302,7 +307,7 @@ export abstract class BaseConnector implements INodeConnector {
       status,
       lastCheck: new Date(),
       latency,
-      errors
+      errors,
     };
   }
 
@@ -361,9 +366,11 @@ export abstract class BaseConnector implements INodeConnector {
    */
   protected shouldUseMockData(): boolean {
     // Use mock data in development or when API is not available
-    return process.env.NODE_ENV === 'development' ||
-           process.env.USE_MOCK_DATA === 'true' ||
-           !this.config.apiKey;
+    return (
+      process.env.NODE_ENV === 'development' ||
+      process.env.USE_MOCK_DATA === 'true' ||
+      !this.config.apiKey
+    );
   }
 
   /**
@@ -395,7 +402,7 @@ export abstract class BaseConnector implements INodeConnector {
       hasApiKey: !!this.config.apiKey,
       cacheEnabled: !!this.config.cache?.enabled,
       scraperEnabled: !!this.config.scraper?.enabled,
-      rateLimitInfo: this.rateLimiter.getInfo()
+      rateLimitInfo: this.rateLimiter.getInfo(),
     };
   }
 }

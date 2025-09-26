@@ -1,19 +1,19 @@
 export interface Config {
-    apiUrl: string;
-    apiKey?: string;
-    defaultOwnerId?: string;
-    verbose?: boolean;
-    timeout?: number;
-    notifications?: {
-        email?: boolean;
-        slack?: boolean;
-        webhookUrl?: string;
-    };
-    thresholds?: {
-        lowUtilization: number;
-        highUtilization: number;
-        offlineAlert: number;
-    };
+  apiUrl: string;
+  apiKey?: string;
+  defaultOwnerId?: string;
+  verbose?: boolean;
+  timeout?: number;
+  notifications?: {
+    email?: boolean;
+    slack?: boolean;
+    webhookUrl?: string;
+  };
+  thresholds?: {
+    lowUtilization: number;
+    highUtilization: number;
+    offlineAlert: number;
+  };
 }
 export declare function readConfig(): Config;
 export declare function writeConfig(config: Partial<Config>): void;

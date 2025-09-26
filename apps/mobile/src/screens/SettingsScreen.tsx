@@ -24,7 +24,7 @@ const SettingsScreen: React.FC = () => {
   }, [settings]);
 
   const handleUpdateSetting = (key: string, value: any) => {
-    setLocalSettings(prev => {
+    setLocalSettings((prev) => {
       const updated = { ...prev };
       if (key.includes('.')) {
         const keys = key.split('.');
@@ -91,7 +91,7 @@ const SettingsScreen: React.FC = () => {
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -134,7 +134,8 @@ const SettingsScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
           <Text style={styles.helpText}>
-            Your API key is used to connect to the AI Nodes service. Keep it secure and don't share it.
+            Your API key is used to connect to the AI Nodes service. Keep it secure and don't share
+            it.
           </Text>
         </View>
       </View>
@@ -201,9 +202,7 @@ const SettingsScreen: React.FC = () => {
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
                   <Text style={styles.settingLabel}>Node Offline Alerts</Text>
-                  <Text style={styles.settingDescription}>
-                    Get notified when nodes go offline
-                  </Text>
+                  <Text style={styles.settingDescription}>Get notified when nodes go offline</Text>
                 </View>
                 <Switch
                   value={localSettings.notifications.nodeOffline}
@@ -222,7 +221,9 @@ const SettingsScreen: React.FC = () => {
                 </View>
                 <Switch
                   value={localSettings.notifications.earningsTarget}
-                  onValueChange={(value) => handleUpdateSetting('notifications.earningsTarget', value)}
+                  onValueChange={(value) =>
+                    handleUpdateSetting('notifications.earningsTarget', value)
+                  }
                   trackColor={{ false: '#E5E7EB', true: '#10B981' }}
                   thumbColor={localSettings.notifications.earningsTarget ? '#FFFFFF' : '#9CA3AF'}
                 />
@@ -237,7 +238,9 @@ const SettingsScreen: React.FC = () => {
                 </View>
                 <Switch
                   value={localSettings.notifications.lowPerformance}
-                  onValueChange={(value) => handleUpdateSetting('notifications.lowPerformance', value)}
+                  onValueChange={(value) =>
+                    handleUpdateSetting('notifications.lowPerformance', value)
+                  }
                   trackColor={{ false: '#E5E7EB', true: '#10B981' }}
                   thumbColor={localSettings.notifications.lowPerformance ? '#FFFFFF' : '#9CA3AF'}
                 />
@@ -288,7 +291,8 @@ const SettingsScreen: React.FC = () => {
         <Text style={styles.infoTitle}>AI Nodes Dashboard</Text>
         <Text style={styles.infoText}>Version 1.0.0</Text>
         <Text style={styles.infoText}>
-          Monitor and manage your AI compute nodes with real-time metrics and automated reinvestment.
+          Monitor and manage your AI compute nodes with real-time metrics and automated
+          reinvestment.
         </Text>
       </View>
     </ScrollView>

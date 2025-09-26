@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { Node } from '../types';
 import {
   formatCurrency,
@@ -26,11 +20,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({ node, onPress, style }) => {
   const performanceColor = getPerformanceColor(node.metrics.performance);
 
   return (
-    <TouchableOpacity
-      style={[styles.container, style]}
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
+    <TouchableOpacity style={[styles.container, style]} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           <Text style={styles.name}>{node.name}</Text>
@@ -56,16 +46,12 @@ export const NodeCard: React.FC<NodeCardProps> = ({ node, onPress, style }) => {
 
         <View style={styles.row}>
           <Text style={styles.label}>Daily Earnings</Text>
-          <Text style={styles.earnings}>
-            {formatCurrency(node.earnings.daily)}
-          </Text>
+          <Text style={styles.earnings}>{formatCurrency(node.earnings.daily)}</Text>
         </View>
 
         <View style={styles.row}>
           <Text style={styles.label}>Total Earnings</Text>
-          <Text style={styles.earnings}>
-            {formatCurrency(node.earnings.total)}
-          </Text>
+          <Text style={styles.earnings}>{formatCurrency(node.earnings.total)}</Text>
         </View>
 
         <View style={styles.row}>
@@ -75,9 +61,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({ node, onPress, style }) => {
 
         <View style={styles.row}>
           <Text style={styles.label}>Last Updated</Text>
-          <Text style={styles.timestamp}>
-            {formatRelativeTime(node.lastUpdated)}
-          </Text>
+          <Text style={styles.timestamp}>{formatRelativeTime(node.lastUpdated)}</Text>
         </View>
       </View>
 
@@ -85,22 +69,16 @@ export const NodeCard: React.FC<NodeCardProps> = ({ node, onPress, style }) => {
         <View style={styles.additionalMetrics}>
           <View style={styles.metricItem}>
             <Text style={styles.metricLabel}>Temp</Text>
-            <Text style={styles.metricValue}>
-              {Math.round(node.metrics.temperature)}°C
-            </Text>
+            <Text style={styles.metricValue}>{Math.round(node.metrics.temperature)}°C</Text>
           </View>
           <View style={styles.metricItem}>
             <Text style={styles.metricLabel}>Uptime</Text>
-            <Text style={styles.metricValue}>
-              {formatPercentage(node.metrics.uptime)}
-            </Text>
+            <Text style={styles.metricValue}>{formatPercentage(node.metrics.uptime)}</Text>
           </View>
           {node.metrics.hashRate && (
             <View style={styles.metricItem}>
               <Text style={styles.metricLabel}>Hash Rate</Text>
-              <Text style={styles.metricValue}>
-                {(node.metrics.hashRate / 1e9).toFixed(1)}GH/s
-              </Text>
+              <Text style={styles.metricValue}>{(node.metrics.hashRate / 1e9).toFixed(1)}GH/s</Text>
             </View>
           )}
         </View>

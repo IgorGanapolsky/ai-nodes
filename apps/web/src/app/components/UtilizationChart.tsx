@@ -123,7 +123,10 @@ export function UtilizationChart({ ownerId, timeframe, isLoading }: UtilizationC
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{progressPercentage.toFixed(0)}%</div>
-            <Badge variant={progressPercentage >= 95 ? 'default' : 'secondary'} className="mt-1 gap-1">
+            <Badge
+              variant={progressPercentage >= 95 ? 'default' : 'secondary'}
+              className="mt-1 gap-1"
+            >
               <TrendingUp className="h-3 w-3" />
               {progressPercentage >= 95 ? 'On-pace' : 'Behind target'}
             </Badge>
@@ -136,9 +139,7 @@ export function UtilizationChart({ ownerId, timeframe, isLoading }: UtilizationC
             <Server className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {data[data.length - 1]?.onlineDevices || 0}
-            </div>
+            <div className="text-2xl font-bold">{data[data.length - 1]?.onlineDevices || 0}</div>
             <div className="text-xs text-muted-foreground mt-1">
               of {data[data.length - 1]?.devices || 0} total
             </div>
@@ -158,9 +159,7 @@ export function UtilizationChart({ ownerId, timeframe, isLoading }: UtilizationC
           <Card>
             <CardHeader>
               <CardTitle>Earnings vs Target</CardTitle>
-              <CardDescription>
-                Actual earnings compared to target over time
-              </CardDescription>
+              <CardDescription>Actual earnings compared to target over time</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-64">
@@ -172,8 +171,16 @@ export function UtilizationChart({ ownerId, timeframe, isLoading }: UtilizationC
                         <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="targetGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0} />
+                        <stop
+                          offset="5%"
+                          stopColor="hsl(var(--muted-foreground))"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="hsl(var(--muted-foreground))"
+                          stopOpacity={0}
+                        />
                       </linearGradient>
                     </defs>
                     <XAxis
@@ -181,10 +188,7 @@ export function UtilizationChart({ ownerId, timeframe, isLoading }: UtilizationC
                       tick={{ fontSize: 12 }}
                       tickLine={{ stroke: 'hsl(var(--border))' }}
                     />
-                    <YAxis
-                      tick={{ fontSize: 12 }}
-                      tickLine={{ stroke: 'hsl(var(--border))' }}
-                    />
+                    <YAxis tick={{ fontSize: 12 }} tickLine={{ stroke: 'hsl(var(--border))' }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
                     <Area
@@ -214,9 +218,7 @@ export function UtilizationChart({ ownerId, timeframe, isLoading }: UtilizationC
           <Card>
             <CardHeader>
               <CardTitle>Uptime & Device Status</CardTitle>
-              <CardDescription>
-                Device uptime and online status over time
-              </CardDescription>
+              <CardDescription>Device uptime and online status over time</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-64">
@@ -242,7 +244,12 @@ export function UtilizationChart({ ownerId, timeframe, isLoading }: UtilizationC
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
-                    <ReferenceLine yAxisId="uptime" y={95} stroke="hsl(var(--destructive))" strokeDasharray="5 5" />
+                    <ReferenceLine
+                      yAxisId="uptime"
+                      y={95}
+                      stroke="hsl(var(--destructive))"
+                      strokeDasharray="5 5"
+                    />
                     <Line
                       yAxisId="uptime"
                       type="monotone"
@@ -272,9 +279,7 @@ export function UtilizationChart({ ownerId, timeframe, isLoading }: UtilizationC
           <Card>
             <CardHeader>
               <CardTitle>Resource Utilization</CardTitle>
-              <CardDescription>
-                CPU, memory usage and network latency
-              </CardDescription>
+              <CardDescription>CPU, memory usage and network latency</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-64">

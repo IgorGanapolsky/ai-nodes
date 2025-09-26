@@ -21,7 +21,7 @@ import {
   getLogger,
   formatCurrency,
   generateUuid,
-  ValidationError
+  ValidationError,
 } from '@depinautopilot/utils';
 ```
 
@@ -64,7 +64,7 @@ import {
   BadRequestError,
   ValidationError,
   createHttpError,
-  handleAsyncError
+  handleAsyncError,
 } from '@depinautopilot/utils';
 
 // Throw structured errors
@@ -86,7 +86,7 @@ import {
   isValidEmail,
   validateAndSanitizeEmail,
   createValidationMiddleware,
-  paginationSchema
+  paginationSchema,
 } from '@depinautopilot/utils';
 
 // Validate common formats
@@ -109,7 +109,7 @@ import {
   formatCurrency,
   formatPercentage,
   formatDate,
-  truncateString
+  truncateString,
 } from '@depinautopilot/utils';
 
 // Format values for display
@@ -127,7 +127,7 @@ import {
   generateId,
   generateUserId,
   hashPassword,
-  verifyPassword
+  verifyPassword,
 } from '@depinautopilot/utils';
 
 // Generate IDs
@@ -143,13 +143,7 @@ const isValid = verifyPassword('mypassword', hash, salt);
 ### Utility Functions
 
 ```typescript
-import {
-  sleep,
-  debounce,
-  retry,
-  withTimeout,
-  deepClone
-} from '@depinautopilot/utils';
+import { sleep, debounce, retry, withTimeout, deepClone } from '@depinautopilot/utils';
 
 // Async utilities
 await sleep(1000); // Wait 1 second
@@ -158,13 +152,13 @@ await sleep(1000); // Wait 1 second
 const result = await retry(
   () => fetchDataFromAPI(),
   3, // max retries
-  1000 // base delay
+  1000, // base delay
 );
 
 // Add timeout to promises
 const data = await withTimeout(
   longRunningOperation(),
-  5000 // timeout in ms
+  5000, // timeout in ms
 );
 
 // Debounce functions
@@ -186,29 +180,34 @@ setTimeout(callback, TIME.MINUTE * 5); // 5 minutes
 ## Modules
 
 ### Configuration (`src/config.ts`)
+
 - Environment variable validation with Zod
 - Type-safe configuration loading
 - Support for all common env vars (DATABASE_URL, JWT_SECRET, etc.)
 
 ### Logging (`src/logger.ts`)
+
 - Pino-based structured logging
 - Request/response logging middleware
 - Child loggers with context
 - Pretty printing for development
 
 ### Errors (`src/errors.ts`)
+
 - Comprehensive error class hierarchy
 - HTTP status code mapping
 - Operational vs programming error distinction
 - Safe error serialization (removes sensitive data)
 
 ### Validation (`src/validators.ts`)
+
 - Common validation schemas (email, URL, UUID, etc.)
 - Express middleware for request validation
 - Business logic validators (wallet addresses, token symbols)
 - Safe validation with proper error handling
 
 ### Formatters (`src/formatters.ts`)
+
 - Currency and percentage formatting
 - Date and duration formatting
 - File size and large number formatting
@@ -216,6 +215,7 @@ setTimeout(callback, TIME.MINUTE * 5); // 5 minutes
 - Crypto-specific formatters
 
 ### Crypto (`src/crypto.ts`)
+
 - Secure ID generation
 - Password hashing with scrypt
 - HMAC signing and verification

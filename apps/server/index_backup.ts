@@ -6,11 +6,14 @@ import { initializeJobs, stopAllJobs } from './jobs';
 
 async function start(): Promise<void> {
   try {
-    logger.info({
-      nodeEnv: env.NODE_ENV,
-      port: env.PORT,
-      host: env.HOST,
-    }, 'Starting AI Nodes Management Server...');
+    logger.info(
+      {
+        nodeEnv: env.NODE_ENV,
+        port: env.PORT,
+        host: env.HOST,
+      },
+      'Starting AI Nodes Management Server...',
+    );
 
     // Create Fastify app
     const app = await createApp();
@@ -24,13 +27,16 @@ async function start(): Promise<void> {
       host: env.HOST,
     });
 
-    logger.info({
-      port: env.PORT,
-      host: env.HOST,
-      environment: env.NODE_ENV,
-      documentation: `http://${env.HOST}:${env.PORT}/docs`,
-      health: `http://${env.HOST}:${env.PORT}/api/health`,
-    }, 'Server started successfully');
+    logger.info(
+      {
+        port: env.PORT,
+        host: env.HOST,
+        environment: env.NODE_ENV,
+        documentation: `http://${env.HOST}:${env.PORT}/docs`,
+        health: `http://${env.HOST}:${env.PORT}/api/health`,
+      },
+      'Server started successfully',
+    );
 
     // Graceful shutdown handlers
     const gracefulShutdown = async (signal: string) => {
@@ -52,9 +58,12 @@ async function start(): Promise<void> {
         logger.info('Graceful shutdown completed');
         process.exit(0);
       } catch (error) {
-        logger.error({
-          error: error instanceof Error ? error.message : 'Unknown error',
-        }, 'Error during graceful shutdown');
+        logger.error(
+          {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          },
+          'Error during graceful shutdown',
+        );
         process.exit(1);
       }
     };
@@ -65,21 +74,27 @@ async function start(): Promise<void> {
 
     // Handle uncaught exceptions
     process.on('uncaughtException', (error) => {
-      logger.fatal({
-        error: {
-          message: error.message,
-          stack: error.stack,
+      logger.fatal(
+        {
+          error: {
+            message: error.message,
+            stack: error.stack,
+          },
         },
-      }, 'Uncaught exception occurred');
+        'Uncaught exception occurred',
+      );
       process.exit(1);
     });
 
     // Handle unhandled promise rejections
     process.on('unhandledRejection', (reason, promise) => {
-      logger.fatal({
-        reason,
-        promise,
-      }, 'Unhandled promise rejection occurred');
+      logger.fatal(
+        {
+          reason,
+          promise,
+        },
+        'Unhandled promise rejection occurred',
+      );
       process.exit(1);
     });
 
@@ -87,22 +102,27 @@ async function start(): Promise<void> {
     if (isDevelopment) {
       setInterval(() => {
         const memUsage = process.memoryUsage();
-        logger.debug({
-          memory: {
-            rss: Math.round(memUsage.rss / 1024 / 1024),
-            heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024),
-            heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
-            external: Math.round(memUsage.external / 1024 / 1024),
+        logger.debug(
+          {
+            memory: {
+              rss: Math.round(memUsage.rss / 1024 / 1024),
+              heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024),
+              heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
+              external: Math.round(memUsage.external / 1024 / 1024),
+            },
           },
-        }, 'Memory usage (MB)');
+          'Memory usage (MB)',
+        );
       }, 60000); // Every minute
     }
-
   } catch (error) {
-    logger.fatal({
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-    }, 'Failed to start server');
+    logger.fatal(
+      {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+      'Failed to start server',
+    );
     process.exit(1);
   }
 }

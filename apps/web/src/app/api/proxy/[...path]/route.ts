@@ -46,7 +46,7 @@ function getForwardedHeaders(request: NextRequest) {
 
   // Forward other relevant headers
   const relevantHeaders = ['x-correlation-id', 'x-request-id', 'accept-language'];
-  relevantHeaders.forEach(header => {
+  relevantHeaders.forEach((header) => {
     const value = request.headers.get(header);
     if (value) {
       headers[header] = value;
@@ -56,10 +56,7 @@ function getForwardedHeaders(request: NextRequest) {
   return headers;
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
   try {
     const { path } = params;
     const searchParams = request.nextUrl.searchParams;
@@ -83,7 +80,7 @@ export async function GET(
 
     // Forward cache-related headers
     const cacheHeaders = ['cache-control', 'etag', 'last-modified'];
-    cacheHeaders.forEach(header => {
+    cacheHeaders.forEach((header) => {
       const value = response.headers.get(header);
       if (value) {
         responseHeaders.set(header, value);
@@ -98,15 +95,12 @@ export async function GET(
     console.error('[API Proxy] GET Error:', error);
     return NextResponse.json(
       { error: 'Internal server error', message: 'Failed to fetch data from API' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { path: string[] } }) {
   try {
     const { path } = params;
     const body = await request.text();
@@ -131,15 +125,12 @@ export async function POST(
     console.error('[API Proxy] POST Error:', error);
     return NextResponse.json(
       { error: 'Internal server error', message: 'Failed to send data to API' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { path: string[] } }) {
   try {
     const { path } = params;
     const body = await request.text();
@@ -164,15 +155,12 @@ export async function PUT(
     console.error('[API Proxy] PUT Error:', error);
     return NextResponse.json(
       { error: 'Internal server error', message: 'Failed to update data via API' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { path: string[] } }) {
   try {
     const { path } = params;
 
@@ -186,9 +174,7 @@ export async function DELETE(
       headers,
     });
 
-    const data = response.headers.get('content-length') !== '0'
-      ? await response.json()
-      : {};
+    const data = response.headers.get('content-length') !== '0' ? await response.json() : {};
 
     return NextResponse.json(data, {
       status: response.status,
@@ -197,7 +183,7 @@ export async function DELETE(
     console.error('[API Proxy] DELETE Error:', error);
     return NextResponse.json(
       { error: 'Internal server error', message: 'Failed to delete data via API' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

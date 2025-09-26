@@ -37,26 +37,31 @@ npm install
 ## Database Scripts
 
 ### Generate Migrations
+
 ```bash
 npm run db:generate
 ```
 
 ### Run Migrations
+
 ```bash
 npm run db:migrate
 ```
 
 ### Seed Demo Data
+
 ```bash
 npm run db:seed
 ```
 
 ### Open Drizzle Studio
+
 ```bash
 npm run db:studio
 ```
 
 ### Push Schema to Database (Development)
+
 ```bash
 npm run db:push
 ```
@@ -75,31 +80,21 @@ The seed script creates:
 ## Usage
 
 ```typescript
-import {
-  database,
-  owners,
-  devices,
-  metrics,
-  statements,
-  alerts
-} from '@depinautopilot/db';
+import { database, owners, devices, metrics, statements, alerts } from '@depinautopilot/db';
 
 // Query owners
 const allOwners = await database.select().from(owners);
 
 // Query devices for an owner
-const ownerDevices = await database
-  .select()
-  .from(devices)
-  .where(eq(devices.ownerId, 'owner-id'));
+const ownerDevices = await database.select().from(devices).where(eq(devices.ownerId, 'owner-id'));
 
 // Insert new metric
 await database.insert(metrics).values({
   deviceId: 'device-id',
   cpuUsage: 75.5,
   memoryUsage: 80.2,
-  earningsUsd: 2.50,
-  timestamp: new Date()
+  earningsUsd: 2.5,
+  timestamp: new Date(),
 });
 ```
 

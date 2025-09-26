@@ -11,7 +11,7 @@ export class ErrorHandler {
     code: string,
     message: string,
     details?: any,
-    retryable: boolean = false
+    retryable: boolean = false,
   ): ConnectorError {
     const error = new Error(message) as ConnectorError;
     error.code = code;
@@ -47,7 +47,7 @@ export class ErrorHandler {
         status,
         statusText,
         data,
-        headers: error.response.headers
+        headers: error.response.headers,
       };
 
       // Specific status code handling
@@ -78,13 +78,13 @@ export class ErrorHandler {
       retryable = true;
       details = {
         timeout: error.timeout,
-        code: error.code
+        code: error.code,
       };
     } else {
       // General error
       message = error.message || 'Unknown error occurred';
       details = {
-        originalError: error.toString()
+        originalError: error.toString(),
       };
     }
 
@@ -133,10 +133,15 @@ export class ErrorHandler {
     const code = 'CACHE_ERROR';
     const message = `Cache ${operation} failed: ${error.message || 'Unknown error'}`;
 
-    return this.createError(code, message, {
-      operation,
-      originalError: error
-    }, false); // Cache errors are typically not retryable
+    return this.createError(
+      code,
+      message,
+      {
+        operation,
+        originalError: error,
+      },
+      false,
+    ); // Cache errors are typically not retryable
   }
 
   /**
@@ -146,11 +151,16 @@ export class ErrorHandler {
     const code = 'VALIDATION_ERROR';
     const message = `Validation failed for field '${field}': ${reason}`;
 
-    return this.createError(code, message, {
-      field,
-      value,
-      reason
-    }, false);
+    return this.createError(
+      code,
+      message,
+      {
+        field,
+        value,
+        reason,
+      },
+      false,
+    );
   }
 
   /**
@@ -168,10 +178,15 @@ export class ErrorHandler {
     const code = 'TIMEOUT_ERROR';
     const message = `Operation '${operation}' timed out after ${timeout}ms`;
 
-    return this.createError(code, message, {
-      operation,
-      timeout
-    }, true);
+    return this.createError(
+      code,
+      message,
+      {
+        operation,
+        timeout,
+      },
+      true,
+    );
   }
 
   /**
@@ -190,10 +205,10 @@ export class ErrorHandler {
       'service unavailable',
       'rate limit',
       'too many requests',
-      'temporarily unavailable'
+      'temporarily unavailable',
     ];
 
-    return temporaryPatterns.some(pattern => message.includes(pattern));
+    return temporaryPatterns.some((pattern) => message.includes(pattern));
   }
 
   /**

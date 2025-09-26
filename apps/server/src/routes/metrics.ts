@@ -6,7 +6,7 @@ const getMetricsQuerySchema = z.object({
   deviceId: z.string().optional(),
   ownerId: z.string().optional(),
   startDate: z.string().optional(), // ISO date string
-  endDate: z.string().optional(),   // ISO date string
+  endDate: z.string().optional(), // ISO date string
   granularity: z.enum(['hour', 'day', 'week', 'month']).default('day'),
   metricType: z.enum(['utilization', 'earnings', 'performance', 'all']).default('all'),
 });
@@ -19,33 +19,39 @@ const metricsResponseSchema = z.object({
     totalEarnings: z.number(),
     totalUptime: z.number(), // in hours
   }),
-  utilization: z.array(z.object({
-    timestamp: z.string(),
-    deviceId: z.string(),
-    deviceName: z.string(),
-    utilizationPercent: z.number(),
-    cpuUsage: z.number().optional(),
-    memoryUsage: z.number().optional(),
-    gpuUsage: z.number().optional(),
-  })),
-  earnings: z.array(z.object({
-    timestamp: z.string(),
-    deviceId: z.string(),
-    deviceName: z.string(),
-    amount: z.number(),
-    currency: z.string(),
-    hoursOnline: z.number(),
-    hourlyRate: z.number(),
-  })),
-  performance: z.array(z.object({
-    timestamp: z.string(),
-    deviceId: z.string(),
-    deviceName: z.string(),
-    responseTime: z.number(), // in ms
-    throughput: z.number(),   // requests/second or similar
-    errorRate: z.number(),    // percentage
-    uptime: z.number(),       // percentage
-  })),
+  utilization: z.array(
+    z.object({
+      timestamp: z.string(),
+      deviceId: z.string(),
+      deviceName: z.string(),
+      utilizationPercent: z.number(),
+      cpuUsage: z.number().optional(),
+      memoryUsage: z.number().optional(),
+      gpuUsage: z.number().optional(),
+    }),
+  ),
+  earnings: z.array(
+    z.object({
+      timestamp: z.string(),
+      deviceId: z.string(),
+      deviceName: z.string(),
+      amount: z.number(),
+      currency: z.string(),
+      hoursOnline: z.number(),
+      hourlyRate: z.number(),
+    }),
+  ),
+  performance: z.array(
+    z.object({
+      timestamp: z.string(),
+      deviceId: z.string(),
+      deviceName: z.string(),
+      responseTime: z.number(), // in ms
+      throughput: z.number(), // requests/second or similar
+      errorRate: z.number(), // percentage
+      uptime: z.number(), // percentage
+    }),
+  ),
 });
 
 type GetMetricsQuery = z.infer<typeof getMetricsQuerySchema>;
@@ -55,55 +61,61 @@ const metricRoutes: FastifyPluginCallback = async (fastify) => {
   // GET /metrics - Get comprehensive metrics data
   fastify.get<{
     Querystring: GetMetricsQuery;
-  }>('/', {
-    schema: {
-      querystring: getMetricsQuerySchema,
+  }>(
+    '/',
+    {
+      schema: {
+        querystring: getMetricsQuerySchema,
+      },
     },
-  }, async (request, reply) => {
-    try {
-      const { deviceId, ownerId, startDate, endDate, granularity, metricType } = request.query;
+    async (request, reply) => {
+      try {
+        const { deviceId, ownerId, startDate, endDate, granularity, metricType } = request.query;
 
-      // Generate mock data based on query parameters
-      const now = new Date();
-      const start = startDate ? new Date(startDate) : new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
-      const end = endDate ? new Date(endDate) : now;
+        // Generate mock data based on query parameters
+        const now = new Date();
+        const start = startDate
+          ? new Date(startDate)
+          : new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
+        const end = endDate ? new Date(endDate) : now;
 
-      // TODO: Replace with actual database queries
-      const mockMetrics: MetricsResponse = {
-        summary: {
-          totalDevices: deviceId ? 1 : 15,
-          onlineDevices: deviceId ? 1 : 12,
-          averageUtilization: 73.5,
-          totalEarnings: 4285.75,
-          totalUptime: 168.5, // hours
-        },
-        utilization: generateMockUtilizationData(start, end, granularity, deviceId),
-        earnings: generateMockEarningsData(start, end, granularity, deviceId),
-        performance: generateMockPerformanceData(start, end, granularity, deviceId),
-      };
+        // TODO: Replace with actual database queries
+        const mockMetrics: MetricsResponse = {
+          summary: {
+            totalDevices: deviceId ? 1 : 15,
+            onlineDevices: deviceId ? 1 : 12,
+            averageUtilization: 73.5,
+            totalEarnings: 4285.75,
+            totalUptime: 168.5, // hours
+          },
+          utilization: generateMockUtilizationData(start, end, granularity, deviceId),
+          earnings: generateMockEarningsData(start, end, granularity, deviceId),
+          performance: generateMockPerformanceData(start, end, granularity, deviceId),
+        };
 
-      // Filter response based on metricType
-      let filteredResponse: Partial<MetricsResponse> = { summary: mockMetrics.summary };
+        // Filter response based on metricType
+        let filteredResponse: Partial<MetricsResponse> = { summary: mockMetrics.summary };
 
-      if (metricType === 'all') {
-        filteredResponse = mockMetrics;
-      } else if (metricType === 'utilization') {
-        filteredResponse.utilization = mockMetrics.utilization;
-      } else if (metricType === 'earnings') {
-        filteredResponse.earnings = mockMetrics.earnings;
-      } else if (metricType === 'performance') {
-        filteredResponse.performance = mockMetrics.performance;
+        if (metricType === 'all') {
+          filteredResponse = mockMetrics;
+        } else if (metricType === 'utilization') {
+          filteredResponse.utilization = mockMetrics.utilization;
+        } else if (metricType === 'earnings') {
+          filteredResponse.earnings = mockMetrics.earnings;
+        } else if (metricType === 'performance') {
+          filteredResponse.performance = mockMetrics.performance;
+        }
+
+        return reply.send(filteredResponse);
+      } catch (error) {
+        fastify.log.error('Error fetching metrics:', error);
+        return reply.status(500).send({
+          error: 'Internal server error',
+          message: 'Failed to fetch metrics',
+        });
       }
-
-      return reply.send(filteredResponse);
-    } catch (error) {
-      fastify.log.error('Error fetching metrics:', error);
-      return reply.status(500).send({
-        error: 'Internal server error',
-        message: 'Failed to fetch metrics',
-      });
-    }
-  });
+    },
+  );
 
   // GET /metrics/live - Get real-time metrics for dashboard
   fastify.get('/live', async (request, reply) => {
@@ -123,7 +135,7 @@ const metricRoutes: FastifyPluginCallback = async (fastify) => {
         },
         earnings: {
           lastHour: 15.75,
-          today: 342.50,
+          today: 342.5,
           rate: 2.35, // USD per hour
         },
         alerts: {
@@ -146,43 +158,48 @@ const metricRoutes: FastifyPluginCallback = async (fastify) => {
   // GET /metrics/export - Export metrics data (CSV/JSON)
   fastify.get<{
     Querystring: GetMetricsQuery & { format: 'csv' | 'json' };
-  }>('/export', {
-    schema: {
-      querystring: getMetricsQuerySchema.extend({
-        format: z.enum(['csv', 'json']).default('json'),
-      }),
+  }>(
+    '/export',
+    {
+      schema: {
+        querystring: getMetricsQuerySchema.extend({
+          format: z.enum(['csv', 'json']).default('json'),
+        }),
+      },
     },
-  }, async (request, reply) => {
-    try {
-      const { format, ...queryParams } = request.query;
+    async (request, reply) => {
+      try {
+        const { format, ...queryParams } = request.query;
 
-      // Get metrics data (same logic as main endpoint)
-      // TODO: Implement actual export functionality
+        // Get metrics data (same logic as main endpoint)
+        // TODO: Implement actual export functionality
 
-      if (format === 'csv') {
-        const csvData = 'timestamp,device_id,utilization,earnings\n2024-01-01T00:00:00Z,1,75.5,2.30\n';
-        reply.type('text/csv');
-        reply.header('Content-Disposition', `attachment; filename="metrics-${Date.now()}.csv"`);
-        return reply.send(csvData);
-      } else {
-        // Return JSON format
-        const exportData = {
-          exportedAt: new Date().toISOString(),
-          query: queryParams,
-          data: [], // Metrics data would go here
-        };
+        if (format === 'csv') {
+          const csvData =
+            'timestamp,device_id,utilization,earnings\n2024-01-01T00:00:00Z,1,75.5,2.30\n';
+          reply.type('text/csv');
+          reply.header('Content-Disposition', `attachment; filename="metrics-${Date.now()}.csv"`);
+          return reply.send(csvData);
+        } else {
+          // Return JSON format
+          const exportData = {
+            exportedAt: new Date().toISOString(),
+            query: queryParams,
+            data: [], // Metrics data would go here
+          };
 
-        reply.header('Content-Disposition', `attachment; filename="metrics-${Date.now()}.json"`);
-        return reply.send(exportData);
+          reply.header('Content-Disposition', `attachment; filename="metrics-${Date.now()}.json"`);
+          return reply.send(exportData);
+        }
+      } catch (error) {
+        fastify.log.error('Error exporting metrics:', error);
+        return reply.status(500).send({
+          error: 'Internal server error',
+          message: 'Failed to export metrics',
+        });
       }
-    } catch (error) {
-      fastify.log.error('Error exporting metrics:', error);
-      return reply.status(500).send({
-        error: 'Internal server error',
-        message: 'Failed to export metrics',
-      });
-    }
-  });
+    },
+  );
 };
 
 // Helper functions to generate mock data
@@ -190,7 +207,7 @@ function generateMockUtilizationData(
   start: Date,
   end: Date,
   granularity: string,
-  deviceId?: string
+  deviceId?: string,
 ): MetricsResponse['utilization'] {
   const data = [];
   const deviceIds = deviceId ? [deviceId] : ['1', '2', '3'];
@@ -220,12 +237,12 @@ function generateMockEarningsData(
   start: Date,
   end: Date,
   granularity: string,
-  deviceId?: string
+  deviceId?: string,
 ): MetricsResponse['earnings'] {
   const data = [];
   const deviceIds = deviceId ? [deviceId] : ['1', '2', '3'];
   const deviceNames = { '1': 'GPU Rig Alpha', '2': 'Storage Node Beta', '3': 'CPU Farm Gamma' };
-  const rates = { '1': 2.50, '2': 0.15, '3': 1.20 };
+  const rates = { '1': 2.5, '2': 0.15, '3': 1.2 };
 
   const interval = granularity === 'hour' ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
   const hoursPerInterval = granularity === 'hour' ? 1 : 24;
@@ -254,7 +271,7 @@ function generateMockPerformanceData(
   start: Date,
   end: Date,
   granularity: string,
-  deviceId?: string
+  deviceId?: string,
 ): MetricsResponse['performance'] {
   const data = [];
   const deviceIds = deviceId ? [deviceId] : ['1', '2', '3'];

@@ -12,7 +12,7 @@ export abstract class BaseError extends Error {
     message: string,
     statusCode: number = 500,
     isOperational: boolean = true,
-    context?: Record<string, any>
+    context?: Record<string, any>,
   ) {
     super(message);
 
@@ -66,7 +66,7 @@ export abstract class BaseError extends Error {
     const safeContext = { ...this.context };
 
     for (const key of Object.keys(safeContext)) {
-      if (sensitiveKeys.some(sensitive => key.toLowerCase().includes(sensitive))) {
+      if (sensitiveKeys.some((sensitive) => key.toLowerCase().includes(sensitive))) {
         safeContext[key] = '[REDACTED]';
       }
     }
@@ -129,7 +129,7 @@ export class ValidationError extends BaseError {
   constructor(
     message: string = 'Validation Error',
     validationErrors?: Record<string, string[]>,
-    context?: Record<string, any>
+    context?: Record<string, any>,
   ) {
     super(message, 422, true, context);
     this.validationErrors = validationErrors;
@@ -159,7 +159,7 @@ export class RateLimitError extends BaseError {
   constructor(
     message: string = 'Too Many Requests',
     retryAfter?: number,
-    context?: Record<string, any>
+    context?: Record<string, any>,
   ) {
     super(message, 429, true, context);
     this.retryAfter = retryAfter;
@@ -223,12 +223,7 @@ export class DatabaseError extends BaseError {
   public readonly query?: string;
   public readonly parameters?: any[];
 
-  constructor(
-    message: string,
-    query?: string,
-    parameters?: any[],
-    context?: Record<string, any>
-  ) {
+  constructor(message: string, query?: string, parameters?: any[], context?: Record<string, any>) {
     super(message, 500, true, context);
     this.query = query;
     this.parameters = parameters;
@@ -263,7 +258,7 @@ export class ExternalAPIError extends BaseError {
     endpoint?: string,
     responseStatus?: number,
     responseData?: any,
-    context?: Record<string, any>
+    context?: Record<string, any>,
   ) {
     super(`${service} API Error: ${message}`, responseStatus || 502, true, context);
     this.service = service;
@@ -373,7 +368,7 @@ export function isOperationalError(error: Error): boolean {
 export function createHttpError(
   statusCode: number,
   message?: string,
-  context?: Record<string, any>
+  context?: Record<string, any>,
 ): BaseError {
   switch (statusCode) {
     case 400:
@@ -405,7 +400,7 @@ export function createHttpError(
  * Error handler utility for async functions
  */
 export function handleAsyncError<T extends any[], R>(
-  fn: (...args: T) => Promise<R>
+  fn: (...args: T) => Promise<R>,
 ): (...args: T) => Promise<R> {
   return async (...args: T): Promise<R> => {
     try {
@@ -418,7 +413,7 @@ export function handleAsyncError<T extends any[], R>(
       // Convert unknown errors to internal server errors
       throw new InternalServerError(
         error instanceof Error ? error.message : 'Unknown error occurred',
-        { originalError: error }
+        { originalError: error },
       );
     }
   };

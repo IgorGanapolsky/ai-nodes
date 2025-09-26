@@ -1,5 +1,5 @@
 interface AppProvidersProps {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 export declare function AppProviders({ children }: AppProvidersProps): any;
 export {};

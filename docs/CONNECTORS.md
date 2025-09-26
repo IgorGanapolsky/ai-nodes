@@ -18,7 +18,7 @@ Package: `@depinautopilot/connectors`
 import { ConnectorFactory, ConnectorNetwork } from '@depinautopilot/connectors';
 
 const connector = ConnectorFactory.createConnector({
-  network: ConnectorNetwork.IONET
+  network: ConnectorNetwork.IONET,
 });
 
 const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -46,4 +46,3 @@ When API keys are not present, connectors return deterministic mock data useful 
 ## Pricing Optimization
 
 Connectors expose price suggestion helpers where supported. For richer pricing logic, prefer utilities from `@depinautopilot/core`.
-

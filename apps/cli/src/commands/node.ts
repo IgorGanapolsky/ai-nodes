@@ -23,7 +23,7 @@ export const nodeCommand = new Command('node')
           const response = await apiClient.getNodes({
             status: options.status,
             type: options.type,
-            region: options.region
+            region: options.region,
           });
 
           spinner.stop();
@@ -38,14 +38,17 @@ export const nodeCommand = new Command('node')
             return;
           }
 
-          const tableData = [
-            ['ID', 'Name', 'Type', 'Status', 'Region', 'Uptime %', 'Earnings']
-          ];
+          const tableData = [['ID', 'Name', 'Type', 'Status', 'Region', 'Uptime %', 'Earnings']];
 
-          response.nodes.forEach(node => {
-            const statusColor = node.status === 'online' ? chalk.green :
-                              node.status === 'offline' ? chalk.red :
-                              node.status === 'maintenance' ? chalk.yellow : chalk.magenta;
+          response.nodes.forEach((node) => {
+            const statusColor =
+              node.status === 'online'
+                ? chalk.green
+                : node.status === 'offline'
+                  ? chalk.red
+                  : node.status === 'maintenance'
+                    ? chalk.yellow
+                    : chalk.magenta;
 
             tableData.push([
               node.id,
@@ -54,7 +57,7 @@ export const nodeCommand = new Command('node')
               statusColor(node.status),
               node.region,
               `${node.metrics.uptime.toFixed(1)}%`,
-              `${node.metrics.earnings.toFixed(4)} tokens`
+              `${node.metrics.earnings.toFixed(4)} tokens`,
             ]);
           });
 
@@ -64,7 +67,7 @@ export const nodeCommand = new Command('node')
           spinner.fail('Failed to fetch nodes');
           console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
         }
-      })
+      }),
   )
   .addCommand(
     new Command('show')
@@ -101,12 +104,11 @@ export const nodeCommand = new Command('node')
           console.log(`Memory Usage: ${node.metrics.memory.toFixed(1)}%`);
           console.log(`Storage Used: ${node.metrics.storage.toFixed(1)}%`);
           console.log(`Earnings:     ${node.metrics.earnings.toFixed(4)} tokens`);
-
         } catch (error) {
           spinner.fail(`Failed to fetch node ${nodeId}`);
           console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
         }
-      })
+      }),
   )
   .addCommand(
     new Command('add')
@@ -121,10 +123,16 @@ export const nodeCommand = new Command('node')
           name: options.name,
           type: options.type,
           endpoint: options.endpoint,
-          region: options.region
+          region: options.region,
         };
 
-        if (options.interactive || !nodeData.name || !nodeData.type || !nodeData.endpoint || !nodeData.region) {
+        if (
+          options.interactive ||
+          !nodeData.name ||
+          !nodeData.type ||
+          !nodeData.endpoint ||
+          !nodeData.region
+        ) {
           console.log(chalk.cyan('🔧 Register New DePIN Node'));
           console.log(chalk.gray('Please provide the following information:\n'));
 
@@ -134,14 +142,14 @@ export const nodeCommand = new Command('node')
               name: 'name',
               message: 'Node name:',
               default: nodeData.name,
-              validate: (input) => input.trim() !== '' || 'Name is required'
+              validate: (input) => input.trim() !== '' || 'Name is required',
             },
             {
               type: 'list',
               name: 'type',
               message: 'Node type:',
               choices: ['helium', 'filecoin', 'storj', 'theta', 'akash', 'other'],
-              default: nodeData.type
+              default: nodeData.type,
             },
             {
               type: 'input',
@@ -155,15 +163,15 @@ export const nodeCommand = new Command('node')
                 } catch {
                   return 'Please enter a valid URL';
                 }
-              }
+              },
             },
             {
               type: 'list',
               name: 'region',
               message: 'Region:',
               choices: ['us-east-1', 'us-west-1', 'eu-west-1', 'ap-southeast-1', 'other'],
-              default: nodeData.region
-            }
+              default: nodeData.region,
+            },
           ]);
 
           nodeData = { ...nodeData, ...answers };
@@ -180,12 +188,11 @@ export const nodeCommand = new Command('node')
           console.log(chalk.gray(`Name: ${newNode.name}`));
           console.log(chalk.gray(`Type: ${newNode.type}`));
           console.log(chalk.gray(`Region: ${newNode.region}`));
-
         } catch (error) {
           spinner.fail('Failed to register node');
           console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
         }
-      })
+      }),
   )
   .addCommand(
     new Command('remove')
@@ -200,8 +207,8 @@ export const nodeCommand = new Command('node')
               type: 'confirm',
               name: 'confirmed',
               message: `Are you sure you want to remove node ${nodeId}?`,
-              default: false
-            }
+              default: false,
+            },
           ]);
 
           if (!confirmed) {
@@ -218,20 +225,24 @@ export const nodeCommand = new Command('node')
 
           spinner.succeed('Node removed successfully!');
           console.log(chalk.green(`✅ Node ${nodeId} has been removed`));
-
         } catch (error) {
           spinner.fail(`Failed to remove node ${nodeId}`);
           console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
         }
-      })
+      }),
   );
 
 function getStatusIcon(status: string): string {
   switch (status) {
-    case 'online': return '🟢';
-    case 'offline': return '🔴';
-    case 'maintenance': return '🟡';
-    case 'error': return '🔴';
-    default: return '⚪';
+    case 'online':
+      return '🟢';
+    case 'offline':
+      return '🔴';
+    case 'maintenance':
+      return '🟡';
+    case 'error':
+      return '🔴';
+    default:
+      return '⚪';
   }
 }

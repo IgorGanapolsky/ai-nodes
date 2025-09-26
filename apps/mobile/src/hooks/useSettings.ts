@@ -54,45 +54,48 @@ export const useSettings = () => {
     } catch (error) {
       setLoading({
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to load settings'
+        error: error instanceof Error ? error.message : 'Failed to load settings',
       });
     } finally {
-      setLoading(prev => ({ ...prev, isLoading: false }));
+      setLoading((prev) => ({ ...prev, isLoading: false }));
     }
   }, []);
 
-  const updateSettings = useCallback(async (newSettings: Partial<Settings>) => {
-    try {
-      const updatedSettings = { ...settings, ...newSettings };
-      setSettings(updatedSettings);
+  const updateSettings = useCallback(
+    async (newSettings: Partial<Settings>) => {
+      try {
+        const updatedSettings = { ...settings, ...newSettings };
+        setSettings(updatedSettings);
 
-      // Save to secure storage
-      await SecureStorage.setSettings(updatedSettings);
+        // Save to secure storage
+        await SecureStorage.setSettings(updatedSettings);
 
-      // Save API key separately if provided
-      if (newSettings.apiKey) {
-        await SecureStorage.setApiKey(newSettings.apiKey);
-        apiClient.setApiKey(newSettings.apiKey);
-      }
-
-      // Sync with server if API key exists
-      if (updatedSettings.apiKey) {
-        const response = await apiClient.updateSettings(updatedSettings);
-        if (!response.success) {
-          console.warn('Failed to sync settings with server:', response.error);
+        // Save API key separately if provided
+        if (newSettings.apiKey) {
+          await SecureStorage.setApiKey(newSettings.apiKey);
+          apiClient.setApiKey(newSettings.apiKey);
         }
-      }
 
-      return { success: true };
-    } catch (error) {
-      // Revert settings on error
-      setSettings(settings);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to update settings'
-      };
-    }
-  }, [settings]);
+        // Sync with server if API key exists
+        if (updatedSettings.apiKey) {
+          const response = await apiClient.updateSettings(updatedSettings);
+          if (!response.success) {
+            console.warn('Failed to sync settings with server:', response.error);
+          }
+        }
+
+        return { success: true };
+      } catch (error) {
+        // Revert settings on error
+        setSettings(settings);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Failed to update settings',
+        };
+      }
+    },
+    [settings],
+  );
 
   const resetSettings = useCallback(async () => {
     try {
@@ -103,7 +106,7 @@ export const useSettings = () => {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to reset settings'
+        error: error instanceof Error ? error.message : 'Failed to reset settings',
       };
     }
   }, []);
@@ -119,7 +122,7 @@ export const useSettings = () => {
     } catch (error) {
       return {
         valid: false,
-        error: error instanceof Error ? error.message : 'Invalid API key'
+        error: error instanceof Error ? error.message : 'Invalid API key',
       };
     }
   }, []);

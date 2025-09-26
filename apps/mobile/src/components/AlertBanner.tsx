@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-  Dimensions,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native';
 import { Alert } from '../types';
 import { formatRelativeTime } from '../utils/formatters';
 
@@ -18,11 +11,7 @@ interface AlertBannerProps {
   onPress?: (alert: Alert) => void;
 }
 
-export const AlertBanner: React.FC<AlertBannerProps> = ({
-  alert,
-  onDismiss,
-  onPress,
-}) => {
+export const AlertBanner: React.FC<AlertBannerProps> = ({ alert, onDismiss, onPress }) => {
   const slideAnim = React.useRef(new Animated.Value(-width)).current;
   const opacityAnim = React.useRef(new Animated.Value(0)).current;
 
@@ -122,22 +111,14 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
         },
       ]}
     >
-      <TouchableOpacity
-        style={styles.content}
-        onPress={() => onPress?.(alert)}
-        activeOpacity={0.7}
-      >
+      <TouchableOpacity style={styles.content} onPress={() => onPress?.(alert)} activeOpacity={0.7}>
         <View style={styles.iconContainer}>
           <Text style={styles.icon}>{getAlertIcon()}</Text>
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={[styles.title, { color: alertStyles.textColor }]}>
-            {alert.title}
-          </Text>
-          <Text style={[styles.message, { color: alertStyles.textColor }]}>
-            {alert.message}
-          </Text>
+          <Text style={[styles.title, { color: alertStyles.textColor }]}>{alert.title}</Text>
+          <Text style={[styles.message, { color: alertStyles.textColor }]}>{alert.message}</Text>
           <Text style={[styles.timestamp, { color: alertStyles.textColor }]}>
             {formatRelativeTime(alert.timestamp)}
           </Text>
@@ -148,9 +129,7 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
           onPress={handleDismiss}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={[styles.dismissText, { color: alertStyles.textColor }]}>
-            ×
-          </Text>
+          <Text style={[styles.dismissText, { color: alertStyles.textColor }]}>×</Text>
         </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>

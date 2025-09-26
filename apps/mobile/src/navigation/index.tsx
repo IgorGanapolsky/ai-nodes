@@ -45,9 +45,7 @@ const TabNavigator = () => {
         name="Dashboard"
         component={DashboardScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="dashboard" color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <TabIcon name="dashboard" color={color} size={size} />,
           title: 'Dashboard',
         }}
       />
@@ -55,9 +53,7 @@ const TabNavigator = () => {
         name="Earnings"
         component={EarningsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="earnings" color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <TabIcon name="earnings" color={color} size={size} />,
           title: 'Earnings',
         }}
       />
@@ -65,9 +61,7 @@ const TabNavigator = () => {
         name="Nodes"
         component={NodesScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="nodes" color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <TabIcon name="nodes" color={color} size={size} />,
           title: 'Nodes',
         }}
       />
@@ -75,9 +69,7 @@ const TabNavigator = () => {
         name="Settings"
         component={SettingsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="settings" color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <TabIcon name="settings" color={color} size={size} />,
           title: 'Settings',
         }}
       />
@@ -107,11 +99,7 @@ const TabIcon: React.FC<{ name: string; color: string; size: number }> = ({
     }
   };
 
-  return (
-    <Text style={{ fontSize: size, textAlign: 'center' }}>
-      {getIcon()}
-    </Text>
-  );
+  return <Text style={{ fontSize: size, textAlign: 'center' }}>{getIcon()}</Text>;
 };
 
 export const AppNavigator = () => {
@@ -122,10 +110,7 @@ export const AppNavigator = () => {
           headerShown: false,
         }}
       >
-        <Stack.Screen
-          name="MainTabs"
-          component={TabNavigator}
-        />
+        <Stack.Screen name="MainTabs" component={TabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
   );

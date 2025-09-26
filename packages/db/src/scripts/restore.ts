@@ -24,7 +24,14 @@ class DatabaseRestore {
   }
 
   async restoreFromBackup(options: RestoreOptions): Promise<void> {
-    const { backupPath, force = false, skipData = false, skipSchema = false, tables, dryRun = false } = options;
+    const {
+      backupPath,
+      force = false,
+      skipData = false,
+      skipSchema = false,
+      tables,
+      dryRun = false,
+    } = options;
 
     console.log(`🔄 Starting database restore from: ${backupPath}`);
 
@@ -46,7 +53,9 @@ class DatabaseRestore {
         console.log(`📊 Backup metadata loaded:`);
         console.log(`   Created: ${metadata.timestamp}`);
         console.log(`   Tables: ${metadata.tables?.join(', ') || 'unknown'}`);
-        console.log(`   Records: ${Object.values(metadata.recordCounts || {}).reduce((sum: number, count: number) => sum + count, 0)}`);
+        console.log(
+          `   Records: ${Object.values(metadata.recordCounts || {}).reduce((sum: number, count: number) => sum + count, 0)}`,
+        );
       } catch (error) {
         console.warn('⚠️  Could not load backup metadata');
       }
@@ -83,18 +92,18 @@ class DatabaseRestore {
       let filteredStatements = statements;
 
       if (skipSchema) {
-        filteredStatements = filteredStatements.filter(stmt => !this.isSchemaStatement(stmt));
+        filteredStatements = filteredStatements.filter((stmt) => !this.isSchemaStatement(stmt));
         console.log(`🚫 Skipping schema statements`);
       }
 
       if (skipData) {
-        filteredStatements = filteredStatements.filter(stmt => !this.isDataStatement(stmt));
+        filteredStatements = filteredStatements.filter((stmt) => !this.isDataStatement(stmt));
         console.log(`🚫 Skipping data statements`);
       }
 
       if (tables && tables.length > 0) {
-        filteredStatements = filteredStatements.filter(stmt =>
-          tables.some(table => stmt.toLowerCase().includes(table.toLowerCase()))
+        filteredStatements = filteredStatements.filter((stmt) =>
+          tables.some((table) => stmt.toLowerCase().includes(table.toLowerCase())),
         );
         console.log(`🎯 Filtering for tables: ${tables.join(', ')}`);
       }
@@ -141,7 +150,6 @@ class DatabaseRestore {
         console.log('🔍 Verifying restore...');
         await this.verifyRestore(metadata);
       }
-
     } catch (error) {
       console.error('❌ Restore failed:', error);
       throw error;
@@ -163,7 +171,9 @@ class DatabaseRestore {
       console.log(`     📅 Created: ${backup.created.toLocaleString()}`);
       console.log(`     📊 Size: ${this.formatBytes(backup.metadata.size)}`);
       console.log(`     🗃️  Tables: ${backup.metadata.tables?.length || 0}`);
-      console.log(`     📈 Records: ${Object.values(backup.metadata.recordCounts || {}).reduce((sum: number, count: number) => sum + count, 0)}`);
+      console.log(
+        `     📈 Records: ${Object.values(backup.metadata.recordCounts || {}).reduce((sum: number, count: number) => sum + count, 0)}`,
+      );
       console.log(`     🗜️  Compressed: ${backup.metadata.compressed ? 'Yes' : 'No'}`);
     });
   }
@@ -224,21 +234,25 @@ class DatabaseRestore {
       statements.push(finalStatement);
     }
 
-    return statements.filter(stmt => stmt.length > 0);
+    return statements.filter((stmt) => stmt.length > 0);
   }
 
   private isSchemaStatement(statement: string): boolean {
     const normalized = statement.toLowerCase().trim();
-    return normalized.startsWith('create table') ||
-           normalized.startsWith('create index') ||
-           normalized.startsWith('create unique index');
+    return (
+      normalized.startsWith('create table') ||
+      normalized.startsWith('create index') ||
+      normalized.startsWith('create unique index')
+    );
   }
 
   private isDataStatement(statement: string): boolean {
     const normalized = statement.toLowerCase().trim();
-    return normalized.startsWith('insert into') ||
-           normalized.startsWith('delete from') ||
-           normalized.startsWith('update ');
+    return (
+      normalized.startsWith('insert into') ||
+      normalized.startsWith('delete from') ||
+      normalized.startsWith('update ')
+    );
   }
 
   private async executeStatements(statements: string[]): Promise<void> {
@@ -274,7 +288,9 @@ class DatabaseRestore {
 
     for (const [tableName, expectedCount] of Object.entries(metadata.recordCounts)) {
       try {
-        const result = await db.select({ count: sql<number>`count(*)` }).from(sql.identifier(tableName));
+        const result = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(sql.identifier(tableName));
         const actualCount = result[0]?.count || 0;
 
         if (actualCount === expectedCount) {
@@ -312,12 +328,14 @@ async function main() {
   const restore = new DatabaseRestore();
 
   if (args.includes('--list')) {
-    const backupDir = args.includes('--backup-dir') ? args[args.indexOf('--backup-dir') + 1] : undefined;
+    const backupDir = args.includes('--backup-dir')
+      ? args[args.indexOf('--backup-dir') + 1]
+      : undefined;
     await restore.listAvailableBackups(backupDir);
     return;
   }
 
-  const backupPathIndex = args.findIndex(arg => !arg.startsWith('--'));
+  const backupPathIndex = args.findIndex((arg) => !arg.startsWith('--'));
   if (backupPathIndex === -1) {
     console.error('❌ Please provide a backup file path');
     console.log('Usage: tsx restore.ts [options] <backup-file>');
@@ -343,7 +361,7 @@ async function main() {
 
   if (args.includes('--tables')) {
     const tablesArg = args[args.indexOf('--tables') + 1];
-    options.tables = tablesArg.split(',').map(t => t.trim());
+    options.tables = tablesArg.split(',').map((t) => t.trim());
   }
 
   await restore.restoreFromBackup(options);

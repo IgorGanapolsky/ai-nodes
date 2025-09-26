@@ -20,10 +20,10 @@ export const useNodes = () => {
     } catch (error) {
       setLoading({
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     } finally {
-      setLoading(prev => ({ ...prev, isLoading: false }));
+      setLoading((prev) => ({ ...prev, isLoading: false }));
     }
   }, []);
 
@@ -31,14 +31,14 @@ export const useNodes = () => {
     try {
       const response = await apiClient.createNode(nodeData);
       if (response.success && response.data) {
-        setNodes(prev => [...prev, response.data!]);
+        setNodes((prev) => [...prev, response.data!]);
         return { success: true, data: response.data };
       }
       return { success: false, error: response.error };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to create node'
+        error: error instanceof Error ? error.message : 'Failed to create node',
       };
     }
   }, []);
@@ -47,10 +47,8 @@ export const useNodes = () => {
     try {
       const response = await apiClient.updateNode(nodeId, nodeData);
       if (response.success && response.data) {
-        setNodes(prev =>
-          prev.map(node =>
-            node.id === nodeId ? { ...node, ...response.data } : node
-          )
+        setNodes((prev) =>
+          prev.map((node) => (node.id === nodeId ? { ...node, ...response.data } : node)),
         );
         return { success: true, data: response.data };
       }
@@ -58,7 +56,7 @@ export const useNodes = () => {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to update node'
+        error: error instanceof Error ? error.message : 'Failed to update node',
       };
     }
   }, []);
@@ -67,14 +65,14 @@ export const useNodes = () => {
     try {
       const response = await apiClient.deleteNode(nodeId);
       if (response.success) {
-        setNodes(prev => prev.filter(node => node.id !== nodeId));
+        setNodes((prev) => prev.filter((node) => node.id !== nodeId));
         return { success: true };
       }
       return { success: false, error: response.error };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to delete node'
+        error: error instanceof Error ? error.message : 'Failed to delete node',
       };
     }
   }, []);
@@ -85,13 +83,12 @@ export const useNodes = () => {
 
   // WebSocket real-time updates
   useEffect(() => {
-    const unsubscribe = webSocketService.subscribe('node_update', (data: Partial<Node> & { id: string }) => {
-      setNodes(prev =>
-        prev.map(node =>
-          node.id === data.id ? { ...node, ...data } : node
-        )
-      );
-    });
+    const unsubscribe = webSocketService.subscribe(
+      'node_update',
+      (data: Partial<Node> & { id: string }) => {
+        setNodes((prev) => prev.map((node) => (node.id === data.id ? { ...node, ...data } : node)));
+      },
+    );
 
     return unsubscribe;
   }, []);
@@ -101,8 +98,8 @@ export const useNodes = () => {
   }, [fetchNodes]);
 
   const totalNodes = nodes.length;
-  const onlineNodes = nodes.filter(node => node.status === 'online').length;
-  const offlineNodes = nodes.filter(node => node.status === 'offline').length;
+  const onlineNodes = nodes.filter((node) => node.status === 'online').length;
+  const offlineNodes = nodes.filter((node) => node.status === 'offline').length;
   const totalEarnings = nodes.reduce((sum, node) => sum + node.earnings.total, 0);
   const dailyEarnings = nodes.reduce((sum, node) => sum + node.earnings.daily, 0);
 

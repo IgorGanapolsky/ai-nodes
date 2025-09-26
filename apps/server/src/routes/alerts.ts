@@ -6,7 +6,14 @@ const alertSchema = z.object({
   id: z.string(),
   ownerId: z.string(),
   deviceId: z.string().optional(),
-  type: z.enum(['utilization_low', 'utilization_high', 'device_offline', 'earnings_drop', 'performance_issue', 'maintenance_required']),
+  type: z.enum([
+    'utilization_low',
+    'utilization_high',
+    'device_offline',
+    'earnings_drop',
+    'performance_issue',
+    'maintenance_required',
+  ]),
   severity: z.enum(['low', 'medium', 'high', 'critical']),
   title: z.string(),
   description: z.string(),
@@ -16,18 +23,29 @@ const alertSchema = z.object({
   resolvedAt: z.string().optional(),
   resolvedBy: z.string().optional(),
   metadata: z.record(z.any()).optional(),
-  actions: z.array(z.object({
-    id: z.string(),
-    label: z.string(),
-    type: z.enum(['resolve', 'acknowledge', 'dismiss', 'escalate', 'custom']),
-    url: z.string().optional(),
-  })).optional(),
+  actions: z
+    .array(
+      z.object({
+        id: z.string(),
+        label: z.string(),
+        type: z.enum(['resolve', 'acknowledge', 'dismiss', 'escalate', 'custom']),
+        url: z.string().optional(),
+      }),
+    )
+    .optional(),
 });
 
 const createAlertSchema = z.object({
   ownerId: z.string().min(1, 'Owner ID is required'),
   deviceId: z.string().optional(),
-  type: z.enum(['utilization_low', 'utilization_high', 'device_offline', 'earnings_drop', 'performance_issue', 'maintenance_required']),
+  type: z.enum([
+    'utilization_low',
+    'utilization_high',
+    'device_offline',
+    'earnings_drop',
+    'performance_issue',
+    'maintenance_required',
+  ]),
   severity: z.enum(['low', 'medium', 'high', 'critical']),
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
@@ -43,7 +61,16 @@ const updateAlertSchema = z.object({
 const getAlertsQuerySchema = z.object({
   ownerId: z.string().optional(),
   deviceId: z.string().optional(),
-  type: z.enum(['utilization_low', 'utilization_high', 'device_offline', 'earnings_drop', 'performance_issue', 'maintenance_required']).optional(),
+  type: z
+    .enum([
+      'utilization_low',
+      'utilization_high',
+      'device_offline',
+      'earnings_drop',
+      'performance_issue',
+      'maintenance_required',
+    ])
+    .optional(),
   severity: z.enum(['low', 'medium', 'high', 'critical']).optional(),
   status: z.enum(['active', 'acknowledged', 'resolved', 'dismissed']).optional(),
   startDate: z.string().optional(),
@@ -63,168 +90,192 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
   // GET /alerts - List alerts with filtering and pagination
   fastify.get<{
     Querystring: GetAlertsQuery;
-  }>('/', {
-    schema: {
-      querystring: getAlertsQuerySchema,
+  }>(
+    '/',
+    {
+      schema: {
+        querystring: getAlertsQuerySchema,
+      },
     },
-  }, async (request, reply) => {
-    try {
-      const { ownerId, deviceId, type, severity, status, startDate, endDate, page, limit, sortBy, sortOrder } = request.query;
-
-      // TODO: Replace with actual database query
-      const mockAlerts: Alert[] = [
-        {
-          id: 'alert_1',
-          ownerId: '1',
-          deviceId: '1',
-          type: 'utilization_low',
-          severity: 'medium',
-          title: 'Low Device Utilization Detected',
-          description: 'GPU Rig Alpha has been running at 23% utilization for the past 4 hours, below the threshold of 30%.',
-          status: 'active',
-          createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
-          updatedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          metadata: {
-            currentUtilization: 23,
-            threshold: 30,
-            duration: '4 hours',
-            suggestedActions: ['lower_price', 'check_network', 'marketing_boost'],
-          },
-          actions: [
-            { id: 'resolve_1', label: 'Mark as Resolved', type: 'resolve' },
-            { id: 'ack_1', label: 'Acknowledge', type: 'acknowledge' },
-            { id: 'reprice_1', label: 'Auto-Reprice', type: 'custom', url: '/actions/reprice' },
-          ],
-        },
-        {
-          id: 'alert_2',
-          ownerId: '1',
-          deviceId: '2',
-          type: 'device_offline',
-          severity: 'high',
-          title: 'Device Offline',
-          description: 'Storage Node Beta has been offline for 15 minutes. Last heartbeat received at 14:32.',
-          status: 'active',
-          createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
-          updatedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-          metadata: {
-            lastSeen: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-            expectedHeartbeat: '5 minutes',
-            connectionStatus: 'timeout',
-          },
-          actions: [
-            { id: 'resolve_2', label: 'Mark as Resolved', type: 'resolve' },
-            { id: 'escalate_2', label: 'Escalate', type: 'escalate' },
-            { id: 'maintenance_2', label: 'Schedule Maintenance', type: 'custom', url: '/actions/maintenance' },
-          ],
-        },
-        {
-          id: 'alert_3',
-          ownerId: '1',
-          type: 'earnings_drop',
-          severity: 'medium',
-          title: 'Earnings Drop Detected',
-          description: 'Overall earnings have dropped by 18% compared to last week. Review device performance and pricing.',
-          status: 'acknowledged',
-          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-          updatedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-          metadata: {
-            currentEarnings: 245.75,
-            previousEarnings: 299.50,
-            dropPercentage: 18,
-            period: 'week',
-          },
-          actions: [
-            { id: 'resolve_3', label: 'Mark as Resolved', type: 'resolve' },
-            { id: 'analyze_3', label: 'Analyze Performance', type: 'custom', url: '/metrics' },
-          ],
-        },
-      ];
-
-      // Apply filters (in real implementation, this would be in the database query)
-      let filteredAlerts = mockAlerts;
-
-      if (ownerId) {
-        filteredAlerts = filteredAlerts.filter(a => a.ownerId === ownerId);
-      }
-      if (deviceId) {
-        filteredAlerts = filteredAlerts.filter(a => a.deviceId === deviceId);
-      }
-      if (type) {
-        filteredAlerts = filteredAlerts.filter(a => a.type === type);
-      }
-      if (severity) {
-        filteredAlerts = filteredAlerts.filter(a => a.severity === severity);
-      }
-      if (status) {
-        filteredAlerts = filteredAlerts.filter(a => a.status === status);
-      }
-
-      // Sort alerts
-      filteredAlerts.sort((a, b) => {
-        let aValue: string | number;
-        let bValue: string | number;
-
-        if (sortBy === 'severity') {
-          const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
-          aValue = severityOrder[a.severity];
-          bValue = severityOrder[b.severity];
-        } else if (sortBy === 'updated') {
-          aValue = new Date(a.updatedAt).getTime();
-          bValue = new Date(b.updatedAt).getTime();
-        } else {
-          aValue = new Date(a.createdAt).getTime();
-          bValue = new Date(b.createdAt).getTime();
-        }
-
-        if (sortOrder === 'asc') {
-          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-        } else {
-          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-        }
-      });
-
-      const totalCount = filteredAlerts.length;
-      const totalPages = Math.ceil(totalCount / limit);
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedAlerts = filteredAlerts.slice(startIndex, endIndex);
-
-      // Summary statistics
-      const summary = {
-        total: totalCount,
-        active: filteredAlerts.filter(a => a.status === 'active').length,
-        acknowledged: filteredAlerts.filter(a => a.status === 'acknowledged').length,
-        resolved: filteredAlerts.filter(a => a.status === 'resolved').length,
-        dismissed: filteredAlerts.filter(a => a.status === 'dismissed').length,
-        critical: filteredAlerts.filter(a => a.severity === 'critical').length,
-        high: filteredAlerts.filter(a => a.severity === 'high').length,
-        medium: filteredAlerts.filter(a => a.severity === 'medium').length,
-        low: filteredAlerts.filter(a => a.severity === 'low').length,
-      };
-
-      const response = {
-        alerts: paginatedAlerts,
-        summary,
-        pagination: {
+    async (request, reply) => {
+      try {
+        const {
+          ownerId,
+          deviceId,
+          type,
+          severity,
+          status,
+          startDate,
+          endDate,
           page,
           limit,
-          totalCount,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
-        },
-      };
+          sortBy,
+          sortOrder,
+        } = request.query;
 
-      return reply.send(response);
-    } catch (error) {
-      fastify.log.error('Error fetching alerts:', error);
-      return reply.status(500).send({
-        error: 'Internal server error',
-        message: 'Failed to fetch alerts',
-      });
-    }
-  });
+        // TODO: Replace with actual database query
+        const mockAlerts: Alert[] = [
+          {
+            id: 'alert_1',
+            ownerId: '1',
+            deviceId: '1',
+            type: 'utilization_low',
+            severity: 'medium',
+            title: 'Low Device Utilization Detected',
+            description:
+              'GPU Rig Alpha has been running at 23% utilization for the past 4 hours, below the threshold of 30%.',
+            status: 'active',
+            createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
+            updatedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+            metadata: {
+              currentUtilization: 23,
+              threshold: 30,
+              duration: '4 hours',
+              suggestedActions: ['lower_price', 'check_network', 'marketing_boost'],
+            },
+            actions: [
+              { id: 'resolve_1', label: 'Mark as Resolved', type: 'resolve' },
+              { id: 'ack_1', label: 'Acknowledge', type: 'acknowledge' },
+              { id: 'reprice_1', label: 'Auto-Reprice', type: 'custom', url: '/actions/reprice' },
+            ],
+          },
+          {
+            id: 'alert_2',
+            ownerId: '1',
+            deviceId: '2',
+            type: 'device_offline',
+            severity: 'high',
+            title: 'Device Offline',
+            description:
+              'Storage Node Beta has been offline for 15 minutes. Last heartbeat received at 14:32.',
+            status: 'active',
+            createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
+            updatedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+            metadata: {
+              lastSeen: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+              expectedHeartbeat: '5 minutes',
+              connectionStatus: 'timeout',
+            },
+            actions: [
+              { id: 'resolve_2', label: 'Mark as Resolved', type: 'resolve' },
+              { id: 'escalate_2', label: 'Escalate', type: 'escalate' },
+              {
+                id: 'maintenance_2',
+                label: 'Schedule Maintenance',
+                type: 'custom',
+                url: '/actions/maintenance',
+              },
+            ],
+          },
+          {
+            id: 'alert_3',
+            ownerId: '1',
+            type: 'earnings_drop',
+            severity: 'medium',
+            title: 'Earnings Drop Detected',
+            description:
+              'Overall earnings have dropped by 18% compared to last week. Review device performance and pricing.',
+            status: 'acknowledged',
+            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+            updatedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
+            metadata: {
+              currentEarnings: 245.75,
+              previousEarnings: 299.5,
+              dropPercentage: 18,
+              period: 'week',
+            },
+            actions: [
+              { id: 'resolve_3', label: 'Mark as Resolved', type: 'resolve' },
+              { id: 'analyze_3', label: 'Analyze Performance', type: 'custom', url: '/metrics' },
+            ],
+          },
+        ];
+
+        // Apply filters (in real implementation, this would be in the database query)
+        let filteredAlerts = mockAlerts;
+
+        if (ownerId) {
+          filteredAlerts = filteredAlerts.filter((a) => a.ownerId === ownerId);
+        }
+        if (deviceId) {
+          filteredAlerts = filteredAlerts.filter((a) => a.deviceId === deviceId);
+        }
+        if (type) {
+          filteredAlerts = filteredAlerts.filter((a) => a.type === type);
+        }
+        if (severity) {
+          filteredAlerts = filteredAlerts.filter((a) => a.severity === severity);
+        }
+        if (status) {
+          filteredAlerts = filteredAlerts.filter((a) => a.status === status);
+        }
+
+        // Sort alerts
+        filteredAlerts.sort((a, b) => {
+          let aValue: string | number;
+          let bValue: string | number;
+
+          if (sortBy === 'severity') {
+            const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
+            aValue = severityOrder[a.severity];
+            bValue = severityOrder[b.severity];
+          } else if (sortBy === 'updated') {
+            aValue = new Date(a.updatedAt).getTime();
+            bValue = new Date(b.updatedAt).getTime();
+          } else {
+            aValue = new Date(a.createdAt).getTime();
+            bValue = new Date(b.createdAt).getTime();
+          }
+
+          if (sortOrder === 'asc') {
+            return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+          } else {
+            return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+          }
+        });
+
+        const totalCount = filteredAlerts.length;
+        const totalPages = Math.ceil(totalCount / limit);
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedAlerts = filteredAlerts.slice(startIndex, endIndex);
+
+        // Summary statistics
+        const summary = {
+          total: totalCount,
+          active: filteredAlerts.filter((a) => a.status === 'active').length,
+          acknowledged: filteredAlerts.filter((a) => a.status === 'acknowledged').length,
+          resolved: filteredAlerts.filter((a) => a.status === 'resolved').length,
+          dismissed: filteredAlerts.filter((a) => a.status === 'dismissed').length,
+          critical: filteredAlerts.filter((a) => a.severity === 'critical').length,
+          high: filteredAlerts.filter((a) => a.severity === 'high').length,
+          medium: filteredAlerts.filter((a) => a.severity === 'medium').length,
+          low: filteredAlerts.filter((a) => a.severity === 'low').length,
+        };
+
+        const response = {
+          alerts: paginatedAlerts,
+          summary,
+          pagination: {
+            page,
+            limit,
+            totalCount,
+            totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
+          },
+        };
+
+        return reply.send(response);
+      } catch (error) {
+        fastify.log.error('Error fetching alerts:', error);
+        return reply.status(500).send({
+          error: 'Internal server error',
+          message: 'Failed to fetch alerts',
+        });
+      }
+    },
+  );
 
   // GET /alerts/:id - Get specific alert
   fastify.get<{
@@ -241,7 +292,8 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
         type: 'utilization_low',
         severity: 'medium',
         title: 'Low Device Utilization Detected',
-        description: 'GPU Rig Alpha has been running at 23% utilization for the past 4 hours, below the threshold of 30%.',
+        description:
+          'GPU Rig Alpha has been running at 23% utilization for the past 4 hours, below the threshold of 30%.',
         status: 'active',
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
@@ -252,7 +304,7 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
           deviceName: 'GPU Rig Alpha',
           suggestedActions: ['lower_price', 'check_network', 'marketing_boost'],
           relatedMetrics: {
-            earnings: { current: 15.30, previous: 28.50 },
+            earnings: { current: 15.3, previous: 28.5 },
             requests: { current: 45, previous: 120 },
           },
         },
@@ -276,145 +328,159 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
   // POST /alerts - Create new alert (usually done by system, but exposed for testing)
   fastify.post<{
     Body: CreateAlertRequest;
-  }>('/', {
-    schema: {
-      body: createAlertSchema,
+  }>(
+    '/',
+    {
+      schema: {
+        body: createAlertSchema,
+      },
     },
-  }, async (request, reply) => {
-    try {
-      const alertData = request.body;
+    async (request, reply) => {
+      try {
+        const alertData = request.body;
 
-      // Generate alert ID
-      const alertId = `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Generate alert ID
+        const alertId = `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-      const newAlert: Alert = {
-        id: alertId,
-        ...alertData,
-        status: 'active',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        actions: [
-          { id: `resolve_${alertId}`, label: 'Mark as Resolved', type: 'resolve' },
-          { id: `ack_${alertId}`, label: 'Acknowledge', type: 'acknowledge' },
-          { id: `dismiss_${alertId}`, label: 'Dismiss', type: 'dismiss' },
-        ],
-      };
+        const newAlert: Alert = {
+          id: alertId,
+          ...alertData,
+          status: 'active',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          actions: [
+            { id: `resolve_${alertId}`, label: 'Mark as Resolved', type: 'resolve' },
+            { id: `ack_${alertId}`, label: 'Acknowledge', type: 'acknowledge' },
+            { id: `dismiss_${alertId}`, label: 'Dismiss', type: 'dismiss' },
+          ],
+        };
 
-      // TODO: Save to database, send notifications, etc.
+        // TODO: Save to database, send notifications, etc.
 
-      fastify.log.info('Created new alert:', {
-        alertId,
-        ownerId: alertData.ownerId,
-        type: alertData.type,
-        severity: alertData.severity,
-      });
+        fastify.log.info('Created new alert:', {
+          alertId,
+          ownerId: alertData.ownerId,
+          type: alertData.type,
+          severity: alertData.severity,
+        });
 
-      return reply.status(201).send(newAlert);
-    } catch (error) {
-      fastify.log.error('Error creating alert:', error);
-      return reply.status(500).send({
-        error: 'Internal server error',
-        message: 'Failed to create alert',
-      });
-    }
-  });
+        return reply.status(201).send(newAlert);
+      } catch (error) {
+        fastify.log.error('Error creating alert:', error);
+        return reply.status(500).send({
+          error: 'Internal server error',
+          message: 'Failed to create alert',
+        });
+      }
+    },
+  );
 
   // POST /alerts/resolve/:id - Resolve specific alert
   fastify.post<{
     Params: { id: string };
     Body: { resolvedBy: string; notes?: string };
-  }>('/resolve/:id', {
-    schema: {
-      body: z.object({
-        resolvedBy: z.string().min(1, 'Resolver ID is required'),
-        notes: z.string().optional(),
-      }),
+  }>(
+    '/resolve/:id',
+    {
+      schema: {
+        body: z.object({
+          resolvedBy: z.string().min(1, 'Resolver ID is required'),
+          notes: z.string().optional(),
+        }),
+      },
     },
-  }, async (request, reply) => {
-    try {
-      const { id } = request.params;
-      const { resolvedBy, notes } = request.body;
+    async (request, reply) => {
+      try {
+        const { id } = request.params;
+        const { resolvedBy, notes } = request.body;
 
-      // TODO: Replace with actual database update
-      const resolvedAlert: Alert = {
-        id,
-        ownerId: '1',
-        deviceId: '1',
-        type: 'utilization_low',
-        severity: 'medium',
-        title: 'Low Device Utilization Detected',
-        description: 'GPU Rig Alpha has been running at 23% utilization for the past 4 hours, below the threshold of 30%.',
-        status: 'resolved',
-        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date().toISOString(),
-        resolvedAt: new Date().toISOString(),
-        resolvedBy,
-        metadata: {
-          currentUtilization: 23,
-          threshold: 30,
-          duration: '4 hours',
-          resolutionNotes: notes,
-        },
-      };
+        // TODO: Replace with actual database update
+        const resolvedAlert: Alert = {
+          id,
+          ownerId: '1',
+          deviceId: '1',
+          type: 'utilization_low',
+          severity: 'medium',
+          title: 'Low Device Utilization Detected',
+          description:
+            'GPU Rig Alpha has been running at 23% utilization for the past 4 hours, below the threshold of 30%.',
+          status: 'resolved',
+          createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          resolvedAt: new Date().toISOString(),
+          resolvedBy,
+          metadata: {
+            currentUtilization: 23,
+            threshold: 30,
+            duration: '4 hours',
+            resolutionNotes: notes,
+          },
+        };
 
-      fastify.log.info('Resolved alert:', { alertId: id, resolvedBy });
+        fastify.log.info('Resolved alert:', { alertId: id, resolvedBy });
 
-      return reply.send(resolvedAlert);
-    } catch (error) {
-      fastify.log.error(`Error resolving alert ${request.params.id}:`, error);
-      return reply.status(500).send({
-        error: 'Internal server error',
-        message: 'Failed to resolve alert',
-      });
-    }
-  });
+        return reply.send(resolvedAlert);
+      } catch (error) {
+        fastify.log.error(`Error resolving alert ${request.params.id}:`, error);
+        return reply.status(500).send({
+          error: 'Internal server error',
+          message: 'Failed to resolve alert',
+        });
+      }
+    },
+  );
 
   // PUT /alerts/:id - Update alert status
   fastify.put<{
     Params: { id: string };
     Body: UpdateAlertRequest;
-  }>('/:id', {
-    schema: {
-      body: updateAlertSchema,
+  }>(
+    '/:id',
+    {
+      schema: {
+        body: updateAlertSchema,
+      },
     },
-  }, async (request, reply) => {
-    try {
-      const { id } = request.params;
-      const updates = request.body;
+    async (request, reply) => {
+      try {
+        const { id } = request.params;
+        const updates = request.body;
 
-      // TODO: Replace with actual database update
-      const updatedAlert: Alert = {
-        id,
-        ownerId: '1',
-        deviceId: '1',
-        type: 'utilization_low',
-        severity: 'medium',
-        title: 'Low Device Utilization Detected',
-        description: 'GPU Rig Alpha has been running at 23% utilization for the past 4 hours, below the threshold of 30%.',
-        status: updates.status || 'acknowledged',
-        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date().toISOString(),
-        resolvedAt: updates.status === 'resolved' ? new Date().toISOString() : undefined,
-        resolvedBy: updates.resolvedBy,
-        metadata: {
-          currentUtilization: 23,
-          threshold: 30,
-          duration: '4 hours',
-          updateNotes: updates.notes,
-        },
-      };
+        // TODO: Replace with actual database update
+        const updatedAlert: Alert = {
+          id,
+          ownerId: '1',
+          deviceId: '1',
+          type: 'utilization_low',
+          severity: 'medium',
+          title: 'Low Device Utilization Detected',
+          description:
+            'GPU Rig Alpha has been running at 23% utilization for the past 4 hours, below the threshold of 30%.',
+          status: updates.status || 'acknowledged',
+          createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          resolvedAt: updates.status === 'resolved' ? new Date().toISOString() : undefined,
+          resolvedBy: updates.resolvedBy,
+          metadata: {
+            currentUtilization: 23,
+            threshold: 30,
+            duration: '4 hours',
+            updateNotes: updates.notes,
+          },
+        };
 
-      fastify.log.info('Updated alert:', { alertId: id, status: updates.status });
+        fastify.log.info('Updated alert:', { alertId: id, status: updates.status });
 
-      return reply.send(updatedAlert);
-    } catch (error) {
-      fastify.log.error(`Error updating alert ${request.params.id}:`, error);
-      return reply.status(500).send({
-        error: 'Internal server error',
-        message: 'Failed to update alert',
-      });
-    }
-  });
+        return reply.send(updatedAlert);
+      } catch (error) {
+        fastify.log.error(`Error updating alert ${request.params.id}:`, error);
+        return reply.status(500).send({
+          error: 'Internal server error',
+          message: 'Failed to update alert',
+        });
+      }
+    },
+  );
 
   // DELETE /alerts/:id - Delete alert
   fastify.delete<{
@@ -444,49 +510,53 @@ const alertRoutes: FastifyPluginCallback = async (fastify) => {
       resolvedBy?: string;
       notes?: string;
     };
-  }>('/batch', {
-    schema: {
-      body: z.object({
-        alertIds: z.array(z.string()).min(1, 'At least one alert ID required'),
-        action: z.enum(['acknowledge', 'resolve', 'dismiss', 'delete']),
-        resolvedBy: z.string().optional(),
-        notes: z.string().optional(),
-      }),
+  }>(
+    '/batch',
+    {
+      schema: {
+        body: z.object({
+          alertIds: z.array(z.string()).min(1, 'At least one alert ID required'),
+          action: z.enum(['acknowledge', 'resolve', 'dismiss', 'delete']),
+          resolvedBy: z.string().optional(),
+          notes: z.string().optional(),
+        }),
+      },
     },
-  }, async (request, reply) => {
-    try {
-      const { alertIds, action, resolvedBy, notes } = request.body;
+    async (request, reply) => {
+      try {
+        const { alertIds, action, resolvedBy, notes } = request.body;
 
-      // TODO: Replace with actual bulk operations
-      const results = alertIds.map(id => ({
-        id,
-        success: true,
-        action,
-        updatedAt: new Date().toISOString(),
-      }));
+        // TODO: Replace with actual bulk operations
+        const results = alertIds.map((id) => ({
+          id,
+          success: true,
+          action,
+          updatedAt: new Date().toISOString(),
+        }));
 
-      fastify.log.info('Bulk alert operation:', {
-        action,
-        alertCount: alertIds.length,
-        performer: resolvedBy,
-      });
+        fastify.log.info('Bulk alert operation:', {
+          action,
+          alertCount: alertIds.length,
+          performer: resolvedBy,
+        });
 
-      return reply.send({
-        results,
-        summary: {
-          total: alertIds.length,
-          successful: results.filter(r => r.success).length,
-          failed: results.filter(r => !r.success).length,
-        },
-      });
-    } catch (error) {
-      fastify.log.error('Error performing bulk alert operation:', error);
-      return reply.status(500).send({
-        error: 'Internal server error',
-        message: 'Failed to perform bulk operation',
-      });
-    }
-  });
+        return reply.send({
+          results,
+          summary: {
+            total: alertIds.length,
+            successful: results.filter((r) => r.success).length,
+            failed: results.filter((r) => !r.success).length,
+          },
+        });
+      } catch (error) {
+        fastify.log.error('Error performing bulk alert operation:', error);
+        return reply.status(500).send({
+          error: 'Internal server error',
+          message: 'Failed to perform bulk operation',
+        });
+      }
+    },
+  );
 
   // GET /alerts/stats - Get alert statistics
   fastify.get('/stats', async (request, reply) => {

@@ -27,13 +27,13 @@ const DEFAULT_CONFIG: Config = {
   timeout: 10000,
   notifications: {
     email: false,
-    slack: false
+    slack: false,
   },
   thresholds: {
     lowUtilization: 30,
     highUtilization: 90,
-    offlineAlert: 5
-  }
+    offlineAlert: 5,
+  },
 };
 
 const CONFIG_FILENAME = '.depinautopilot.json';
@@ -69,15 +69,17 @@ export function readConfig(): Config {
       ...config,
       notifications: {
         ...DEFAULT_CONFIG.notifications,
-        ...config.notifications
+        ...config.notifications,
       },
       thresholds: {
         ...DEFAULT_CONFIG.thresholds,
-        ...config.thresholds
-      }
+        ...config.thresholds,
+      },
     };
   } catch (error) {
-    console.error(chalk.red(`Error reading config file: ${error instanceof Error ? error.message : error}`));
+    console.error(
+      chalk.red(`Error reading config file: ${error instanceof Error ? error.message : error}`),
+    );
     console.log(chalk.yellow('Using default configuration...'));
     return DEFAULT_CONFIG;
   }
@@ -92,19 +94,21 @@ export function writeConfig(config: Partial<Config>): void {
     ...config,
     notifications: {
       ...currentConfig.notifications,
-      ...config.notifications
+      ...config.notifications,
     },
     thresholds: {
       ...currentConfig.thresholds,
-      ...config.thresholds
-    }
+      ...config.thresholds,
+    },
   };
 
   try {
     writeFileSync(configPath, JSON.stringify(updatedConfig, null, 2));
     console.log(chalk.green(`Configuration saved to ${configPath}`));
   } catch (error) {
-    console.error(chalk.red(`Error writing config file: ${error instanceof Error ? error.message : error}`));
+    console.error(
+      chalk.red(`Error writing config file: ${error instanceof Error ? error.message : error}`),
+    );
     throw error;
   }
 }
@@ -120,11 +124,17 @@ export function validateConfig(config: Partial<Config>): string[] {
     errors.push('Timeout must be between 1000 and 60000 milliseconds');
   }
 
-  if (config.thresholds?.lowUtilization && (config.thresholds.lowUtilization < 0 || config.thresholds.lowUtilization > 100)) {
+  if (
+    config.thresholds?.lowUtilization &&
+    (config.thresholds.lowUtilization < 0 || config.thresholds.lowUtilization > 100)
+  ) {
     errors.push('Low utilization threshold must be between 0 and 100');
   }
 
-  if (config.thresholds?.highUtilization && (config.thresholds.highUtilization < 0 || config.thresholds.highUtilization > 100)) {
+  if (
+    config.thresholds?.highUtilization &&
+    (config.thresholds.highUtilization < 0 || config.thresholds.highUtilization > 100)
+  ) {
     errors.push('High utilization threshold must be between 0 and 100');
   }
 
@@ -151,7 +161,9 @@ export function resetConfig(): void {
     writeFileSync(configPath, JSON.stringify(DEFAULT_CONFIG, null, 2));
     console.log(chalk.green('Configuration reset to defaults'));
   } catch (error) {
-    console.error(chalk.red(`Error resetting config: ${error instanceof Error ? error.message : error}`));
+    console.error(
+      chalk.red(`Error resetting config: ${error instanceof Error ? error.message : error}`),
+    );
     throw error;
   }
 }
@@ -181,8 +193,12 @@ export function displayConfig(): void {
   console.log(`Timeout: ${chalk.yellow(config.timeout + 'ms')}`);
 
   console.log(chalk.bold.cyan('\nNotifications:'));
-  console.log(`Email: ${config.notifications?.email ? chalk.green('Enabled') : chalk.red('Disabled')}`);
-  console.log(`Slack: ${config.notifications?.slack ? chalk.green('Enabled') : chalk.red('Disabled')}`);
+  console.log(
+    `Email: ${config.notifications?.email ? chalk.green('Enabled') : chalk.red('Disabled')}`,
+  );
+  console.log(
+    `Slack: ${config.notifications?.slack ? chalk.green('Enabled') : chalk.red('Disabled')}`,
+  );
   console.log(`Webhook URL: ${config.notifications?.webhookUrl || chalk.gray('Not set')}`);
 
   console.log(chalk.bold.cyan('\nThresholds:'));

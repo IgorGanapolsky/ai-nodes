@@ -56,7 +56,7 @@ export function computeRevShare(grossUsd: number, revSharePct: number): RevShare
 export function calculateTargetUtilization(
   targetMonthlyGross: number,
   currentPricePerHour: number,
-  daysInMonth: number = 30
+  daysInMonth: number = 30,
 ): UtilizationResult {
   // Validate inputs
   if (targetMonthlyGross < 0) {
@@ -93,7 +93,7 @@ export function calculateTargetUtilization(
 export function calculateMonthlyGross(
   utilizationPct: number,
   pricePerHour: number,
-  daysInMonth: number = 30
+  daysInMonth: number = 30,
 ): number {
   if (utilizationPct < 0 || utilizationPct > 1) {
     throw new Error('Utilization percentage must be between 0 and 1');
@@ -122,16 +122,20 @@ export function calculateRevenueGap(
   targetMonthlyGross: number,
   currentUtilization: number,
   currentPricePerHour: number,
-  daysInMonth: number = 30
+  daysInMonth: number = 30,
 ): {
   revenueGapUsd: number;
   currentMonthlyGross: number;
   gapPercentage: number;
   isTargetMet: boolean;
 } {
-  const currentMonthlyGross = calculateMonthlyGross(currentUtilization, currentPricePerHour, daysInMonth);
+  const currentMonthlyGross = calculateMonthlyGross(
+    currentUtilization,
+    currentPricePerHour,
+    daysInMonth,
+  );
   const revenueGapUsd = targetMonthlyGross - currentMonthlyGross;
-  const gapPercentage = targetMonthlyGross > 0 ? (revenueGapUsd / targetMonthlyGross) : 0;
+  const gapPercentage = targetMonthlyGross > 0 ? revenueGapUsd / targetMonthlyGross : 0;
   const isTargetMet = revenueGapUsd <= 0;
 
   return {

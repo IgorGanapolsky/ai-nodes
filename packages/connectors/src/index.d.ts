@@ -18,13 +18,18 @@ export { RenderConnector } from './connectors/RenderConnector';
 export { GrassConnector } from './connectors/GrassConnector';
 export { NatixConnector } from './connectors/NatixConnector';
 export * from './factory';
-export { ConnectorFactory, ConnectorNetwork, createConnector, createAllConnectors } from './factory';
-export declare const VERSION = "1.0.0";
+export {
+  ConnectorFactory,
+  ConnectorNetwork,
+  createConnector,
+  createAllConnectors,
+} from './factory';
+export declare const VERSION = '1.0.0';
 export declare const PACKAGE_INFO: {
-    name: string;
-    version: string;
-    description: string;
-    supportedConnectors: string[];
-    features: string[];
+  name: string;
+  version: string;
+  description: string;
+  supportedConnectors: string[];
+  features: string[];
 };
 //# sourceMappingURL=index.d.ts.map

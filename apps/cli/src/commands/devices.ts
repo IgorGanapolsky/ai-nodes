@@ -38,7 +38,11 @@ function createAddCommand(): Command {
           }
 
           if (owners.length === 0) {
-            console.error(chalk.red('No owners found. Please create an owner first using: depinautopilot owners add'));
+            console.error(
+              chalk.red(
+                'No owners found. Please create an owner first using: depinautopilot owners add',
+              ),
+            );
             process.exit(1);
           }
 
@@ -48,7 +52,7 @@ function createAddCommand(): Command {
               name: 'name',
               message: 'Device name:',
               default: options.name,
-              validate: (input) => input.trim() ? true : 'Device name is required'
+              validate: (input) => (input.trim() ? true : 'Device name is required'),
             },
             {
               type: 'list',
@@ -61,27 +65,27 @@ function createAddCommand(): Command {
                 'Network Node',
                 'Validator Node',
                 'Mining Rig',
-                'Other'
+                'Other',
               ],
-              default: options.type || 'IoT Node'
+              default: options.type || 'IoT Node',
             },
             {
               type: 'list',
               name: 'ownerId',
               message: 'Select owner:',
-              choices: owners.map(owner => ({
+              choices: owners.map((owner) => ({
                 name: `${owner.name} (${owner.email})`,
-                value: owner.id
+                value: owner.id,
               })),
-              default: options.owner
+              default: options.owner,
             },
             {
               type: 'list',
               name: 'status',
               message: 'Initial status:',
               choices: ['online', 'offline', 'maintenance'],
-              default: 'offline'
-            }
+              default: 'offline',
+            },
           ]);
 
           deviceData = answers;
@@ -96,7 +100,7 @@ function createAddCommand(): Command {
             name: options.name,
             type: options.type,
             ownerId: options.owner,
-            status: 'offline'
+            status: 'offline',
           };
         }
 
@@ -106,24 +110,30 @@ function createAddCommand(): Command {
           const newDevice = await api.createDevice(deviceData);
           spinner.succeed(chalk.green('Device created successfully!'));
 
-          console.log('\n' + createTable(
-            [
-              { title: 'ID', key: 'id' },
-              { title: 'Name', key: 'name' },
-              { title: 'Type', key: 'type' },
-              { title: 'Owner', key: 'ownerId' },
-              { title: 'Status', key: 'status', color: formatters.status },
-              { title: 'Last Seen', key: 'lastSeen', color: formatters.date }
-            ],
-            [newDevice],
-            { title: 'New Device Details' }
-          ));
+          console.log(
+            '\n' +
+              createTable(
+                [
+                  { title: 'ID', key: 'id' },
+                  { title: 'Name', key: 'name' },
+                  { title: 'Type', key: 'type' },
+                  { title: 'Owner', key: 'ownerId' },
+                  { title: 'Status', key: 'status', color: formatters.status },
+                  { title: 'Last Seen', key: 'lastSeen', color: formatters.date },
+                ],
+                [newDevice],
+                { title: 'New Device Details' },
+              ),
+          );
         } catch (error) {
           spinner.fail('Failed to create device');
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error creating device:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error creating device:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });
@@ -145,7 +155,7 @@ function createListCommand(): Command {
 
           // Filter by status if provided
           const filteredDevices = options.status
-            ? devices.filter(device => device.status === options.status)
+            ? devices.filter((device) => device.status === options.status)
             : devices;
 
           spinner.succeed(`Found ${filteredDevices.length} device(s)`);
@@ -160,38 +170,44 @@ function createListCommand(): Command {
             return;
           }
 
-          console.log('\n' + createTable(
-            [
-              { title: 'ID', key: 'id' },
-              { title: 'Name', key: 'name' },
-              { title: 'Type', key: 'type' },
-              { title: 'Owner', key: 'ownerId' },
-              { title: 'Status', key: 'status', color: formatters.status },
-              { title: 'Last Seen', key: 'lastSeen', color: formatters.date },
-              {
-                title: '24h Revenue',
-                key: 'metrics.grossRevenue24h',
-                color: formatters.currency
-              },
-              {
-                title: 'Utilization',
-                key: 'metrics.utilization',
-                color: formatters.percentage
-              }
-            ],
-            filteredDevices.map(device => ({
-              ...device,
-              'metrics.grossRevenue24h': device.metrics?.grossRevenue24h || 0,
-              'metrics.utilization': device.metrics?.utilization || 0
-            })),
-            { title: 'Devices' }
-          ));
+          console.log(
+            '\n' +
+              createTable(
+                [
+                  { title: 'ID', key: 'id' },
+                  { title: 'Name', key: 'name' },
+                  { title: 'Type', key: 'type' },
+                  { title: 'Owner', key: 'ownerId' },
+                  { title: 'Status', key: 'status', color: formatters.status },
+                  { title: 'Last Seen', key: 'lastSeen', color: formatters.date },
+                  {
+                    title: '24h Revenue',
+                    key: 'metrics.grossRevenue24h',
+                    color: formatters.currency,
+                  },
+                  {
+                    title: 'Utilization',
+                    key: 'metrics.utilization',
+                    color: formatters.percentage,
+                  },
+                ],
+                filteredDevices.map((device) => ({
+                  ...device,
+                  'metrics.grossRevenue24h': device.metrics?.grossRevenue24h || 0,
+                  'metrics.utilization': device.metrics?.utilization || 0,
+                })),
+                { title: 'Devices' },
+              ),
+          );
         } catch (error) {
           spinner.fail('Failed to fetch devices');
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error fetching devices:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error fetching devices:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });
@@ -209,33 +225,50 @@ function createShowCommand(): Command {
           const device = await api.getDevice(id);
           spinner.succeed('Device details loaded');
 
-          console.log('\n' + createTable(
-            [
-              { title: 'Property', key: 'key' },
-              { title: 'Value', key: 'value' }
-            ],
-            [
-              { key: 'ID', value: device.id },
-              { key: 'Name', value: device.name },
-              { key: 'Type', value: device.type },
-              { key: 'Owner ID', value: device.ownerId },
-              { key: 'Status', value: formatters.status(device.status) },
-              { key: 'Last Seen', value: formatters.date(device.lastSeen) },
-              ...(device.metrics ? [
-                { key: '24h Revenue', value: formatters.currency(device.metrics.grossRevenue24h) },
-                { key: '7d Revenue', value: formatters.currency(device.metrics.grossRevenue7d) },
-                { key: 'Utilization', value: formatters.percentage(device.metrics.utilization) },
-                { key: 'Uptime', value: formatters.percentage(device.metrics.uptime) }
-              ] : [])
-            ],
-            { title: 'Device Details' }
-          ));
+          console.log(
+            '\n' +
+              createTable(
+                [
+                  { title: 'Property', key: 'key' },
+                  { title: 'Value', key: 'value' },
+                ],
+                [
+                  { key: 'ID', value: device.id },
+                  { key: 'Name', value: device.name },
+                  { key: 'Type', value: device.type },
+                  { key: 'Owner ID', value: device.ownerId },
+                  { key: 'Status', value: formatters.status(device.status) },
+                  { key: 'Last Seen', value: formatters.date(device.lastSeen) },
+                  ...(device.metrics
+                    ? [
+                        {
+                          key: '24h Revenue',
+                          value: formatters.currency(device.metrics.grossRevenue24h),
+                        },
+                        {
+                          key: '7d Revenue',
+                          value: formatters.currency(device.metrics.grossRevenue7d),
+                        },
+                        {
+                          key: 'Utilization',
+                          value: formatters.percentage(device.metrics.utilization),
+                        },
+                        { key: 'Uptime', value: formatters.percentage(device.metrics.uptime) },
+                      ]
+                    : []),
+                ],
+                { title: 'Device Details' },
+              ),
+          );
         } catch (error) {
           spinner.fail('Failed to fetch device');
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error fetching device:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error fetching device:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });
@@ -271,7 +304,7 @@ function createUpdateCommand(): Command {
               type: 'input',
               name: 'name',
               message: 'Device name:',
-              default: options.name || currentDevice.name
+              default: options.name || currentDevice.name,
             },
             {
               type: 'list',
@@ -284,24 +317,25 @@ function createUpdateCommand(): Command {
                 'Network Node',
                 'Validator Node',
                 'Mining Rig',
-                'Other'
+                'Other',
               ],
-              default: options.type || currentDevice.type
+              default: options.type || currentDevice.type,
             },
             {
               type: 'list',
               name: 'status',
               message: 'Device status:',
               choices: ['online', 'offline', 'maintenance'],
-              default: options.status || currentDevice.status
-            }
+              default: options.status || currentDevice.status,
+            },
           ]);
 
           updateData = answers;
         } else {
           if (options.name) updateData.name = options.name;
           if (options.type) updateData.type = options.type;
-          if (options.status) updateData.status = options.status as 'online' | 'offline' | 'maintenance';
+          if (options.status)
+            updateData.status = options.status as 'online' | 'offline' | 'maintenance';
 
           if (Object.keys(updateData).length === 0) {
             console.log(chalk.yellow('No updates provided. Use --interactive for guided update.'));
@@ -315,24 +349,30 @@ function createUpdateCommand(): Command {
           const updatedDevice = await api.updateDevice(id, updateData);
           updateSpinner.succeed(chalk.green('Device updated successfully!'));
 
-          console.log('\n' + createTable(
-            [
-              { title: 'ID', key: 'id' },
-              { title: 'Name', key: 'name' },
-              { title: 'Type', key: 'type' },
-              { title: 'Owner', key: 'ownerId' },
-              { title: 'Status', key: 'status', color: formatters.status },
-              { title: 'Last Seen', key: 'lastSeen', color: formatters.date }
-            ],
-            [updatedDevice],
-            { title: 'Updated Device Details' }
-          ));
+          console.log(
+            '\n' +
+              createTable(
+                [
+                  { title: 'ID', key: 'id' },
+                  { title: 'Name', key: 'name' },
+                  { title: 'Type', key: 'type' },
+                  { title: 'Owner', key: 'ownerId' },
+                  { title: 'Status', key: 'status', color: formatters.status },
+                  { title: 'Last Seen', key: 'lastSeen', color: formatters.date },
+                ],
+                [updatedDevice],
+                { title: 'Updated Device Details' },
+              ),
+          );
         } catch (error) {
           updateSpinner.fail('Failed to update device');
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error updating device:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error updating device:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });
@@ -364,8 +404,8 @@ function createRemoveCommand(): Command {
               type: 'confirm',
               name: 'confirm',
               message: `Are you sure you want to remove device "${device.name}" (${device.type})?`,
-              default: false
-            }
+              default: false,
+            },
           ]);
 
           if (!confirm) {
@@ -384,7 +424,10 @@ function createRemoveCommand(): Command {
           throw error;
         }
       } catch (error) {
-        console.error(chalk.red('Error removing device:'), error instanceof Error ? error.message : error);
+        console.error(
+          chalk.red('Error removing device:'),
+          error instanceof Error ? error.message : error,
+        );
         process.exit(1);
       }
     });

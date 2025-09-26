@@ -1,6 +1,6 @@
-import js from '@eslint/js'
-import tsEslint from '@typescript-eslint/eslint-plugin'
-import tsParser from '@typescript-eslint/parser'
+import js from '@eslint/js';
+import tsEslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 
 export default [
   js.configs.recommended,
@@ -37,8 +37,8 @@ export default [
       'no-undef': 'warn',
 
       // General rules - relaxed for CI
-      'eqeqeq': 'warn',
-      'curly': 'warn',
+      eqeqeq: 'warn',
+      curly: 'warn',
     },
   },
   {
@@ -62,4 +62,4 @@ export default [
       '**/*.js.map',
     ],
   },
-]
+];

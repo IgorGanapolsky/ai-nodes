@@ -134,7 +134,7 @@ export class Logger {
     url: string,
     statusCode: number,
     duration: number,
-    context: LogContext = {}
+    context: LogContext = {},
   ): void {
     this.info(`${method} ${url} ${statusCode}`, {
       ...context,
@@ -149,11 +149,7 @@ export class Logger {
   /**
    * Log database query
    */
-  logQuery(
-    query: string,
-    duration: number,
-    context: LogContext = {}
-  ): void {
+  logQuery(query: string, duration: number, context: LogContext = {}): void {
     this.debug('Database query executed', {
       ...context,
       query,
@@ -171,7 +167,7 @@ export class Logger {
     url: string,
     statusCode: number,
     duration: number,
-    context: LogContext = {}
+    context: LogContext = {},
   ): void {
     this.info(`API call to ${service}`, {
       ...context,
@@ -187,12 +183,7 @@ export class Logger {
   /**
    * Log performance metrics
    */
-  logMetric(
-    name: string,
-    value: number,
-    unit: string = 'ms',
-    context: LogContext = {}
-  ): void {
+  logMetric(name: string, value: number, unit: string = 'ms', context: LogContext = {}): void {
     this.info(`Metric: ${name}`, {
       ...context,
       metric: name,
@@ -205,10 +196,7 @@ export class Logger {
   /**
    * Log business events
    */
-  logEvent(
-    event: string,
-    context: LogContext = {}
-  ): void {
+  logEvent(event: string, context: LogContext = {}): void {
     this.info(`Event: ${event}`, {
       ...context,
       event,
@@ -265,15 +253,9 @@ export function createLoggerMiddleware(logger: Logger = getLogger()) {
     // Log response when finished
     res.on('finish', () => {
       const duration = Date.now() - start;
-      req.logger.logRequest(
-        req.method,
-        req.url,
-        res.statusCode,
-        duration,
-        {
-          contentLength: res.get('Content-Length'),
-        }
-      );
+      req.logger.logRequest(req.method, req.url, res.statusCode, duration, {
+        contentLength: res.get('Content-Length'),
+      });
     });
 
     next();

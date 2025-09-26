@@ -53,21 +53,20 @@ export type {
 } from './types.js';
 
 // Export enums and constants
-export {
-  EmbedColors,
-  DefaultNotificationPreferences,
-} from './types.js';
+export { EmbedColors, DefaultNotificationPreferences } from './types.js';
 
 // Utility functions and helpers
 export const NotificationUtils = {
   /**
    * Create a notification manager with default configuration
    */
-  createManager(config: {
-    discordWebhookUrl?: string;
-    resendApiKey?: string;
-    fromEmail?: string;
-  } = {}) {
+  createManager(
+    config: {
+      discordWebhookUrl?: string;
+      resendApiKey?: string;
+      fromEmail?: string;
+    } = {},
+  ) {
     return new NotificationManager({
       discord: {
         webhookUrl: config.discordWebhookUrl,
@@ -98,9 +97,9 @@ export const NotificationUtils = {
    */
   getSeverityColor(severity: NotificationSeverity): string {
     const colors = {
-      low: '#95a5a6',      // Gray
-      medium: '#f39c12',   // Orange
-      high: '#e74c3c',     // Red
+      low: '#95a5a6', // Gray
+      medium: '#f39c12', // Orange
+      high: '#e74c3c', // Red
       critical: '#8b0000', // Dark red
     };
     return colors[severity];
@@ -146,7 +145,7 @@ export const NotificationUtils = {
    */
   getRecommendedChannels(
     type: NotificationType,
-    severity?: NotificationSeverity
+    severity?: NotificationSeverity,
   ): NotificationChannel[] {
     // Critical alerts should go to all available channels
     if (severity === 'critical') {

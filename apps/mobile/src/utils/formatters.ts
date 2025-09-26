@@ -75,7 +75,7 @@ export const formatHashRate = (hashRate: number): string => {
 
 export const formatTemperature = (temp: number, unit: 'C' | 'F' = 'C'): string => {
   if (unit === 'F') {
-    return `${Math.round(temp * 9/5 + 32)}°F`;
+    return `${Math.round((temp * 9) / 5 + 32)}°F`;
   }
   return `${Math.round(temp)}°C`;
 };

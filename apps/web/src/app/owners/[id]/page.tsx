@@ -136,9 +136,7 @@ export default function OwnerDetailPage() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(metrics.totalEarnings)}
-              </div>
+              <div className="text-2xl font-bold">{formatCurrency(metrics.totalEarnings)}</div>
               <p className="text-xs text-muted-foreground">
                 Target: {formatCurrency(metrics.targetEarnings)}
               </p>
@@ -152,9 +150,7 @@ export default function OwnerDetailPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{metrics.averageUptime.toFixed(1)}%</div>
-              <p className="text-xs text-muted-foreground">
-                Across all devices
-              </p>
+              <p className="text-xs text-muted-foreground">Across all devices</p>
             </CardContent>
           </Card>
 
@@ -214,9 +210,7 @@ export default function OwnerDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle>Device Utilization</CardTitle>
-              <CardDescription>
-                Performance metrics over the last {timeframe}
-              </CardDescription>
+              <CardDescription>Performance metrics over the last {timeframe}</CardDescription>
             </CardHeader>
             <CardContent>
               <UtilizationChart
@@ -232,15 +226,10 @@ export default function OwnerDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle>All Devices</CardTitle>
-              <CardDescription>
-                Complete list of devices owned by {owner.name}
-              </CardDescription>
+              <CardDescription>Complete list of devices owned by {owner.name}</CardDescription>
             </CardHeader>
             <CardContent>
-              <DeviceTable
-                devices={devices?.devices || []}
-                isLoading={devicesLoading}
-              />
+              <DeviceTable devices={devices?.devices || []} isLoading={devicesLoading} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -249,16 +238,10 @@ export default function OwnerDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle>Active Alerts</CardTitle>
-              <CardDescription>
-                Current alerts and notifications for {owner.name}
-              </CardDescription>
+              <CardDescription>Current alerts and notifications for {owner.name}</CardDescription>
             </CardHeader>
             <CardContent>
-              <AlertsList
-                alerts={alerts?.alerts || []}
-                isLoading={alertsLoading}
-                showActions
-              />
+              <AlertsList alerts={alerts?.alerts || []} isLoading={alertsLoading} showActions />
             </CardContent>
           </Card>
         </TabsContent>
@@ -267,16 +250,10 @@ export default function OwnerDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle>Financial Statements</CardTitle>
-              <CardDescription>
-                Download earnings statements and financial reports
-              </CardDescription>
+              <CardDescription>Download earnings statements and financial reports</CardDescription>
             </CardHeader>
             <CardContent>
-              <StatementDownload
-                ownerId={ownerId}
-                ownerName={owner.name}
-                showHistory
-              />
+              <StatementDownload ownerId={ownerId} ownerName={owner.name} showHistory />
             </CardContent>
           </Card>
         </TabsContent>

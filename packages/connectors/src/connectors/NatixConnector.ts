@@ -20,7 +20,11 @@ export class NatixConnector extends BaseConnector {
     return this.generateMockMetrics(externalId, since);
   }
 
-  async getOccupancy(externalId: string, periodStart: Date, periodEnd: Date): Promise<DeviceOccupancy> {
+  async getOccupancy(
+    externalId: string,
+    periodStart: Date,
+    periodEnd: Date,
+  ): Promise<DeviceOccupancy> {
     await this.simulateDelay();
     return this.generateMockOccupancy(externalId, periodStart, periodEnd);
   }
@@ -45,11 +49,15 @@ export class NatixConnector extends BaseConnector {
       // Camera and data collection
       photosCollected: Math.floor(this.seededRandomInRange(externalId, 100, 2000, index + 5004)),
       videoMinutesRecorded: this.seededRandomInRange(externalId, 30, 300, index + 5005),
-      gpsPointsCollected: Math.floor(this.seededRandomInRange(externalId, 1000, 20000, index + 5006)),
+      gpsPointsCollected: Math.floor(
+        this.seededRandomInRange(externalId, 1000, 20000, index + 5006),
+      ),
       mapDataUploaded: this.seededRandomInRange(externalId, 50, 2000, index + 5007), // MB
 
       // Location and coverage metrics
-      uniqueLocationsVisited: Math.floor(this.seededRandomInRange(externalId, 10, 100, index + 5008)),
+      uniqueLocationsVisited: Math.floor(
+        this.seededRandomInRange(externalId, 10, 100, index + 5008),
+      ),
       countriesCovered: Math.floor(this.seededRandomInRange(externalId, 1, 15, index + 5009)),
       citiesCovered: Math.floor(this.seededRandomInRange(externalId, 1, 50, index + 5010)),
       roadTypesCovered: this.getRoadTypes(externalId, index),
@@ -83,7 +91,9 @@ export class NatixConnector extends BaseConnector {
     const selectedTypes: string[] = [];
 
     for (let i = 0; i < count; i++) {
-      const typeIndex = Math.floor(this.seededRandomInRange(externalId, 0, allRoadTypes.length, index + 5022 + i));
+      const typeIndex = Math.floor(
+        this.seededRandomInRange(externalId, 0, allRoadTypes.length, index + 5022 + i),
+      );
       const roadType = allRoadTypes[typeIndex];
       if (!selectedTypes.includes(roadType)) {
         selectedTypes.push(roadType);
@@ -95,7 +105,9 @@ export class NatixConnector extends BaseConnector {
 
   private getWeatherCondition(externalId: string, index: number): string {
     const conditions = ['sunny', 'cloudy', 'rainy', 'foggy', 'snowy'];
-    const conditionIndex = Math.floor(this.seededRandomInRange(externalId, 0, conditions.length, index + 5023));
+    const conditionIndex = Math.floor(
+      this.seededRandomInRange(externalId, 0, conditions.length, index + 5023),
+    );
     return conditions[conditionIndex];
   }
 

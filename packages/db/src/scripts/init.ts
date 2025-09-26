@@ -111,7 +111,6 @@ class DatabaseInitializer {
 
       // Close connection
       closeConnection();
-
     } catch (error) {
       console.error('❌ Database initialization failed:', error);
       closeConnection();
@@ -210,11 +209,15 @@ class DatabaseInitializer {
     }
 
     // Display results
-    testResults.forEach(result => {
+    testResults.forEach((result) => {
       if (result.status === 'OK') {
-        console.log(`  ✅ ${result.table}: ${result.status}${result.value ? ` (${result.value})` : ''}`);
+        console.log(
+          `  ✅ ${result.table}: ${result.status}${result.value ? ` (${result.value})` : ''}`,
+        );
       } else if (result.status === 'WARNING') {
-        console.log(`  ⚠️  ${result.table}: ${result.status}${result.value ? ` (${result.value})` : ''}`);
+        console.log(
+          `  ⚠️  ${result.table}: ${result.status}${result.value ? ` (${result.value})` : ''}`,
+        );
       } else {
         console.log(`  ❌ ${result.table}: ${result.status}`);
         if (result.error) {
@@ -223,7 +226,7 @@ class DatabaseInitializer {
       }
     });
 
-    const failedTests = testResults.filter(r => r.status === 'FAILED');
+    const failedTests = testResults.filter((r) => r.status === 'FAILED');
     if (failedTests.length > 0) {
       throw new Error(`Health check failed: ${failedTests.length} tests failed`);
     }
@@ -290,7 +293,9 @@ async function main() {
     console.log('  --skip-migrations    Skip running migrations');
     console.log('  --skip-seeding       Skip seeding with sample data');
     console.log('  --create-backup      Create backup before reinitializing');
-    console.log('  --env <env>          Environment: development, production, test (default: development)');
+    console.log(
+      '  --env <env>          Environment: development, production, test (default: development)',
+    );
     console.log('  --data-path <path>   Custom database file path');
     console.log('  --help               Show this help message');
     console.log('\nExamples:');

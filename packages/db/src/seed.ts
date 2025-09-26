@@ -10,12 +10,15 @@ async function seedDatabase() {
   try {
     // Create demo owner
     console.log('Creating demo owner...');
-    const [demoOwner] = await db.insert(owners).values({
-      displayName: 'Demo Owner',
-      email: 'demo@owner.test',
-      discordWebhook: 'https://discord.com/api/webhooks/demo',
-      revSharePct: 0.15, // 15% platform fee
-    }).returning();
+    const [demoOwner] = await db
+      .insert(owners)
+      .values({
+        displayName: 'Demo Owner',
+        email: 'demo@owner.test',
+        discordWebhook: 'https://discord.com/api/webhooks/demo',
+        revSharePct: 0.15, // 15% platform fee
+      })
+      .returning();
 
     console.log(`✅ Created owner: ${demoOwner.displayName} (${demoOwner.id})`);
 
@@ -23,28 +26,34 @@ async function seedDatabase() {
     console.log('Creating demo devices...');
 
     // Device 1: io.net GPU
-    const [gpuDevice] = await db.insert(devices).values({
-      ownerId: demoOwner.id,
-      label: 'High-Performance GPU Node',
-      marketplace: 'io.net',
-      externalId: 'io-gpu-001',
-      hourlyPriceUsd: 2.50,
-      region: 'us-west-1',
-      active: true,
-    }).returning();
+    const [gpuDevice] = await db
+      .insert(devices)
+      .values({
+        ownerId: demoOwner.id,
+        label: 'High-Performance GPU Node',
+        marketplace: 'io.net',
+        externalId: 'io-gpu-001',
+        hourlyPriceUsd: 2.5,
+        region: 'us-west-1',
+        active: true,
+      })
+      .returning();
 
     console.log(`✅ Created GPU device: ${gpuDevice.label} (${gpuDevice.id})`);
 
     // Device 2: Nosana CPU
-    const [cpuDevice] = await db.insert(devices).values({
-      ownerId: demoOwner.id,
-      label: 'Nosana CPU Compute Node',
-      marketplace: 'nosana',
-      externalId: 'nosana-cpu-001',
-      hourlyPriceUsd: 0.75,
-      region: 'eu-central-1',
-      active: true,
-    }).returning();
+    const [cpuDevice] = await db
+      .insert(devices)
+      .values({
+        ownerId: demoOwner.id,
+        label: 'Nosana CPU Compute Node',
+        marketplace: 'nosana',
+        externalId: 'nosana-cpu-001',
+        hourlyPriceUsd: 0.75,
+        region: 'eu-central-1',
+        active: true,
+      })
+      .returning();
 
     console.log(`✅ Created CPU device: ${cpuDevice.label} (${cpuDevice.id})`);
 
@@ -136,7 +145,9 @@ async function seedDatabase() {
         status: 'processed',
       });
 
-      console.log(`✅ Created statement for ${device.label}: $${ownerEarnings.toFixed(2)} owner earnings`);
+      console.log(
+        `✅ Created statement for ${device.label}: $${ownerEarnings.toFixed(2)} owner earnings`,
+      );
     }
 
     console.log('🎉 Database seeding completed successfully!');
@@ -145,7 +156,6 @@ async function seedDatabase() {
     console.log(`- Devices: 2 (1 GPU @ io.net, 1 CPU @ Nosana)`);
     console.log(`- Metrics: ${metricsData.length} records over 30 days`);
     console.log('- Statements: 2 monthly statements');
-
   } catch (error) {
     console.error('❌ Seeding failed:', error);
     process.exit(1);

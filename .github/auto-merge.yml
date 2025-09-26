@@ -8,8 +8,8 @@ merge_rules:
     update_types:
       - minor
       - patch
-    
-  - name: Auto merge Dependabot security updates  
+
+  - name: Auto merge Dependabot security updates
     authors:
       - dependabot[bot]
     labels:
@@ -20,11 +20,11 @@ block_rules:
   - name: Block major version updates
     update_types:
       - major
-      
+
   - name: Block production dependencies
     paths:
       - packages/*/package.json
     dependencies:
-      - "!@types/*"
-      - "!eslint*"
-      - "!prettier"
+      - '!@types/*'
+      - '!eslint*'
+      - '!prettier'

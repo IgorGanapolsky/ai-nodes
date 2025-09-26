@@ -43,13 +43,15 @@ export const EarningsChart: React.FC<EarningsChartProps> = ({
   };
 
   const chartData = {
-    labels: data.labels.length > 6
-      ? data.labels.filter((_, index) => index % Math.ceil(data.labels.length / 6) === 0)
-      : data.labels,
-    datasets: data.datasets.map(dataset => ({
-      data: data.labels.length > 6
-        ? dataset.data.filter((_, index) => index % Math.ceil(data.labels.length / 6) === 0)
-        : dataset.data,
+    labels:
+      data.labels.length > 6
+        ? data.labels.filter((_, index) => index % Math.ceil(data.labels.length / 6) === 0)
+        : data.labels,
+    datasets: data.datasets.map((dataset) => ({
+      data:
+        data.labels.length > 6
+          ? dataset.data.filter((_, index) => index % Math.ceil(data.labels.length / 6) === 0)
+          : dataset.data,
       color: dataset.color || ((opacity = 1) => `rgba(16, 185, 129, ${opacity})`),
       strokeWidth: dataset.strokeWidth || 2,
     })),
@@ -98,9 +100,7 @@ export const EarningsChart: React.FC<EarningsChartProps> = ({
         </View>
       </View>
 
-      <View style={styles.chartContainer}>
-        {renderChart()}
-      </View>
+      <View style={styles.chartContainer}>{renderChart()}</View>
     </View>
   );
 };

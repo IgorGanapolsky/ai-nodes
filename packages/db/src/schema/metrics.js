@@ -1,11 +1,15 @@
 import { sql } from 'drizzle-orm';
 import { text, integer, real, sqliteTable, index } from 'drizzle-orm/sqlite-core';
 import { nodes } from './nodes';
-export const metrics = sqliteTable('metrics', {
-    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+export const metrics = sqliteTable(
+  'metrics',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     nodeId: text('node_id')
-        .notNull()
-        .references(() => nodes.id, { onDelete: 'cascade' }),
+      .notNull()
+      .references(() => nodes.id, { onDelete: 'cascade' }),
     // CPU Metrics
     cpuUsage: real('cpu_usage'), // Percentage 0-100
     cpuCores: integer('cpu_cores'),
@@ -37,13 +41,15 @@ export const metrics = sqliteTable('metrics', {
     blockHeight: integer('block_height'),
     peerCount: integer('peer_count'),
     timestamp: integer('timestamp', { mode: 'timestamp' })
-        .notNull()
-        .default(sql `(unixepoch())`),
-}, (table) => ({
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
     nodeIdIdx: index('metrics_node_id_idx').on(table.nodeId),
     timestampIdx: index('metrics_timestamp_idx').on(table.timestamp),
     nodeTimestampIdx: index('metrics_node_timestamp_idx').on(table.nodeId, table.timestamp),
     cpuUsageIdx: index('metrics_cpu_usage_idx').on(table.cpuUsage),
     memoryUsageIdx: index('metrics_memory_usage_idx').on(table.memoryUsage),
     storageUsageIdx: index('metrics_storage_usage_idx').on(table.storageUsage),
-}));
+  }),
+);

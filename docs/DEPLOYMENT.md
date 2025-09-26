@@ -50,4 +50,3 @@ See `.env.example` for a full list. Minimum:
 - API health: `GET /health`
 - Swagger UI: `GET /docs`
 - Consider Prometheus/Grafana via the `scripts/` examples.
-

@@ -5,6 +5,7 @@ A comprehensive React Native Expo application for monitoring and managing AI com
 ## Features
 
 ### 🏠 Dashboard
+
 - Real-time node status monitoring
 - Live earnings overview with growth indicators
 - WebSocket connection status
@@ -12,6 +13,7 @@ A comprehensive React Native Expo application for monitoring and managing AI com
 - Recent node performance summaries
 
 ### 💰 Earnings Management
+
 - Interactive earnings charts with multiple time ranges (24h, 7d, 30d, 3m)
 - Real-time earnings updates via WebSocket
 - Auto-reinvest configuration and manual triggers
@@ -19,6 +21,7 @@ A comprehensive React Native Expo application for monitoring and managing AI com
 - Reinvestment success tracking
 
 ### 🖥️ Node Management
+
 - Add, edit, and delete nodes
 - Filter nodes by status (online, offline, maintenance)
 - Detailed node metrics and performance data
@@ -26,6 +29,7 @@ A comprehensive React Native Expo application for monitoring and managing AI com
 - Real-time status updates
 
 ### ⚙️ Settings & Configuration
+
 - Secure API key management with validation
 - Auto-reinvest threshold configuration
 - Granular notification preferences
@@ -33,6 +37,7 @@ A comprehensive React Native Expo application for monitoring and managing AI com
 - Data reset and backup options
 
 ### 🔔 Push Notifications
+
 - Node offline alerts
 - Earnings target notifications
 - Low performance warnings
@@ -83,6 +88,7 @@ src/
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
 - Expo CLI
 - iOS Simulator or Android Emulator
@@ -91,11 +97,13 @@ src/
 ### Installation
 
 1. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
 2. **Start the development server**:
+
    ```bash
    npm start
    ```
@@ -122,27 +130,35 @@ src/
 ## Key Features Implementation
 
 ### Real-time Updates
+
 The app uses WebSocket connections to provide real-time updates for:
+
 - Node status changes
 - Live earnings data
 - Performance metrics
 - Auto-reinvest completion
 
 ### Secure Storage
+
 All sensitive data is stored using Expo's secure storage:
+
 - API keys are encrypted
 - Settings are persisted securely
 - Automatic data cleanup on logout
 
 ### Auto-reinvest Logic
+
 Intelligent reinvestment system that:
+
 - Monitors earnings against configurable thresholds
 - Triggers automatic reinvestment
 - Provides manual override capabilities
 - Tracks success/failure rates
 
 ### Error Handling
+
 Comprehensive error handling including:
+
 - Global error boundary for crash recovery
 - Network error handling with retry logic
 - User-friendly error messages
@@ -166,6 +182,7 @@ Comprehensive error handling including:
 ## Development
 
 ### Custom Hooks
+
 The app uses custom hooks for state management:
 
 - `useNodes`: Manages node data and operations
@@ -174,14 +191,18 @@ The app uses custom hooks for state management:
 - `useReinvest`: Controls auto-reinvest functionality
 
 ### API Integration
+
 The API client provides:
+
 - Automatic retry logic
 - Error handling and user feedback
 - Request/response logging (development)
 - Authentication management
 
 ### Testing
+
 Run tests with:
+
 ```bash
 npm test
 ```
@@ -189,11 +210,13 @@ npm test
 ## Building for Production
 
 ### iOS
+
 ```bash
 npm run build:ios
 ```
 
 ### Android
+
 ```bash
 npm run build:android
 ```
@@ -232,6 +255,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Support
 
 For support and questions:
+
 - Check the troubleshooting section
 - Review the API documentation
 - Contact the development team

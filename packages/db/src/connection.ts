@@ -160,7 +160,7 @@ class ConnectionPool {
   }
 
   close() {
-    this.connections.forEach(conn => conn.close());
+    this.connections.forEach((conn) => conn.close());
     this.connections = [];
   }
 }

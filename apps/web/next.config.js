@@ -4,10 +4,10 @@ const nextConfig = {
   swcMinify: true,
   experimental: {
     appDir: true,
-    typedRoutes: true
+    typedRoutes: true,
   },
   images: {
-    domains: []
+    domains: [],
   },
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
@@ -16,14 +16,11 @@ const nextConfig = {
     return [
       {
         source: '/api/v1/:path*',
-        destination: `${process.env.API_URL || 'http://localhost:3001'}/api/v1/:path*`
-      }
+        destination: `${process.env.API_URL || 'http://localhost:3001'}/api/v1/:path*`,
+      },
     ];
   },
-  transpilePackages: [
-    '@depinautopilot/core',
-    '@depinautopilot/utils'
-  ]
+  transpilePackages: ['@depinautopilot/core', '@depinautopilot/utils'],
 };
 
 export default nextConfig;

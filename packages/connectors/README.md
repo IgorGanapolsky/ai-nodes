@@ -29,7 +29,7 @@ import { ConnectorFactory, ConnectorType } from '@ai-nodes/connectors';
 // Create and initialize a connector
 const connector = await ConnectorFactory.createAndInitialize(ConnectorType.IONET, {
   apiKey: 'your-api-key',
-  baseUrl: 'https://api.io.net'
+  baseUrl: 'https://api.io.net',
 });
 
 // Get node status
@@ -40,7 +40,7 @@ console.log('Node Status:', status);
 const earnings = await connector.getEarnings({
   start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
   end: new Date(),
-  type: 'week'
+  type: 'week',
 });
 console.log('Weekly Earnings:', earnings);
 
@@ -70,28 +70,26 @@ const renderConnector = ConnectorFactory.createWithAutoConfig(ConnectorType.REND
 const configs = [
   { type: ConnectorType.IONET, config: { apiKey: 'ionet-key' } },
   { type: ConnectorType.NOSANA, config: { baseUrl: 'https://explorer.nosana.io' } },
-  { type: ConnectorType.RENDER, config: { apiKey: 'render-key' } }
+  { type: ConnectorType.RENDER, config: { apiKey: 'render-key' } },
 ];
 
 const connectors = await ConnectorFactory.createAndInitializeMultiple(configs);
 
 // Get status from all connectors
-const allStatuses = await Promise.all(
-  connectors.map(connector => connector.getNodeStatus())
-);
+const allStatuses = await Promise.all(connectors.map((connector) => connector.getNodeStatus()));
 ```
 
 ## 🔌 Supported Networks
 
-| Network | Type | Description | API Key Required |
-|---------|------|-------------|------------------|
-| **IoNet** | GPU Compute | Decentralized GPU compute network | ✅ |
-| **Nosana** | AI Compute | AI inference and compute network | ❌ |
-| **Render** | GPU Rendering | Distributed GPU rendering network | ✅ |
-| **Grass** | Bandwidth | Bandwidth sharing network | ✅ |
-| **Natix** | Mapping | Decentralized mapping and location data | ✅ |
-| **Huddle01** | Video | Decentralized video infrastructure | ✅ |
-| **OwnAI** | AI Compute | Decentralized AI compute network | ✅ |
+| Network      | Type          | Description                             | API Key Required |
+| ------------ | ------------- | --------------------------------------- | ---------------- |
+| **IoNet**    | GPU Compute   | Decentralized GPU compute network       | ✅               |
+| **Nosana**   | AI Compute    | AI inference and compute network        | ❌               |
+| **Render**   | GPU Rendering | Distributed GPU rendering network       | ✅               |
+| **Grass**    | Bandwidth     | Bandwidth sharing network               | ✅               |
+| **Natix**    | Mapping       | Decentralized mapping and location data | ✅               |
+| **Huddle01** | Video         | Decentralized video infrastructure      | ✅               |
+| **OwnAI**    | AI Compute    | Decentralized AI compute network        | ✅               |
 
 ## 🛠️ Advanced Configuration
 
@@ -106,17 +104,17 @@ const connector = await ConnectorFactory.createAndInitialize(ConnectorType.IONET
   retryDelay: 1000,
   rateLimit: {
     requests: 60,
-    window: 60000 // 1 minute
+    window: 60000, // 1 minute
   },
   cache: {
     enabled: true,
-    ttl: 300 // 5 minutes
+    ttl: 300, // 5 minutes
   },
   scraper: {
     enabled: true,
     headless: true,
-    timeout: 30000
-  }
+    timeout: 30000,
+  },
 });
 ```
 
@@ -125,7 +123,7 @@ const connector = await ConnectorFactory.createAndInitialize(ConnectorType.IONET
 ```typescript
 const validation = ConnectorFactory.validateConfig(ConnectorType.IONET, {
   apiKey: 'test-key',
-  timeout: 30000
+  timeout: 30000,
 });
 
 if (!validation.valid) {
@@ -263,8 +261,8 @@ const pricingStrategy = await connector.optimizePricing({
     cpu: { cores: 16, model: 'Intel i9-13900K', frequency: 3.0 },
     memory: { total: 64, available: 48 },
     storage: { total: 2000, available: 1500, type: 'NVMe' },
-    gpu: { model: 'NVIDIA RTX 4090', memory: 24, compute: 165 }
-  }
+    gpu: { model: 'NVIDIA RTX 4090', memory: 24, compute: 165 },
+  },
 });
 
 console.log('Recommended pricing:', pricingStrategy.recommended);
@@ -282,8 +280,8 @@ const connector = await ConnectorFactory.createAndInitialize(ConnectorType.IONET
   scraper: {
     enabled: true,
     headless: true,
-    timeout: 30000
-  }
+    timeout: 30000,
+  },
 });
 
 // Will use API if available, otherwise scrapes dashboard
@@ -301,7 +299,7 @@ console.log('Memory usage:', stats.memoryUsage);
 
 // Get connector type information
 const availableTypes = ConnectorFactory.getAvailableTypes();
-availableTypes.forEach(type => {
+availableTypes.forEach((type) => {
   const info = ConnectorFactory.getTypeInfo(type);
   console.log(`${info.name}: ${info.description}`);
 });

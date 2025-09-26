@@ -51,10 +51,7 @@ export interface CSVExportOptions {
  * @param options CSV export options
  * @returns CSV string
  */
-export function recordsToCSV(
-  records: StatementRecord[],
-  options: CSVExportOptions = {}
-): string {
+export function recordsToCSV(records: StatementRecord[], options: CSVExportOptions = {}): string {
   const {
     includeHeader = true,
     dateFormat = 'yyyy-MM-dd',
@@ -158,12 +155,13 @@ export function generateStatementSummary(records: StatementRecord[]): StatementS
   const totalOwnerCut = records.reduce((sum, r) => sum + r.ownerCutUsd, 0);
 
   // Calculate averages
-  const averageUtilization = records.reduce((sum, r) => sum + r.utilizationPercent, 0) / records.length;
+  const averageUtilization =
+    records.reduce((sum, r) => sum + r.utilizationPercent, 0) / records.length;
   const averageUptime = records.reduce((sum, r) => sum + r.uptime, 0) / records.length;
 
   // Find top performing node (by gross revenue)
   const nodeRevenues = new Map<string, number>();
-  records.forEach(record => {
+  records.forEach((record) => {
     const current = nodeRevenues.get(record.nodeId) || 0;
     nodeRevenues.set(record.nodeId, current + record.grossRevenueUsd);
   });
@@ -178,7 +176,7 @@ export function generateStatementSummary(records: StatementRecord[]): StatementS
   }
 
   // Count unique nodes
-  const uniqueNodes = new Set(records.map(r => r.nodeId));
+  const uniqueNodes = new Set(records.map((r) => r.nodeId));
 
   return {
     periodStart,
@@ -204,10 +202,10 @@ export function generateStatementSummary(records: StatementRecord[]): StatementS
 export function generateMonthlyStatement(
   dailyRecords: StatementRecord[],
   month: number,
-  year: number
+  year: number,
 ): StatementSummary {
   // Filter records for the specified month and year
-  const monthlyRecords = dailyRecords.filter(record => {
+  const monthlyRecords = dailyRecords.filter((record) => {
     const recordDate = record.date;
     return recordDate.getMonth() === month - 1 && recordDate.getFullYear() === year;
   });
@@ -227,7 +225,7 @@ export function generateMonthlyStatement(
  */
 export function exportStatementSummaryToCSV(
   summary: StatementSummary,
-  options: CSVExportOptions = {}
+  options: CSVExportOptions = {},
 ): string {
   const {
     dateFormat = 'yyyy-MM-dd',
@@ -239,12 +237,22 @@ export function exportStatementSummaryToCSV(
   const lines: string[] = [];
 
   // Add summary header
-  lines.push(`Statement Summary${delimiter}Period: ${format(summary.periodStart, dateFormat)} to ${format(summary.periodEnd, dateFormat)}`);
+  lines.push(
+    `Statement Summary${delimiter}Period: ${format(summary.periodStart, dateFormat)} to ${format(summary.periodEnd, dateFormat)}`,
+  );
   lines.push(`Total Nodes${delimiter}${summary.totalNodes}`);
-  lines.push(`Total Gross Revenue (${currency})${delimiter}${summary.totalGrossRevenue.toFixed(decimalPlaces)}`);
-  lines.push(`Total Operator Cut (${currency})${delimiter}${summary.totalOperatorCut.toFixed(decimalPlaces)}`);
-  lines.push(`Total Owner Cut (${currency})${delimiter}${summary.totalOwnerCut.toFixed(decimalPlaces)}`);
-  lines.push(`Average Utilization (%)${delimiter}${summary.averageUtilization.toFixed(decimalPlaces)}`);
+  lines.push(
+    `Total Gross Revenue (${currency})${delimiter}${summary.totalGrossRevenue.toFixed(decimalPlaces)}`,
+  );
+  lines.push(
+    `Total Operator Cut (${currency})${delimiter}${summary.totalOperatorCut.toFixed(decimalPlaces)}`,
+  );
+  lines.push(
+    `Total Owner Cut (${currency})${delimiter}${summary.totalOwnerCut.toFixed(decimalPlaces)}`,
+  );
+  lines.push(
+    `Average Utilization (%)${delimiter}${summary.averageUtilization.toFixed(decimalPlaces)}`,
+  );
   lines.push(`Average Uptime (%)${delimiter}${summary.averageUptime.toFixed(decimalPlaces)}`);
   if (summary.topPerformingNode) {
     lines.push(`Top Performing Node${delimiter}${summary.topPerformingNode}`);
@@ -266,10 +274,10 @@ export function exportStatementSummaryToCSV(
  */
 export function parseCSVToRecords(
   csvContent: string,
-  options: { hasHeader?: boolean; delimiter?: string } = {}
+  options: { hasHeader?: boolean; delimiter?: string } = {},
 ): StatementRecord[] {
   const { hasHeader = true, delimiter = ',' } = options;
-  const lines = csvContent.split('\n').filter(line => line.trim().length > 0);
+  const lines = csvContent.split('\n').filter((line) => line.trim().length > 0);
 
   if (lines.length === 0) {
     return [];

@@ -13,28 +13,47 @@ export const phoneSchema = z.string().regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone
 // Numeric validators
 export const positiveNumberSchema = z.number().positive('Must be a positive number');
 export const nonNegativeNumberSchema = z.number().nonnegative('Must be non-negative');
-export const percentageSchema = z.number().min(0, 'Percentage must be >= 0').max(100, 'Percentage must be <= 100');
-export const priceSchema = z.number().min(0, 'Price must be non-negative').multipleOf(0.01, 'Price must have at most 2 decimal places');
+export const percentageSchema = z
+  .number()
+  .min(0, 'Percentage must be >= 0')
+  .max(100, 'Percentage must be <= 100');
+export const priceSchema = z
+  .number()
+  .min(0, 'Price must be non-negative')
+  .multipleOf(0.01, 'Price must have at most 2 decimal places');
 
 // String validators
 export const nonEmptyStringSchema = z.string().min(1, 'String cannot be empty');
-export const alphanumericSchema = z.string().regex(/^[a-zA-Z0-9]+$/, 'Must contain only alphanumeric characters');
-export const slugSchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Must be a valid slug (lowercase, hyphens allowed)');
+export const alphanumericSchema = z
+  .string()
+  .regex(/^[a-zA-Z0-9]+$/, 'Must contain only alphanumeric characters');
+export const slugSchema = z
+  .string()
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Must be a valid slug (lowercase, hyphens allowed)');
 
 // Date validators
-export const dateStringSchema = z.string().refine((val) => !isNaN(Date.parse(val)), 'Invalid date string');
-export const futureDateSchema = z.date().refine((date) => date > new Date(), 'Date must be in the future');
-export const pastDateSchema = z.date().refine((date) => date < new Date(), 'Date must be in the past');
+export const dateStringSchema = z
+  .string()
+  .refine((val) => !isNaN(Date.parse(val)), 'Invalid date string');
+export const futureDateSchema = z
+  .date()
+  .refine((date) => date > new Date(), 'Date must be in the future');
+export const pastDateSchema = z
+  .date()
+  .refine((date) => date < new Date(), 'Date must be in the past');
 
 // Custom validators for business logic
-export const revSharePercentageSchema = z.number()
+export const revSharePercentageSchema = z
+  .number()
   .min(0, 'Revenue share percentage must be >= 0')
   .max(1, 'Revenue share percentage must be <= 1');
 
-export const walletAddressSchema = z.string()
+export const walletAddressSchema = z
+  .string()
   .regex(/^[a-zA-Z0-9]{32,44}$/, 'Invalid wallet address format');
 
-export const tokenSymbolSchema = z.string()
+export const tokenSymbolSchema = z
+  .string()
   .min(2, 'Token symbol must be at least 2 characters')
   .max(10, 'Token symbol must be at most 10 characters')
   .regex(/^[A-Z]+$/, 'Token symbol must be uppercase letters only');
@@ -50,13 +69,15 @@ export const paginationSchema = z.object({
 export type PaginationParams = z.infer<typeof paginationSchema>;
 
 // Filter schemas
-export const dateRangeSchema = z.object({
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
-}).refine(
-  (data) => !data.startDate || !data.endDate || data.startDate <= data.endDate,
-  'Start date must be before or equal to end date'
-);
+export const dateRangeSchema = z
+  .object({
+    startDate: z.date().optional(),
+    endDate: z.date().optional(),
+  })
+  .refine(
+    (data) => !data.startDate || !data.endDate || data.startDate <= data.endDate,
+    'Start date must be before or equal to end date',
+  );
 
 export type DateRange = z.infer<typeof dateRangeSchema>;
 
@@ -240,7 +261,7 @@ export function createQueryValidationMiddleware<T>(schema: z.ZodSchema<T>) {
     try {
       // Parse numeric query parameters
       const query = { ...req.query };
-      Object.keys(query).forEach(key => {
+      Object.keys(query).forEach((key) => {
         const value = query[key];
         if (typeof value === 'string' && /^\d+$/.test(value)) {
           query[key] = parseInt(value, 10);
@@ -304,19 +325,21 @@ export function validatePartial<T>(data: unknown, schema: ZodObject<any>): Parti
 export function transformAndValidate<T, U>(
   data: T,
   transformer: (data: T) => unknown,
-  schema: z.ZodSchema<U>
+  schema: z.ZodSchema<U>,
 ): U {
   const transformed = transformer(data);
   return schema.parse(transformed);
 }
 
-export type ValidationResult<T> = {
-  success: true;
-  data: T;
-} | {
-  success: false;
-  errors: z.ZodError;
-};
+export type ValidationResult<T> =
+  | {
+      success: true;
+      data: T;
+    }
+  | {
+      success: false;
+      errors: z.ZodError;
+    };
 
 /**
  * Safe validation that returns result instead of throwing

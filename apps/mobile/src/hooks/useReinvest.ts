@@ -7,11 +7,13 @@ import { useSettings } from './useSettings';
 export const useReinvest = () => {
   const [isReinvesting, setIsReinvesting] = useState(false);
   const [lastReinvestAmount, setLastReinvestAmount] = useState<number | null>(null);
-  const [reinvestHistory, setReinvestHistory] = useState<Array<{
-    amount: number;
-    timestamp: string;
-    status: 'success' | 'failed';
-  }>>([]);
+  const [reinvestHistory, setReinvestHistory] = useState<
+    Array<{
+      amount: number;
+      timestamp: string;
+      status: 'success' | 'failed';
+    }>
+  >([]);
   const { settings } = useSettings();
 
   const triggerReinvest = useCallback(async () => {
@@ -30,9 +32,9 @@ export const useReinvest = () => {
         const reinvestRecord = {
           amount,
           timestamp: new Date().toISOString(),
-          status: status === 'success' ? 'success' as const : 'failed' as const,
+          status: status === 'success' ? ('success' as const) : ('failed' as const),
         };
-        setReinvestHistory(prev => [reinvestRecord, ...prev]);
+        setReinvestHistory((prev) => [reinvestRecord, ...prev]);
 
         // Send notification
         if (status === 'success') {
@@ -47,7 +49,7 @@ export const useReinvest = () => {
           timestamp: new Date().toISOString(),
           status: 'failed' as const,
         };
-        setReinvestHistory(prev => [reinvestRecord, ...prev]);
+        setReinvestHistory((prev) => [reinvestRecord, ...prev]);
 
         return { success: false, error: response.error };
       }
@@ -58,65 +60,71 @@ export const useReinvest = () => {
         timestamp: new Date().toISOString(),
         status: 'failed' as const,
       };
-      setReinvestHistory(prev => [reinvestRecord, ...prev]);
+      setReinvestHistory((prev) => [reinvestRecord, ...prev]);
 
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Reinvest failed'
+        error: error instanceof Error ? error.message : 'Reinvest failed',
       };
     } finally {
       setIsReinvesting(false);
     }
   }, [isReinvesting]);
 
-  const checkAutoReinvest = useCallback(async (currentEarnings: number) => {
-    if (!settings.autoReinvest || isReinvesting) return;
+  const checkAutoReinvest = useCallback(
+    async (currentEarnings: number) => {
+      if (!settings.autoReinvest || isReinvesting) return;
 
-    if (currentEarnings >= settings.reinvestThreshold) {
-      console.log(`Auto-reinvest triggered: $${currentEarnings} >= $${settings.reinvestThreshold}`);
+      if (currentEarnings >= settings.reinvestThreshold) {
+        console.log(
+          `Auto-reinvest triggered: $${currentEarnings} >= $${settings.reinvestThreshold}`,
+        );
 
-      // Send notification about auto-reinvest
-      await notificationService.scheduleLocalNotification(
-        'Auto-Reinvest Triggered',
-        `Earnings threshold reached ($${settings.reinvestThreshold}). Starting auto-reinvest...`
-      );
+        // Send notification about auto-reinvest
+        await notificationService.scheduleLocalNotification(
+          'Auto-Reinvest Triggered',
+          `Earnings threshold reached ($${settings.reinvestThreshold}). Starting auto-reinvest...`,
+        );
 
-      await triggerReinvest();
-    }
-  }, [settings.autoReinvest, settings.reinvestThreshold, isReinvesting, triggerReinvest]);
+        await triggerReinvest();
+      }
+    },
+    [settings.autoReinvest, settings.reinvestThreshold, isReinvesting, triggerReinvest],
+  );
 
   // Listen for reinvest completion from WebSocket
   useEffect(() => {
-    const unsubscribe = webSocketService.subscribe('reinvest_complete', (data: {
-      amount: number;
-      status: string;
-      timestamp: string;
-    }) => {
-      setLastReinvestAmount(data.amount);
-      setIsReinvesting(false);
+    const unsubscribe = webSocketService.subscribe(
+      'reinvest_complete',
+      (data: { amount: number; status: string; timestamp: string }) => {
+        setLastReinvestAmount(data.amount);
+        setIsReinvesting(false);
 
-      const reinvestRecord = {
-        amount: data.amount,
-        timestamp: data.timestamp,
-        status: data.status === 'success' ? 'success' as const : 'failed' as const,
-      };
-      setReinvestHistory(prev => [reinvestRecord, ...prev]);
+        const reinvestRecord = {
+          amount: data.amount,
+          timestamp: data.timestamp,
+          status: data.status === 'success' ? ('success' as const) : ('failed' as const),
+        };
+        setReinvestHistory((prev) => [reinvestRecord, ...prev]);
 
-      // Send notification
-      if (data.status === 'success') {
-        notificationService.scheduleReinvestComplete(data.amount);
-      }
-    });
+        // Send notification
+        if (data.status === 'success') {
+          notificationService.scheduleReinvestComplete(data.amount);
+        }
+      },
+    );
 
     return unsubscribe;
   }, []);
 
   const totalReinvested = reinvestHistory
-    .filter(record => record.status === 'success')
+    .filter((record) => record.status === 'success')
     .reduce((sum, record) => sum + record.amount, 0);
 
-  const successfulReinvests = reinvestHistory.filter(record => record.status === 'success').length;
-  const failedReinvests = reinvestHistory.filter(record => record.status === 'failed').length;
+  const successfulReinvests = reinvestHistory.filter(
+    (record) => record.status === 'success',
+  ).length;
+  const failedReinvests = reinvestHistory.filter((record) => record.status === 'failed').length;
 
   return {
     isReinvesting,

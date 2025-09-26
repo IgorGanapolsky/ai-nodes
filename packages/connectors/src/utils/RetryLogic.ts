@@ -27,9 +27,11 @@ export class RetryLogic {
       }
 
       // Retry on network errors
-      if (error.message.includes('ECONNRESET') ||
-          error.message.includes('ENOTFOUND') ||
-          error.message.includes('timeout')) {
+      if (
+        error.message.includes('ECONNRESET') ||
+        error.message.includes('ENOTFOUND') ||
+        error.message.includes('timeout')
+      ) {
         return true;
       }
 
@@ -40,7 +42,7 @@ export class RetryLogic {
       }
 
       return false;
-    }
+    },
   };
 
   /**
@@ -48,35 +50,37 @@ export class RetryLogic {
    * @param fn Function to execute
    * @param options Retry options
    */
-  static async execute<T>(
-    fn: () => Promise<T>,
-    options: RetryOptions = {}
-  ): Promise<T> {
+  static async execute<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
     const config = { ...this.DEFAULT_OPTIONS, ...options };
 
-    return pRetry(async (attemptNumber) => {
-      try {
-        return await fn();
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+    return pRetry(
+      async (attemptNumber) => {
+        try {
+          return await fn();
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
 
-        if (!config.shouldRetry(err)) {
-          throw new AbortError(err);
+          if (!config.shouldRetry(err)) {
+            throw new AbortError(err);
+          }
+
+          console.warn(`Attempt ${attemptNumber} failed:`, err.message);
+          throw err;
         }
-
-        console.warn(`Attempt ${attemptNumber} failed:`, err.message);
-        throw err;
-      }
-    }, {
-      retries: config.retries,
-      factor: config.factor,
-      minTimeout: config.minTimeout,
-      maxTimeout: config.maxTimeout,
-      randomize: config.randomize,
-      onFailedAttempt: (error) => {
-        console.warn(`Retry attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`);
-      }
-    });
+      },
+      {
+        retries: config.retries,
+        factor: config.factor,
+        minTimeout: config.minTimeout,
+        maxTimeout: config.maxTimeout,
+        randomize: config.randomize,
+        onFailedAttempt: (error) => {
+          console.warn(
+            `Retry attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`,
+          );
+        },
+      },
+    );
   }
 
   /**
@@ -84,10 +88,7 @@ export class RetryLogic {
    * @param fn Function to wrap
    * @param options Retry options
    */
-  static wrap<T extends (...args: any[]) => Promise<any>>(
-    fn: T,
-    options: RetryOptions = {}
-  ): T {
+  static wrap<T extends (...args: any[]) => Promise<any>>(fn: T, options: RetryOptions = {}): T {
     return ((...args: Parameters<T>) => {
       return this.execute(() => fn(...args), options);
     }) as T;

@@ -44,8 +44,12 @@ describe('Revenue Functions', () => {
     });
 
     it('should throw error for invalid revenue share percentage', () => {
-      expect(() => computeRevShare(1000, -0.1)).toThrow('Revenue share percentage must be between 0 and 1');
-      expect(() => computeRevShare(1000, 1.1)).toThrow('Revenue share percentage must be between 0 and 1');
+      expect(() => computeRevShare(1000, -0.1)).toThrow(
+        'Revenue share percentage must be between 0 and 1',
+      );
+      expect(() => computeRevShare(1000, 1.1)).toThrow(
+        'Revenue share percentage must be between 0 and 1',
+      );
     });
   });
 
@@ -76,22 +80,27 @@ describe('Revenue Functions', () => {
     });
 
     it('should throw error for negative target', () => {
-      expect(() => calculateTargetUtilization(-1000, 5, 30))
-        .toThrow('Target monthly gross must be non-negative');
+      expect(() => calculateTargetUtilization(-1000, 5, 30)).toThrow(
+        'Target monthly gross must be non-negative',
+      );
     });
 
     it('should throw error for non-positive price', () => {
-      expect(() => calculateTargetUtilization(1000, 0, 30))
-        .toThrow('Current price per hour must be positive');
-      expect(() => calculateTargetUtilization(1000, -5, 30))
-        .toThrow('Current price per hour must be positive');
+      expect(() => calculateTargetUtilization(1000, 0, 30)).toThrow(
+        'Current price per hour must be positive',
+      );
+      expect(() => calculateTargetUtilization(1000, -5, 30)).toThrow(
+        'Current price per hour must be positive',
+      );
     });
 
     it('should throw error for invalid days', () => {
-      expect(() => calculateTargetUtilization(1000, 5, 0))
-        .toThrow('Days in month must be between 1 and 31');
-      expect(() => calculateTargetUtilization(1000, 5, 32))
-        .toThrow('Days in month must be between 1 and 31');
+      expect(() => calculateTargetUtilization(1000, 5, 0)).toThrow(
+        'Days in month must be between 1 and 31',
+      );
+      expect(() => calculateTargetUtilization(1000, 5, 32)).toThrow(
+        'Days in month must be between 1 and 31',
+      );
     });
   });
 
@@ -115,15 +124,18 @@ describe('Revenue Functions', () => {
     });
 
     it('should throw error for invalid utilization', () => {
-      expect(() => calculateMonthlyGross(-0.1, 10, 30))
-        .toThrow('Utilization percentage must be between 0 and 1');
-      expect(() => calculateMonthlyGross(1.1, 10, 30))
-        .toThrow('Utilization percentage must be between 0 and 1');
+      expect(() => calculateMonthlyGross(-0.1, 10, 30)).toThrow(
+        'Utilization percentage must be between 0 and 1',
+      );
+      expect(() => calculateMonthlyGross(1.1, 10, 30)).toThrow(
+        'Utilization percentage must be between 0 and 1',
+      );
     });
 
     it('should throw error for negative price', () => {
-      expect(() => calculateMonthlyGross(0.8, -10, 30))
-        .toThrow('Price per hour must be non-negative');
+      expect(() => calculateMonthlyGross(0.8, -10, 30)).toThrow(
+        'Price per hour must be non-negative',
+      );
     });
   });
 

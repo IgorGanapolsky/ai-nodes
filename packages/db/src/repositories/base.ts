@@ -25,21 +25,13 @@ export interface QueryResult<T> {
   hasMore: boolean;
 }
 
-export abstract class BaseRepository<
-  TTable extends SQLiteTableWithColumns<any>,
-  TSelect,
-  TInsert
-> {
+export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>, TSelect, TInsert> {
   protected db = getConnection();
   protected abstract table: TTable;
 
   // Basic CRUD operations
   async findById(id: string): Promise<TSelect | null> {
-    const result = await this.db
-      .select()
-      .from(this.table)
-      .where(eq(this.table.id, id))
-      .limit(1);
+    const result = await this.db.select().from(this.table).where(eq(this.table.id, id)).limit(1);
 
     return result[0] || null;
   }
@@ -49,7 +41,7 @@ export abstract class BaseRepository<
       filters?: FilterOptions;
       pagination?: PaginationOptions;
       sort?: SortOptions<TSelect>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<TSelect>> {
     const { filters = {}, pagination = {}, sort } = options;
     const { page = 1, limit = 50 } = pagination;
@@ -62,7 +54,7 @@ export abstract class BaseRepository<
       const conditions = Object.entries(filters).map(([key, value]) => {
         const column = this.table[key as keyof TTable] as SQLiteColumn;
         if (Array.isArray(value)) {
-          return or(...value.map(v => eq(column, v)));
+          return or(...value.map((v) => eq(column, v)));
         }
         return eq(column, value);
       });
@@ -81,17 +73,14 @@ export abstract class BaseRepository<
       const conditions = Object.entries(filters).map(([key, value]) => {
         const column = this.table[key as keyof TTable] as SQLiteColumn;
         if (Array.isArray(value)) {
-          return or(...value.map(v => eq(column, v)));
+          return or(...value.map((v) => eq(column, v)));
         }
         return eq(column, value);
       });
       countQuery = countQuery.where(and(...conditions));
     }
 
-    const [data, totalResult] = await Promise.all([
-      query.limit(limit).offset(offset),
-      countQuery,
-    ]);
+    const [data, totalResult] = await Promise.all([query.limit(limit).offset(offset), countQuery]);
 
     const total = totalResult[0]?.count || 0;
 
@@ -105,19 +94,13 @@ export abstract class BaseRepository<
   }
 
   async create(data: TInsert): Promise<TSelect> {
-    const result = await this.db
-      .insert(this.table)
-      .values(data)
-      .returning();
+    const result = await this.db.insert(this.table).values(data).returning();
 
     return result[0];
   }
 
   async createMany(data: TInsert[]): Promise<TSelect[]> {
-    const result = await this.db
-      .insert(this.table)
-      .values(data)
-      .returning();
+    const result = await this.db.insert(this.table).values(data).returning();
 
     return result;
   }
@@ -133,9 +116,7 @@ export abstract class BaseRepository<
   }
 
   async delete(id: string): Promise<boolean> {
-    const result = await this.db
-      .delete(this.table)
-      .where(eq(this.table.id, id));
+    const result = await this.db.delete(this.table).where(eq(this.table.id, id));
 
     return result.changes > 0;
   }
@@ -143,7 +124,7 @@ export abstract class BaseRepository<
   async deleteMany(ids: string[]): Promise<number> {
     const result = await this.db
       .delete(this.table)
-      .where(or(...ids.map(id => eq(this.table.id, id))));
+      .where(or(...ids.map((id) => eq(this.table.id, id))));
 
     return result.changes;
   }
@@ -167,7 +148,7 @@ export abstract class BaseRepository<
   protected async aggregate<TColumn extends SQLiteColumn>(
     column: TColumn,
     operation: 'sum' | 'avg' | 'max' | 'min',
-    filters: FilterOptions = {}
+    filters: FilterOptions = {},
   ): Promise<number | null> {
     const aggregateFn = {
       sum,
@@ -199,7 +180,7 @@ export abstract class BaseRepository<
       filters?: FilterOptions;
       pagination?: PaginationOptions;
       sort?: SortOptions<TSelect>;
-    } = {}
+    } = {},
   ): Promise<QueryResult<TSelect>> {
     const startTimestamp = Math.floor(startDate.getTime() / 1000);
     const endTimestamp = Math.floor(endDate.getTime() / 1000);
@@ -217,19 +198,14 @@ export abstract class BaseRepository<
     let query = this.db.select().from(this.table);
 
     // Apply date range filter
-    query = query.where(
-      and(
-        gte(dateColumn, startTimestamp),
-        lte(dateColumn, endTimestamp)
-      )
-    );
+    query = query.where(and(gte(dateColumn, startTimestamp), lte(dateColumn, endTimestamp)));
 
     // Apply other filters
     if (Object.keys(filters).length > 0) {
       const conditions = Object.entries(filters).map(([key, value]) => {
         const column = this.table[key as keyof TTable] as SQLiteColumn;
         if (Array.isArray(value)) {
-          return or(...value.map(v => eq(column, v)));
+          return or(...value.map((v) => eq(column, v)));
         }
         return eq(column, value);
       });
@@ -248,27 +224,21 @@ export abstract class BaseRepository<
     // Get total count
     let countQuery = this.db.select({ count: count() }).from(this.table);
     countQuery = countQuery.where(
-      and(
-        gte(dateColumn, startTimestamp),
-        lte(dateColumn, endTimestamp)
-      )
+      and(gte(dateColumn, startTimestamp), lte(dateColumn, endTimestamp)),
     );
 
     if (Object.keys(filters).length > 0) {
       const conditions = Object.entries(filters).map(([key, value]) => {
         const column = this.table[key as keyof TTable] as SQLiteColumn;
         if (Array.isArray(value)) {
-          return or(...value.map(v => eq(column, v)));
+          return or(...value.map((v) => eq(column, v)));
         }
         return eq(column, value);
       });
       countQuery = countQuery.where(and(...conditions));
     }
 
-    const [data, totalResult] = await Promise.all([
-      query.limit(limit).offset(offset),
-      countQuery,
-    ]);
+    const [data, totalResult] = await Promise.all([query.limit(limit).offset(offset), countQuery]);
 
     const total = totalResult[0]?.count || 0;
 

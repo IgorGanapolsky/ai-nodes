@@ -20,7 +20,7 @@ import {
   WifiOff,
   Search,
   MoreVertical,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 
 import {
@@ -91,8 +91,8 @@ export function DeviceTable({ devices, isLoading }: DeviceTableProps) {
                 device.status === 'online'
                   ? 'default'
                   : device.status === 'maintenance'
-                  ? 'secondary'
-                  : 'destructive'
+                    ? 'secondary'
+                    : 'destructive'
               }
             >
               {device.status}
@@ -137,10 +137,14 @@ export function DeviceTable({ devices, isLoading }: DeviceTableProps) {
         const uptime = row.getValue('uptime') as number;
         return (
           <div className="flex items-center gap-2">
-            <div className={`font-medium ${uptime > 95 ? 'text-green-600' : uptime > 85 ? 'text-yellow-600' : 'text-red-600'}`}>
+            <div
+              className={`font-medium ${uptime > 95 ? 'text-green-600' : uptime > 85 ? 'text-yellow-600' : 'text-red-600'}`}
+            >
               {uptime.toFixed(1)}%
             </div>
-            <div className={`w-2 h-2 rounded-full ${uptime > 95 ? 'bg-green-500' : uptime > 85 ? 'bg-yellow-500' : 'bg-red-500'}`} />
+            <div
+              className={`w-2 h-2 rounded-full ${uptime > 95 ? 'bg-green-500' : uptime > 85 ? 'bg-yellow-500' : 'bg-red-500'}`}
+            />
           </div>
         );
       },
@@ -159,11 +163,7 @@ export function DeviceTable({ devices, isLoading }: DeviceTableProps) {
       ),
       cell: ({ row }) => {
         const earnings = row.getValue('earnings') as number;
-        return (
-          <div className="font-medium">
-            {formatCurrency(earnings)}
-          </div>
-        );
+        return <div className="font-medium">{formatCurrency(earnings)}</div>;
       },
     },
     {
@@ -183,11 +183,7 @@ export function DeviceTable({ devices, isLoading }: DeviceTableProps) {
       header: 'Last Seen',
       cell: ({ row }) => {
         const lastSeen = row.getValue('lastSeen') as string;
-        return (
-          <div className="text-sm text-muted-foreground">
-            {formatDate(lastSeen)}
-          </div>
-        );
+        return <div className="text-sm text-muted-foreground">{formatDate(lastSeen)}</div>;
       },
     },
     {
@@ -212,9 +208,7 @@ export function DeviceTable({ devices, isLoading }: DeviceTableProps) {
                 View Metrics
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="cursor-pointer text-red-600 dark:text-red-400"
-              >
+              <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400">
                 <AlertTriangle className="mr-2 h-4 w-4" />
                 Report Issue
               </DropdownMenuItem>
@@ -263,7 +257,8 @@ export function DeviceTable({ devices, isLoading }: DeviceTableProps) {
           />
         </div>
         <div className="text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} device{table.getFilteredRowModel().rows.length !== 1 ? 's' : ''}
+          {table.getFilteredRowModel().rows.length} device
+          {table.getFilteredRowModel().rows.length !== 1 ? 's' : ''}
         </div>
       </div>
 
@@ -277,10 +272,7 @@ export function DeviceTable({ devices, isLoading }: DeviceTableProps) {
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -296,20 +288,14 @@ export function DeviceTable({ devices, isLoading }: DeviceTableProps) {
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   <div className="flex flex-col items-center gap-2">
                     <Server className="h-8 w-8 text-muted-foreground" />
                     <div className="text-muted-foreground">No devices found</div>

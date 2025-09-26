@@ -5,6 +5,7 @@ A complete database layer built with Drizzle ORM and SQLite for the DePIN Autopi
 ## Features
 
 ### 🗄️ Complete Database Schema
+
 - **Users**: Authentication and role management
 - **Nodes**: DePIN node management with support for multiple node types
 - **Earnings**: Revenue tracking with crypto/fiat support
@@ -13,6 +14,7 @@ A complete database layer built with Drizzle ORM and SQLite for the DePIN Autopi
 - **Revenue Shares**: Automated revenue distribution tracking
 
 ### 🚀 Repository Pattern
+
 - Type-safe CRUD operations
 - Advanced querying with filters, pagination, and sorting
 - Aggregation and reporting capabilities
@@ -20,12 +22,14 @@ A complete database layer built with Drizzle ORM and SQLite for the DePIN Autopi
 - Performance optimizations with proper indexing
 
 ### 🛠️ Development Tools
+
 - **Migration System**: Schema versioning and deployment
 - **Seeding**: Sample data generation for development
 - **Backup/Restore**: Complete database backup and restoration utilities
 - **Initialization**: One-command database setup
 
 ### 📊 Advanced Features
+
 - Connection pooling for high performance
 - Query optimization with strategic indexes
 - Time-series analytics for metrics
@@ -97,11 +101,13 @@ revenue_shares
 ## Installation & Setup
 
 ### 1. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 2. Initialize Database
+
 ```bash
 # Initialize with migrations and sample data (development)
 npm run db:init
@@ -116,6 +122,7 @@ npm run db:init -- --force --create-backup
 ### 3. Available Scripts
 
 #### Database Management
+
 ```bash
 npm run db:generate   # Generate new migrations
 npm run db:migrate    # Run pending migrations
@@ -124,6 +131,7 @@ npm run db:studio     # Open Drizzle Studio (GUI)
 ```
 
 #### Data Management
+
 ```bash
 npm run db:seed       # Seed with sample data
 npm run db:backup     # Create database backup
@@ -131,6 +139,7 @@ npm run db:restore    # Restore from backup
 ```
 
 #### Development
+
 ```bash
 npm run build         # Build the package
 npm run dev           # Watch mode development
@@ -140,6 +149,7 @@ npm run type-check    # TypeScript validation
 ## Usage Examples
 
 ### Basic Setup
+
 ```typescript
 import { initializeDatabase, getRepositories } from '@ai-nodes/db';
 
@@ -147,7 +157,7 @@ import { initializeDatabase, getRepositories } from '@ai-nodes/db';
 await initializeDatabase({
   url: './data/production.db',
   runMigrations: true,
-  seedData: false
+  seedData: false,
 });
 
 // Get repository instances
@@ -157,6 +167,7 @@ const { users, nodes, earnings, metrics, alerts } = getRepositories();
 ### Working with Repositories
 
 #### User Management
+
 ```typescript
 const userRepo = getUserRepository();
 
@@ -164,7 +175,7 @@ const userRepo = getUserRepository();
 const user = await userRepo.createUser({
   email: 'user@example.com',
   passwordHash: 'hashed_password',
-  role: 'user'
+  role: 'user',
 });
 
 // Find by email
@@ -175,6 +186,7 @@ const stats = await userRepo.getUserStats();
 ```
 
 #### Node Management
+
 ```typescript
 const nodeRepo = getNodeRepository();
 
@@ -183,49 +195,54 @@ const node = await nodeRepo.create({
   ownerId: user.id,
   type: 'storj',
   name: 'My Storj Node',
-  status: 'active'
+  status: 'active',
 });
 
 // Find nodes by owner
 const userNodes = await nodeRepo.findByOwner(user.id, {
-  pagination: { page: 1, limit: 20 }
+  pagination: { page: 1, limit: 20 },
 });
 
 // Get node statistics
 const nodeStats = await nodeRepo.getStats({
-  ownerId: user.id
+  ownerId: user.id,
 });
 ```
 
 #### Earnings Analytics
+
 ```typescript
 const earningsRepo = getEarningsRepository();
 
 // Get earnings report
-const report = await earningsRepo.getEarningsReport({
-  nodeId: node.id
-}, {
-  start: new Date('2024-01-01'),
-  end: new Date('2024-12-31')
-});
+const report = await earningsRepo.getEarningsReport(
+  {
+    nodeId: node.id,
+  },
+  {
+    start: new Date('2024-01-01'),
+    end: new Date('2024-12-31'),
+  },
+);
 
 // Get time series data
 const timeSeries = await earningsRepo.getTimeSeries(
   'day',
   new Date('2024-01-01'),
   new Date('2024-01-31'),
-  { nodeId: node.id }
+  { nodeId: node.id },
 );
 
 // Get projections
 const projection = await earningsRepo.getProjectedEarnings(
   node.id,
   30, // historical days
-  30  // projection days
+  30, // projection days
 );
 ```
 
 #### Metrics Monitoring
+
 ```typescript
 const metricsRepo = getMetricsRepository();
 
@@ -235,7 +252,7 @@ await metricsRepo.create({
   cpuUsage: 45.2,
   memoryUsage: 67.8,
   storageUsage: 23.1,
-  timestamp: new Date()
+  timestamp: new Date(),
 });
 
 // Get health scores
@@ -245,20 +262,21 @@ const healthScores = await metricsRepo.calculateHealthScores([node.id]);
 const alerts = await metricsRepo.detectPerformanceAlerts({
   cpuUsage: 80,
   memoryUsage: 85,
-  storageUsage: 90
+  storageUsage: 90,
 });
 ```
 
 ### Advanced Features
 
 #### Time-Series Analytics
+
 ```typescript
 // Get detailed time series with multiple metrics
 const timeSeries = await metricsRepo.getTimeSeries(
   [node.id],
   'hour',
   new Date(Date.now() - 24 * 60 * 60 * 1000), // 24 hours ago
-  new Date()
+  new Date(),
 );
 
 // Analyze resource trends
@@ -266,6 +284,7 @@ const trends = await metricsRepo.getResourceTrends(node.id, 7); // 7 days
 ```
 
 #### Alert Management
+
 ```typescript
 const alertRepo = getAlertRepository();
 
@@ -275,12 +294,12 @@ await alertRepo.createAlert({
   type: 'high_cpu',
   severity: 'warning',
   title: 'High CPU Usage',
-  message: 'CPU usage is above 80%'
+  message: 'CPU usage is above 80%',
 });
 
 // Get alert statistics
 const alertStats = await alertRepo.getAlertStats({
-  nodeId: node.id
+  nodeId: node.id,
 });
 
 // Auto-resolve stale alerts
@@ -288,6 +307,7 @@ const resolved = await alertRepo.autoResolveStaleAlerts(48); // 48 hours
 ```
 
 #### Revenue Sharing
+
 ```typescript
 const revenueRepo = getRevenueShareRepository();
 
@@ -298,19 +318,20 @@ const shares = await revenueRepo.generateRevenueShares(
   new Date('2024-01-31'),
   [
     { nodeId: node.id, shareType: 'owner', percentage: 70 },
-    { nodeId: node.id, shareType: 'platform', percentage: 30 }
-  ]
+    { nodeId: node.id, shareType: 'platform', percentage: 30 },
+  ],
 );
 
 // Get revenue share report
 const shareReport = await revenueRepo.getRevenueShareReport({
-  nodeId: node.id
+  nodeId: node.id,
 });
 ```
 
 ## Database Operations
 
 ### Backup & Restore
+
 ```bash
 # Create compressed backup
 npm run db:backup
@@ -332,6 +353,7 @@ npm run db:restore ./backups/backup.sql --tables users,nodes
 ```
 
 ### Database Maintenance
+
 ```bash
 # Clean up old backups (keep last 30 days, minimum 5 backups)
 npm run db:backup -- --cleanup --retention 30 --keep 5
@@ -343,39 +365,44 @@ const cleaned = await metricsRepo.cleanupOldMetrics(90);
 ## Configuration
 
 ### Environment Variables
+
 ```bash
 DATABASE_URL=./data/app.db          # Database file path
 NODE_ENV=development                # Environment mode
 ```
 
 ### Connection Options
+
 ```typescript
 // Custom connection configuration
 const db = createConnection({
   url: './custom.db',
-  enableWAL: true,           // Enable WAL mode (recommended)
-  enableForeignKeys: true,   // Enable foreign key constraints
-  busyTimeout: 5000,         // Busy timeout in ms
-  verbose: true              // Enable query logging
+  enableWAL: true, // Enable WAL mode (recommended)
+  enableForeignKeys: true, // Enable foreign key constraints
+  busyTimeout: 5000, // Busy timeout in ms
+  verbose: true, // Enable query logging
 });
 ```
 
 ## Performance Optimization
 
 ### Indexing Strategy
+
 The schema includes strategic indexes on:
+
 - Foreign key relationships
 - Frequently queried columns (status, type, timestamp)
 - Composite indexes for common query patterns
 - Time-series optimized indexes for metrics
 
 ### Connection Pooling
+
 ```typescript
 import { ConnectionPool } from '@ai-nodes/db';
 
 const pool = new ConnectionPool({
   maxConnections: 10,
-  url: './data/app.db'
+  url: './data/app.db',
 });
 
 const connection = await pool.getConnection();
@@ -384,6 +411,7 @@ pool.returnConnection(connection);
 ```
 
 ### Query Optimization
+
 - Use pagination for large result sets
 - Leverage time-series specific queries for metrics
 - Use aggregation queries for reporting
@@ -392,11 +420,13 @@ pool.returnConnection(connection);
 ## Production Deployment
 
 ### Requirements
+
 - Node.js 18+
 - SQLite 3.38+
 - Write permissions for database directory
 
 ### Production Setup
+
 ```bash
 # 1. Install dependencies
 npm ci --production
@@ -413,6 +443,7 @@ npm run db:init -- --env production --skip-seeding
 ```
 
 ### Monitoring
+
 ```typescript
 // Health check endpoint
 app.get('/health/db', async (req, res) => {
@@ -429,6 +460,7 @@ app.get('/health/db', async (req, res) => {
 ## Contributing
 
 ### Development Workflow
+
 1. Make schema changes in `src/schema/`
 2. Generate migrations: `npm run db:generate`
 3. Test migrations: `npm run db:migrate`
@@ -437,6 +469,7 @@ app.get('/health/db', async (req, res) => {
 6. Update documentation
 
 ### Testing
+
 ```bash
 # Run type checking
 npm run type-check
@@ -451,6 +484,7 @@ npm run db:seed
 ## Support
 
 For issues and questions:
+
 1. Check the [troubleshooting guide](#troubleshooting)
 2. Review the [examples](#usage-examples)
 3. Open an issue on the repository

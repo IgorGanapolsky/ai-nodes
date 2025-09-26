@@ -13,7 +13,9 @@ export const monitorCommand = new Command('monitor')
       .option('--alerts-only', 'Only show alerts and status changes')
       .action(async (options) => {
         const interval = parseInt(options.interval);
-        const nodeIds = options.nodes ? options.nodes.split(',').map((id: string) => id.trim()) : null;
+        const nodeIds = options.nodes
+          ? options.nodes.split(',').map((id: string) => id.trim())
+          : null;
         let running = true;
         let lastStates = new Map();
 
@@ -36,11 +38,11 @@ export const monitorCommand = new Command('monitor')
           try {
             const apiClient = new ApiClient();
             const response = await apiClient.getNodes({
-              limit: 100
+              limit: 100,
             });
 
             const nodes = nodeIds
-              ? response.nodes.filter(node => nodeIds.includes(node.id))
+              ? response.nodes.filter((node) => nodeIds.includes(node.id))
               : response.nodes;
 
             const timestamp = new Date().toLocaleTimeString();
@@ -51,13 +53,15 @@ export const monitorCommand = new Command('monitor')
                 status: node.status,
                 uptime: node.metrics.uptime,
                 cpu: node.metrics.cpu,
-                memory: node.metrics.memory
+                memory: node.metrics.memory,
               };
 
               if (!lastState) {
                 // First time seeing this node
                 if (!options.alertsOnly) {
-                  console.log(`[${timestamp}] ${getStatusIcon(node.status)} ${node.name} (${node.id}): ${node.status}`);
+                  console.log(
+                    `[${timestamp}] ${getStatusIcon(node.status)} ${node.name} (${node.id}): ${node.status}`,
+                  );
                 }
                 lastStates.set(node.id, currentState);
                 continue;
@@ -66,32 +70,54 @@ export const monitorCommand = new Command('monitor')
               // Check for status changes
               if (lastState.status !== currentState.status) {
                 const statusColor = getStatusColor(currentState.status);
-                console.log(chalk.bold(`[${timestamp}] 🔄 ${node.name} status changed: ${getStatusColor(lastState.status)(lastState.status)} → ${statusColor(currentState.status)}`));
+                console.log(
+                  chalk.bold(
+                    `[${timestamp}] 🔄 ${node.name} status changed: ${getStatusColor(lastState.status)(lastState.status)} → ${statusColor(currentState.status)}`,
+                  ),
+                );
               }
 
               // Check for performance alerts
               if (currentState.cpu > 80 && lastState.cpu <= 80) {
-                console.log(chalk.red(`[${timestamp}] ⚠️  ${node.name}: High CPU usage (${currentState.cpu.toFixed(1)}%)`));
+                console.log(
+                  chalk.red(
+                    `[${timestamp}] ⚠️  ${node.name}: High CPU usage (${currentState.cpu.toFixed(1)}%)`,
+                  ),
+                );
               }
 
               if (currentState.memory > 90 && lastState.memory <= 90) {
-                console.log(chalk.red(`[${timestamp}] ⚠️  ${node.name}: High memory usage (${currentState.memory.toFixed(1)}%)`));
+                console.log(
+                  chalk.red(
+                    `[${timestamp}] ⚠️  ${node.name}: High memory usage (${currentState.memory.toFixed(1)}%)`,
+                  ),
+                );
               }
 
               if (currentState.uptime < 95 && lastState.uptime >= 95) {
-                console.log(chalk.yellow(`[${timestamp}] ⚠️  ${node.name}: Uptime dropped below 95% (${currentState.uptime.toFixed(1)}%)`));
+                console.log(
+                  chalk.yellow(
+                    `[${timestamp}] ⚠️  ${node.name}: Uptime dropped below 95% (${currentState.uptime.toFixed(1)}%)`,
+                  ),
+                );
               }
 
               // Regular status update (if not alerts-only)
-              if (!options.alertsOnly && Math.random() < 0.1) { // Show occasional updates
-                console.log(`[${timestamp}] ${getStatusIcon(node.status)} ${node.name}: ${node.status} (CPU: ${currentState.cpu.toFixed(1)}%, Mem: ${currentState.memory.toFixed(1)}%)`);
+              if (!options.alertsOnly && Math.random() < 0.1) {
+                // Show occasional updates
+                console.log(
+                  `[${timestamp}] ${getStatusIcon(node.status)} ${node.name}: ${node.status} (CPU: ${currentState.cpu.toFixed(1)}%, Mem: ${currentState.memory.toFixed(1)}%)`,
+                );
               }
 
               lastStates.set(node.id, currentState);
             }
-
           } catch (error) {
-            console.error(chalk.red(`[${new Date().toLocaleTimeString()}] Error fetching node data: ${error instanceof Error ? error.message : 'Unknown error'}`));
+            console.error(
+              chalk.red(
+                `[${new Date().toLocaleTimeString()}] Error fetching node data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+              ),
+            );
           }
         };
 
@@ -106,12 +132,16 @@ export const monitorCommand = new Command('monitor')
             clearInterval(monitorInterval);
           }
         }, interval * 1000);
-      })
+      }),
   )
   .addCommand(
     new Command('alerts')
       .description('Monitor for new alerts in real-time')
-      .option('-s, --severity <severity>', 'Minimum severity level (low, medium, high, critical)', 'medium')
+      .option(
+        '-s, --severity <severity>',
+        'Minimum severity level (low, medium, high, critical)',
+        'medium',
+      )
       .option('-i, --interval <seconds>', 'Polling interval in seconds', '30')
       .action(async (options) => {
         const interval = parseInt(options.interval);
@@ -138,10 +168,10 @@ export const monitorCommand = new Command('monitor')
           try {
             const apiClient = new ApiClient();
             const response = await apiClient.getAlerts({
-              status: 'active'
+              status: 'active',
             });
 
-            const filteredAlerts = response.alerts.filter(alert => {
+            const filteredAlerts = response.alerts.filter((alert) => {
               const alertSeverityIndex = severityLevels.indexOf(alert.severity);
               return alertSeverityIndex >= minSeverityIndex;
             });
@@ -166,19 +196,30 @@ export const monitorCommand = new Command('monitor')
             // Update count
             if (filteredAlerts.length !== lastAlertCount) {
               if (filteredAlerts.length > lastAlertCount) {
-                console.log(chalk.red(`[${timestamp}] Alert count increased: ${lastAlertCount} → ${filteredAlerts.length}`));
+                console.log(
+                  chalk.red(
+                    `[${timestamp}] Alert count increased: ${lastAlertCount} → ${filteredAlerts.length}`,
+                  ),
+                );
               } else {
-                console.log(chalk.green(`[${timestamp}] Alert count decreased: ${lastAlertCount} → ${filteredAlerts.length}`));
+                console.log(
+                  chalk.green(
+                    `[${timestamp}] Alert count decreased: ${lastAlertCount} → ${filteredAlerts.length}`,
+                  ),
+                );
               }
               lastAlertCount = filteredAlerts.length;
             }
 
             // Clean up resolved alerts from seen set
-            const activeAlertIds = new Set(filteredAlerts.map(alert => alert.id));
-            seenAlerts = new Set([...seenAlerts].filter(id => activeAlertIds.has(id)));
-
+            const activeAlertIds = new Set(filteredAlerts.map((alert) => alert.id));
+            seenAlerts = new Set([...seenAlerts].filter((id) => activeAlertIds.has(id)));
           } catch (error) {
-            console.error(chalk.red(`[${new Date().toLocaleTimeString()}] Error fetching alerts: ${error instanceof Error ? error.message : 'Unknown error'}`));
+            console.error(
+              chalk.red(
+                `[${new Date().toLocaleTimeString()}] Error fetching alerts: ${error instanceof Error ? error.message : 'Unknown error'}`,
+              ),
+            );
           }
         };
 
@@ -193,7 +234,7 @@ export const monitorCommand = new Command('monitor')
             clearInterval(alertInterval);
           }
         }, interval * 1000);
-      })
+      }),
   )
   .addCommand(
     new Command('performance')
@@ -247,12 +288,15 @@ export const monitorCommand = new Command('monitor')
 
               // Performance alerts
               if (node.metrics.cpu > threshold) {
-                console.log(chalk.red(`⚠️  HIGH CPU: ${node.metrics.cpu.toFixed(1)}% > ${threshold}%`));
+                console.log(
+                  chalk.red(`⚠️  HIGH CPU: ${node.metrics.cpu.toFixed(1)}% > ${threshold}%`),
+                );
               }
               if (node.metrics.memory > threshold) {
-                console.log(chalk.red(`⚠️  HIGH MEMORY: ${node.metrics.memory.toFixed(1)}% > ${threshold}%`));
+                console.log(
+                  chalk.red(`⚠️  HIGH MEMORY: ${node.metrics.memory.toFixed(1)}% > ${threshold}%`),
+                );
               }
-
             } else {
               // Monitor all nodes
               const response = await apiClient.getNodes({ limit: 100 });
@@ -270,7 +314,11 @@ export const monitorCommand = new Command('monitor')
 
                 if (node.metrics.cpu > threshold || node.metrics.memory > threshold) {
                   alertCount++;
-                  console.log(chalk.yellow(`  ⚠️  ${node.name}: CPU ${node.metrics.cpu.toFixed(1)}%, Memory ${node.metrics.memory.toFixed(1)}%`));
+                  console.log(
+                    chalk.yellow(
+                      `  ⚠️  ${node.name}: CPU ${node.metrics.cpu.toFixed(1)}%, Memory ${node.metrics.memory.toFixed(1)}%`,
+                    ),
+                  );
                 }
               }
 
@@ -282,10 +330,11 @@ export const monitorCommand = new Command('monitor')
               console.log(`  Nodes over threshold: ${alertCount}/${response.nodes.length}`);
               console.log('');
             }
-
           } catch (error) {
             spinner.fail('Failed to fetch performance data');
-            console.error(chalk.red(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`));
+            console.error(
+              chalk.red(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`),
+            );
           }
         };
 
@@ -300,35 +349,50 @@ export const monitorCommand = new Command('monitor')
             clearInterval(perfInterval);
           }
         }, interval * 1000);
-      })
+      }),
   );
 
 function getStatusIcon(status: string): string {
   switch (status) {
-    case 'online': return '🟢';
-    case 'offline': return '🔴';
-    case 'maintenance': return '🟡';
-    case 'error': return '🔴';
-    default: return '⚪';
+    case 'online':
+      return '🟢';
+    case 'offline':
+      return '🔴';
+    case 'maintenance':
+      return '🟡';
+    case 'error':
+      return '🔴';
+    default:
+      return '⚪';
   }
 }
 
 function getStatusColor(status: string) {
   switch (status) {
-    case 'online': return chalk.green;
-    case 'offline': return chalk.red;
-    case 'maintenance': return chalk.yellow;
-    case 'error': return chalk.red;
-    default: return chalk.gray;
+    case 'online':
+      return chalk.green;
+    case 'offline':
+      return chalk.red;
+    case 'maintenance':
+      return chalk.yellow;
+    case 'error':
+      return chalk.red;
+    default:
+      return chalk.gray;
   }
 }
 
 function getSeverityColor(severity: string) {
   switch (severity) {
-    case 'critical': return chalk.red.bold;
-    case 'high': return chalk.red;
-    case 'medium': return chalk.yellow;
-    case 'low': return chalk.blue;
-    default: return chalk.gray;
+    case 'critical':
+      return chalk.red.bold;
+    case 'high':
+      return chalk.red;
+    case 'medium':
+      return chalk.yellow;
+    case 'low':
+      return chalk.blue;
+    default:
+      return chalk.gray;
   }
 }

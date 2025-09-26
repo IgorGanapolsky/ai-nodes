@@ -38,34 +38,38 @@ async function start() {
 
       app.post<{
         Body: { jobName: string };
-      }>('/admin/scheduler/trigger', {
-        schema: {
-          body: {
-            type: 'object',
-            required: ['jobName'],
-            properties: {
-              jobName: { type: 'string' },
+      }>(
+        '/admin/scheduler/trigger',
+        {
+          schema: {
+            body: {
+              type: 'object',
+              required: ['jobName'],
+              properties: {
+                jobName: { type: 'string' },
+              },
             },
           },
         },
-      }, async (request, reply) => {
-        const { jobName } = request.body;
-        const success = await scheduler!.triggerJob(jobName);
+        async (request, reply) => {
+          const { jobName } = request.body;
+          const success = await scheduler!.triggerJob(jobName);
 
-        if (success) {
-          return reply.send({
-            success: true,
-            message: `Job ${jobName} triggered successfully`,
-            triggeredAt: new Date().toISOString(),
-          });
-        } else {
-          return reply.status(404).send({
-            success: false,
-            error: 'Job not found',
-            message: `Job ${jobName} does not exist`,
-          });
-        }
-      });
+          if (success) {
+            return reply.send({
+              success: true,
+              message: `Job ${jobName} triggered successfully`,
+              triggeredAt: new Date().toISOString(),
+            });
+          } else {
+            return reply.status(404).send({
+              success: false,
+              error: 'Job not found',
+              message: `Job ${jobName} does not exist`,
+            });
+          }
+        },
+      );
     }
 
     // Global error handler
@@ -174,7 +178,6 @@ async function start() {
         app.log.info('  POST /admin/scheduler/trigger - Trigger job');
       }
     }
-
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);

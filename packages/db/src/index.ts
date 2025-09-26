@@ -5,7 +5,7 @@ export {
   closeDatabaseConnection,
   runDatabaseMigrations,
   database,
-  schema
+  schema,
 } from './client';
 
 // Schema definitions and types
@@ -18,7 +18,12 @@ export { seedDatabase } from './seed';
 export type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 
 // Database utilities
-import { getDatabaseConnection, createDatabaseConnection, closeDatabaseConnection, runDatabaseMigrations } from './client';
+import {
+  getDatabaseConnection,
+  createDatabaseConnection,
+  closeDatabaseConnection,
+  runDatabaseMigrations,
+} from './client';
 
 /**
  * Initialize the database with default configuration

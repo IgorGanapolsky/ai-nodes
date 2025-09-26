@@ -1,13 +1,5 @@
 import Link from 'next/link';
-import {
-  Server,
-  TrendingUp,
-  Mail,
-  Wallet,
-  Activity,
-  AlertTriangle,
-  Clock
-} from 'lucide-react';
+import { Server, TrendingUp, Mail, Wallet, Activity, AlertTriangle, Clock } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -49,7 +41,7 @@ export function OwnerCard({ owner }: OwnerCardProps) {
   const getInitials = (name: string) => {
     return name
       .split(' ')
-      .map(n => n[0])
+      .map((n) => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
@@ -79,10 +71,7 @@ export function OwnerCard({ owner }: OwnerCardProps) {
               {owner.status}
             </Badge>
             {isOnPace !== undefined && (
-              <Badge
-                variant={isOnPace ? 'default' : 'secondary'}
-                className="text-xs gap-1"
-              >
+              <Badge variant={isOnPace ? 'default' : 'secondary'} className="text-xs gap-1">
                 <TrendingUp className="h-2 w-2" />
                 {isOnPace ? 'On-pace' : 'Behind'}
               </Badge>
@@ -112,9 +101,7 @@ export function OwnerCard({ owner }: OwnerCardProps) {
               </span>
               <div className="text-right">
                 <div className="font-medium">{metrics.totalDevices}</div>
-                <div className="text-xs text-muted-foreground">
-                  {metrics.onlineDevices} online
-                </div>
+                <div className="text-xs text-muted-foreground">{metrics.onlineDevices} online</div>
               </div>
             </div>
 
@@ -124,9 +111,7 @@ export function OwnerCard({ owner }: OwnerCardProps) {
                 Earnings
               </span>
               <div className="text-right">
-                <div className="font-medium">
-                  {formatCurrency(metrics.totalEarnings)}
-                </div>
+                <div className="font-medium">{formatCurrency(metrics.totalEarnings)}</div>
                 <div className="text-xs text-muted-foreground">
                   Target: {formatCurrency(metrics.targetEarnings)}
                 </div>
@@ -150,7 +135,9 @@ export function OwnerCard({ owner }: OwnerCardProps) {
                 Alerts
               </span>
               <div className="text-right">
-                <div className={`font-medium ${metrics.alertsCount > 0 ? 'text-orange-600 dark:text-orange-400' : ''}`}>
+                <div
+                  className={`font-medium ${metrics.alertsCount > 0 ? 'text-orange-600 dark:text-orange-400' : ''}`}
+                >
                   {metrics.alertsCount}
                 </div>
                 <div className="text-xs text-muted-foreground">Active</div>
@@ -166,25 +153,17 @@ export function OwnerCard({ owner }: OwnerCardProps) {
               <Clock className="h-3 w-3" />
               Joined {formatDate(owner.joinedAt)}
             </div>
-            {owner.lastSeen && (
-              <div>
-                Last seen {formatDate(owner.lastSeen)}
-              </div>
-            )}
+            {owner.lastSeen && <div>Last seen {formatDate(owner.lastSeen)}</div>}
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <Button asChild size="sm" className="flex-1">
-            <Link href={`/owners/${owner.id}`}>
-              View Details
-            </Link>
+            <Link href={`/owners/${owner.id}`}>View Details</Link>
           </Button>
           <Button asChild variant="outline" size="sm">
-            <Link href={`/owners/${owner.id}/devices`}>
-              Devices
-            </Link>
+            <Link href={`/owners/${owner.id}/devices`}>Devices</Link>
           </Button>
         </div>
       </CardContent>

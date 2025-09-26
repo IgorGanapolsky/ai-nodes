@@ -19,7 +19,9 @@ import { formatCurrency, getStatusColor } from '../utils/formatters';
 const NodesScreen: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [filterStatus, setFilterStatus] = useState<'all' | 'online' | 'offline' | 'maintenance'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'online' | 'offline' | 'maintenance'>(
+    'all',
+  );
   const [newNode, setNewNode] = useState({
     name: '',
     type: 'GPU' as 'GPU' | 'CPU' | 'STORAGE',
@@ -102,16 +104,16 @@ const NodesScreen: React.FC = () => {
             }
           },
         },
-      ]
+      ],
     );
   };
 
-  const filteredNodes = nodes.filter(node => {
+  const filteredNodes = nodes.filter((node) => {
     if (filterStatus === 'all') return true;
     return node.status === filterStatus;
   });
 
-  const maintenanceNodes = nodes.filter(node => node.status === 'maintenance').length;
+  const maintenanceNodes = nodes.filter((node) => node.status === 'maintenance').length;
 
   if (loading.isLoading && nodes.length === 0) {
     return (
@@ -157,10 +159,7 @@ const NodesScreen: React.FC = () => {
           </View>
         </View>
 
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setShowAddModal(true)}
-        >
+        <TouchableOpacity style={styles.addButton} onPress={() => setShowAddModal(true)}>
           <Text style={styles.addButtonText}>+ Add Node</Text>
         </TouchableOpacity>
       </View>
@@ -172,19 +171,18 @@ const NodesScreen: React.FC = () => {
           { key: 'online', label: 'Online' },
           { key: 'offline', label: 'Offline' },
           { key: 'maintenance', label: 'Maintenance' },
-        ].map(filter => (
+        ].map((filter) => (
           <TouchableOpacity
             key={filter.key}
-            style={[
-              styles.filterButton,
-              filterStatus === filter.key && styles.filterButtonActive,
-            ]}
+            style={[styles.filterButton, filterStatus === filter.key && styles.filterButtonActive]}
             onPress={() => setFilterStatus(filter.key as any)}
           >
-            <Text style={[
-              styles.filterButtonText,
-              filterStatus === filter.key && styles.filterButtonTextActive,
-            ]}>
+            <Text
+              style={[
+                styles.filterButtonText,
+                filterStatus === filter.key && styles.filterButtonTextActive,
+              ]}
+            >
               {filter.label}
             </Text>
           </TouchableOpacity>
@@ -194,9 +192,7 @@ const NodesScreen: React.FC = () => {
       {/* Nodes List */}
       <ScrollView
         style={styles.scrollView}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
       >
         {filteredNodes.length === 0 ? (
           <View style={styles.emptyContainer}>
@@ -206,36 +202,31 @@ const NodesScreen: React.FC = () => {
             <Text style={styles.emptySubtext}>
               {filterStatus === 'all'
                 ? 'Add your first node to get started'
-                : 'Try changing the filter or refresh the list'
-              }
+                : 'Try changing the filter or refresh the list'}
             </Text>
           </View>
         ) : (
-          filteredNodes.map(node => (
+          filteredNodes.map((node) => (
             <View key={node.id} style={styles.nodeContainer}>
               <NodeCard
                 node={node}
                 onPress={() => {
                   // Show node details/actions
-                  Alert.alert(
-                    node.name,
-                    'Node Actions',
-                    [
-                      { text: 'Cancel', style: 'cancel' },
-                      {
-                        text: 'Edit',
-                        onPress: () => {
-                          // TODO: Implement edit functionality
-                          console.log('Edit node:', node.id);
-                        },
+                  Alert.alert(node.name, 'Node Actions', [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Edit',
+                      onPress: () => {
+                        // TODO: Implement edit functionality
+                        console.log('Edit node:', node.id);
                       },
-                      {
-                        text: 'Delete',
-                        style: 'destructive',
-                        onPress: () => handleDeleteNode(node),
-                      },
-                    ]
-                  );
+                    },
+                    {
+                      text: 'Delete',
+                      style: 'destructive',
+                      onPress: () => handleDeleteNode(node),
+                    },
+                  ]);
                 }}
               />
               <View style={styles.nodeActions}>
@@ -284,7 +275,7 @@ const NodesScreen: React.FC = () => {
               <TextInput
                 style={styles.formInput}
                 value={newNode.name}
-                onChangeText={(text) => setNewNode(prev => ({ ...prev, name: text }))}
+                onChangeText={(text) => setNewNode((prev) => ({ ...prev, name: text }))}
                 placeholder="Enter node name"
                 autoCapitalize="words"
               />
@@ -293,19 +284,18 @@ const NodesScreen: React.FC = () => {
             <View style={styles.formGroup}>
               <Text style={styles.formLabel}>Node Type *</Text>
               <View style={styles.typeSelector}>
-                {(['GPU', 'CPU', 'STORAGE'] as const).map(type => (
+                {(['GPU', 'CPU', 'STORAGE'] as const).map((type) => (
                   <TouchableOpacity
                     key={type}
-                    style={[
-                      styles.typeButton,
-                      newNode.type === type && styles.typeButtonActive,
-                    ]}
-                    onPress={() => setNewNode(prev => ({ ...prev, type }))}
+                    style={[styles.typeButton, newNode.type === type && styles.typeButtonActive]}
+                    onPress={() => setNewNode((prev) => ({ ...prev, type }))}
                   >
-                    <Text style={[
-                      styles.typeButtonText,
-                      newNode.type === type && styles.typeButtonTextActive,
-                    ]}>
+                    <Text
+                      style={[
+                        styles.typeButtonText,
+                        newNode.type === type && styles.typeButtonTextActive,
+                      ]}
+                    >
                       {type}
                     </Text>
                   </TouchableOpacity>
@@ -318,14 +308,15 @@ const NodesScreen: React.FC = () => {
               <TextInput
                 style={styles.formInput}
                 value={newNode.location}
-                onChangeText={(text) => setNewNode(prev => ({ ...prev, location: text }))}
+                onChangeText={(text) => setNewNode((prev) => ({ ...prev, location: text }))}
                 placeholder="e.g., US East, Europe West"
                 autoCapitalize="words"
               />
             </View>
 
             <Text style={styles.formNote}>
-              * Required fields. New nodes will start in offline status and need to be configured separately.
+              * Required fields. New nodes will start in offline status and need to be configured
+              separately.
             </Text>
           </ScrollView>
         </View>

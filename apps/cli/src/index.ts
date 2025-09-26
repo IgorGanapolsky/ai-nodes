@@ -26,7 +26,7 @@ const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'));
 // Check for updates
 const notifier = updateNotifier({
   pkg: packageJson,
-  updateCheckInterval: 1000 * 60 * 60 * 24 // 24 hours
+  updateCheckInterval: 1000 * 60 * 60 * 24, // 24 hours
 });
 
 notifier.notify();
@@ -39,9 +39,9 @@ console.log(
     figlet.textSync('DePIN Autopilot', {
       font: 'Standard',
       horizontalLayout: 'default',
-      verticalLayout: 'default'
-    })
-  )
+      verticalLayout: 'default',
+    }),
+  ),
 );
 
 console.log(chalk.gray('🚀 DePIN Node Management & Monitoring CLI\n'));

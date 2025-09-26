@@ -78,7 +78,7 @@ class ApiClient {
         } else {
           throw new Error(`API Error: ${error.message}`);
         }
-      }
+      },
     );
   }
 
@@ -100,7 +100,7 @@ class ApiClient {
 
   async getMetricsSummary(timeframe: string = '24h'): Promise<MetricsSummary> {
     const response = await this.client.get('/metrics/summary', {
-      params: { timeframe }
+      params: { timeframe },
     });
     return response.data;
   }

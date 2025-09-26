@@ -14,7 +14,7 @@ export const NodeType = z.enum([
   'render',
   'flux',
   'hivemapper',
-  'other'
+  'other',
 ]);
 export type NodeType = z.infer<typeof NodeType>;
 

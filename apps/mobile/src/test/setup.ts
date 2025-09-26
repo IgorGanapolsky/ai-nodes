@@ -26,10 +26,10 @@ jest.mock('expo-constants', () => ({
   expoConfig: {
     extra: {
       eas: {
-        projectId: 'mock-project-id'
-      }
-    }
-  }
+        projectId: 'mock-project-id',
+      },
+    },
+  },
 }));
 
 jest.mock('expo-device', () => ({
@@ -50,7 +50,7 @@ global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
     json: () => Promise.resolve({}),
-  })
+  }),
 ) as jest.Mock;
 
 // Silence the warning about act() wrapping

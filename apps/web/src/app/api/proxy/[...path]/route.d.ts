@@ -1,22 +1,42 @@
 import { NextRequest } from 'next/server';
-export declare function GET(request: NextRequest, { params }: {
+export declare function GET(
+  request: NextRequest,
+  {
+    params,
+  }: {
     params: {
-        path: string[];
+      path: string[];
     };
-}): Promise<any>;
-export declare function POST(request: NextRequest, { params }: {
+  },
+): Promise<any>;
+export declare function POST(
+  request: NextRequest,
+  {
+    params,
+  }: {
     params: {
-        path: string[];
+      path: string[];
     };
-}): Promise<any>;
-export declare function PUT(request: NextRequest, { params }: {
+  },
+): Promise<any>;
+export declare function PUT(
+  request: NextRequest,
+  {
+    params,
+  }: {
     params: {
-        path: string[];
+      path: string[];
     };
-}): Promise<any>;
-export declare function DELETE(request: NextRequest, { params }: {
+  },
+): Promise<any>;
+export declare function DELETE(
+  request: NextRequest,
+  {
+    params,
+  }: {
     params: {
-        path: string[];
+      path: string[];
     };
-}): Promise<any>;
+  },
+): Promise<any>;
 //# sourceMappingURL=route.d.ts.map

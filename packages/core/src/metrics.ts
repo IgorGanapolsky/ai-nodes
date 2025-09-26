@@ -54,7 +54,7 @@ export interface RollingAverageConfig {
  */
 export function calculateRollingAverage(
   data: DataPoint[],
-  config: RollingAverageConfig
+  config: RollingAverageConfig,
 ): DataPoint[] {
   const { windowSize, minDataPoints = 1 } = config;
 
@@ -163,7 +163,7 @@ export function calculateAverageUtilization(metrics: PerformanceMetrics[]): {
     throw new Error('Cannot calculate average from empty metrics array');
   }
 
-  const utilizations = metrics.map(m => m.utilization);
+  const utilizations = metrics.map((m) => m.utilization);
   const sum = utilizations.reduce((acc, val) => acc + val, 0);
   const average = sum / utilizations.length;
 
@@ -171,7 +171,7 @@ export function calculateAverageUtilization(metrics: PerformanceMetrics[]): {
   const max = Math.max(...utilizations);
 
   // Calculate standard deviation
-  const squaredDifferences = utilizations.map(val => Math.pow(val - average, 2));
+  const squaredDifferences = utilizations.map((val) => Math.pow(val - average, 2));
   const variance = squaredDifferences.reduce((acc, val) => acc + val, 0) / utilizations.length;
   const standardDeviation = Math.sqrt(variance);
 
@@ -190,14 +190,17 @@ export function calculateAverageUtilization(metrics: PerformanceMetrics[]): {
  * @param periodDescription Description of the time period
  * @returns Trend analysis result
  */
-export function analyzeTrend(data: DataPoint[], periodDescription: string = 'unknown'): TrendAnalysis {
+export function analyzeTrend(
+  data: DataPoint[],
+  periodDescription: string = 'unknown',
+): TrendAnalysis {
   if (data.length < 2) {
     throw new Error('Need at least 2 data points for trend analysis');
   }
 
   // Convert timestamps to numeric values for regression
-  const timestamps = data.map(d => d.timestamp.getTime());
-  const values = data.map(d => d.value);
+  const timestamps = data.map((d) => d.timestamp.getTime());
+  const values = data.map((d) => d.value);
 
   // Calculate linear regression
   const n = data.length;
@@ -211,8 +214,8 @@ export function analyzeTrend(data: DataPoint[], periodDescription: string = 'unk
   const intercept = (sumY - slope * sumX) / n;
 
   // Calculate correlation coefficient
-  const correlation = (n * sumXY - sumX * sumY) /
-    Math.sqrt((n * sumXX - sumX * sumX) * (n * sumYY - sumY * sumY));
+  const correlation =
+    (n * sumXY - sumX * sumY) / Math.sqrt((n * sumXX - sumX * sumX) * (n * sumYY - sumY * sumY));
 
   // Determine trend direction and strength
   let direction: 'increasing' | 'decreasing' | 'stable';
@@ -269,13 +272,14 @@ export function calculateRevenuePerHour(metrics: PerformanceMetrics[]): {
   const sortedMetrics = [...metrics].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
   // Calculate revenue per hour for each metric
-  const revenuePerHourData: DataPoint[] = sortedMetrics.map(metric => ({
+  const revenuePerHourData: DataPoint[] = sortedMetrics.map((metric) => ({
     timestamp: metric.timestamp,
     value: metric.utilization > 0 ? metric.revenueUsd / (metric.utilization * 24) : 0,
   }));
 
   const current = revenuePerHourData[revenuePerHourData.length - 1]?.value || 0;
-  const average = revenuePerHourData.reduce((sum, d) => sum + d.value, 0) / revenuePerHourData.length;
+  const average =
+    revenuePerHourData.reduce((sum, d) => sum + d.value, 0) / revenuePerHourData.length;
   const trend = analyzeTrend(revenuePerHourData, `${metrics.length} data points`);
 
   return {
@@ -291,24 +295,21 @@ export function calculateRevenuePerHour(metrics: PerformanceMetrics[]): {
  * @param standardDeviations Number of standard deviations for anomaly threshold
  * @returns Array of anomalous data points
  */
-export function detectAnomalies(
-  data: DataPoint[],
-  standardDeviations: number = 2
-): DataPoint[] {
+export function detectAnomalies(data: DataPoint[], standardDeviations: number = 2): DataPoint[] {
   if (data.length < 3) {
     return []; // Need sufficient data for meaningful statistics
   }
 
-  const values = data.map(d => d.value);
+  const values = data.map((d) => d.value);
   const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
 
-  const squaredDifferences = values.map(val => Math.pow(val - mean, 2));
+  const squaredDifferences = values.map((val) => Math.pow(val - mean, 2));
   const variance = squaredDifferences.reduce((sum, val) => sum + val, 0) / values.length;
   const standardDeviation = Math.sqrt(variance);
 
   const threshold = standardDeviations * standardDeviation;
 
-  return data.filter(point => Math.abs(point.value - mean) > threshold);
+  return data.filter((point) => Math.abs(point.value - mean) > threshold);
 }
 
 /**
@@ -324,7 +325,7 @@ export function calculatePerformanceScore(
     uptime?: number;
     responseTime?: number;
     errorRate?: number;
-  } = {}
+  } = {},
 ): number {
   const {
     utilization: utilizationWeight = 0.4,
@@ -337,9 +338,8 @@ export function calculatePerformanceScore(
   let totalWeight = 0;
 
   // Utilization score (higher is better, but diminishing returns after 0.8)
-  const utilizationScore = metrics.utilization <= 0.8
-    ? metrics.utilization * 100
-    : 80 + (metrics.utilization - 0.8) * 50;
+  const utilizationScore =
+    metrics.utilization <= 0.8 ? metrics.utilization * 100 : 80 + (metrics.utilization - 0.8) * 50;
   score += utilizationScore * utilizationWeight;
   totalWeight += utilizationWeight;
 
@@ -349,7 +349,7 @@ export function calculatePerformanceScore(
 
   // Response time score (lower is better, assuming 0-1000ms range)
   if (metrics.responseTime !== undefined) {
-    const responseTimeScore = Math.max(0, 100 - (metrics.responseTime / 10));
+    const responseTimeScore = Math.max(0, 100 - metrics.responseTime / 10);
     score += responseTimeScore * responseTimeWeight;
     totalWeight += responseTimeWeight;
   }

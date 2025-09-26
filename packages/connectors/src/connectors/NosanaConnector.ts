@@ -20,7 +20,11 @@ export class NosanaConnector extends BaseConnector {
     return this.generateMockMetrics(externalId, since);
   }
 
-  async getOccupancy(externalId: string, periodStart: Date, periodEnd: Date): Promise<DeviceOccupancy> {
+  async getOccupancy(
+    externalId: string,
+    periodStart: Date,
+    periodEnd: Date,
+  ): Promise<DeviceOccupancy> {
     await this.simulateDelay();
     return this.generateMockOccupancy(externalId, periodStart, periodEnd);
   }
@@ -42,7 +46,9 @@ export class NosanaConnector extends BaseConnector {
       cpuTemperature: this.seededRandomInRange(externalId, 35, 75, index + 2002), // °C
 
       // AI/ML workload metrics
-      inferenceJobsCompleted: Math.floor(this.seededRandomInRange(externalId, 10, 100, index + 2003)),
+      inferenceJobsCompleted: Math.floor(
+        this.seededRandomInRange(externalId, 10, 100, index + 2003),
+      ),
       averageInferenceTime: this.seededRandomInRange(externalId, 50, 500, index + 2004), // ms
       modelsLoaded: Math.floor(this.seededRandomInRange(externalId, 1, 8, index + 2005)),
 

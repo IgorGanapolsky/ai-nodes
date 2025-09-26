@@ -29,7 +29,7 @@ export const dashboardCommand = new Command('dashboard')
         const [summary, nodes, alerts] = await Promise.all([
           apiClient.getMetricsSummary('24h'),
           apiClient.getNodes({ limit: 10 }),
-          apiClient.getAlerts({ status: 'active', limit: 5 })
+          apiClient.getAlerts({ status: 'active', limit: 5 }),
         ]);
 
         spinner.stop();
@@ -39,38 +39,34 @@ export const dashboardCommand = new Command('dashboard')
 
         // Header
         const header = boxen(
-          chalk.cyan.bold('🚀 DePIN Autopilot Dashboard') + '\n' +
-          chalk.gray(`Last updated: ${new Date().toLocaleTimeString()}`),
+          chalk.cyan.bold('🚀 DePIN Autopilot Dashboard') +
+            '\n' +
+            chalk.gray(`Last updated: ${new Date().toLocaleTimeString()}`),
           {
             padding: 1,
             margin: { bottom: 1 },
             borderStyle: 'round',
-            borderColor: 'cyan'
-          }
+            borderColor: 'cyan',
+          },
         );
 
         console.log(header);
 
         // Summary metrics
-        const summaryBox = boxen(
-          createSummaryDisplay(summary),
-          {
-            title: '📊 Overview (24h)',
-            padding: 1,
-            margin: { bottom: 1 },
-            borderStyle: 'round'
-          }
-        );
+        const summaryBox = boxen(createSummaryDisplay(summary), {
+          title: '📊 Overview (24h)',
+          padding: 1,
+          margin: { bottom: 1 },
+          borderStyle: 'round',
+        });
 
         console.log(summaryBox);
 
         // Node status
         if (nodes.nodes.length > 0) {
-          const nodeStatusTable = [
-            ['Node', 'Type', 'Status', 'Uptime', 'Earnings']
-          ];
+          const nodeStatusTable = [['Node', 'Type', 'Status', 'Uptime', 'Earnings']];
 
-          nodes.nodes.slice(0, 5).forEach(node => {
+          nodes.nodes.slice(0, 5).forEach((node) => {
             const statusIcon = getStatusIcon(node.status);
             const statusColor = getStatusColor(node.status);
 
@@ -79,61 +75,53 @@ export const dashboardCommand = new Command('dashboard')
               node.type,
               statusColor(`${statusIcon} ${node.status}`),
               `${node.metrics.uptime.toFixed(1)}%`,
-              `${node.metrics.earnings.toFixed(4)}`
+              `${node.metrics.earnings.toFixed(4)}`,
             ]);
           });
 
-          const nodesBox = boxen(
-            table(nodeStatusTable),
-            {
-              title: '📡 Node Status',
-              padding: 1,
-              margin: { bottom: 1 },
-              borderStyle: 'round'
-            }
-          );
+          const nodesBox = boxen(table(nodeStatusTable), {
+            title: '📡 Node Status',
+            padding: 1,
+            margin: { bottom: 1 },
+            borderStyle: 'round',
+          });
 
           console.log(nodesBox);
         }
 
         // Active alerts
         if (alerts.alerts.length > 0) {
-          const alertsDisplay = alerts.alerts.map(alert => {
-            const severityColor = getSeverityColor(alert.severity);
-            const timeAgo = getTimeAgo(new Date(alert.timestamp));
-            return `${severityColor(alert.severity.toUpperCase())} ${alert.nodeId}: ${alert.message} (${timeAgo})`;
-          }).join('\n');
+          const alertsDisplay = alerts.alerts
+            .map((alert) => {
+              const severityColor = getSeverityColor(alert.severity);
+              const timeAgo = getTimeAgo(new Date(alert.timestamp));
+              return `${severityColor(alert.severity.toUpperCase())} ${alert.nodeId}: ${alert.message} (${timeAgo})`;
+            })
+            .join('\n');
 
-          const alertsBox = boxen(
-            alertsDisplay,
-            {
-              title: '🚨 Active Alerts',
-              padding: 1,
-              margin: { bottom: 1 },
-              borderStyle: 'round',
-              borderColor: 'red'
-            }
-          );
+          const alertsBox = boxen(alertsDisplay, {
+            title: '🚨 Active Alerts',
+            padding: 1,
+            margin: { bottom: 1 },
+            borderStyle: 'round',
+            borderColor: 'red',
+          });
 
           console.log(alertsBox);
         } else {
-          const noAlertsBox = boxen(
-            chalk.green('✅ No active alerts'),
-            {
-              title: '🚨 Active Alerts',
-              padding: 1,
-              margin: { bottom: 1 },
-              borderStyle: 'round',
-              borderColor: 'green'
-            }
-          );
+          const noAlertsBox = boxen(chalk.green('✅ No active alerts'), {
+            title: '🚨 Active Alerts',
+            padding: 1,
+            margin: { bottom: 1 },
+            borderStyle: 'round',
+            borderColor: 'green',
+          });
 
           console.log(noAlertsBox);
         }
 
         // Footer
         console.log(chalk.gray(`Press Ctrl+C to exit • Refreshing every ${refreshInterval}s`));
-
       } catch (error) {
         spinner.fail('Failed to load dashboard data');
         console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
@@ -157,10 +145,16 @@ function createSummaryDisplay(summary: any): string {
   const metrics = [
     ['Total Nodes', summary.totalNodes.toString()],
     ['Online', chalk.green(summary.onlineNodes.toString())],
-    ['Offline', summary.offlineNodes > 0 ? chalk.red(summary.offlineNodes.toString()) : chalk.green('0')],
+    [
+      'Offline',
+      summary.offlineNodes > 0 ? chalk.red(summary.offlineNodes.toString()) : chalk.green('0'),
+    ],
     ['Total Earnings', chalk.yellow(`${summary.totalEarnings.toFixed(4)} tokens`)],
     ['Avg Uptime', `${summary.averageUptime.toFixed(1)}%`],
-    ['Performance Score', getPerformanceColor(summary.performanceScore)(`${summary.performanceScore.toFixed(1)}/100`)]
+    [
+      'Performance Score',
+      getPerformanceColor(summary.performanceScore)(`${summary.performanceScore.toFixed(1)}/100`),
+    ],
   ];
 
   return metrics.map(([label, value]) => `${label.padEnd(18)}: ${value}`).join('\n');
@@ -168,31 +162,46 @@ function createSummaryDisplay(summary: any): string {
 
 function getStatusIcon(status: string): string {
   switch (status) {
-    case 'online': return '🟢';
-    case 'offline': return '🔴';
-    case 'maintenance': return '🟡';
-    case 'error': return '🔴';
-    default: return '⚪';
+    case 'online':
+      return '🟢';
+    case 'offline':
+      return '🔴';
+    case 'maintenance':
+      return '🟡';
+    case 'error':
+      return '🔴';
+    default:
+      return '⚪';
   }
 }
 
 function getStatusColor(status: string) {
   switch (status) {
-    case 'online': return chalk.green;
-    case 'offline': return chalk.red;
-    case 'maintenance': return chalk.yellow;
-    case 'error': return chalk.red;
-    default: return chalk.gray;
+    case 'online':
+      return chalk.green;
+    case 'offline':
+      return chalk.red;
+    case 'maintenance':
+      return chalk.yellow;
+    case 'error':
+      return chalk.red;
+    default:
+      return chalk.gray;
   }
 }
 
 function getSeverityColor(severity: string) {
   switch (severity) {
-    case 'critical': return chalk.red.bold;
-    case 'high': return chalk.red;
-    case 'medium': return chalk.yellow;
-    case 'low': return chalk.blue;
-    default: return chalk.gray;
+    case 'critical':
+      return chalk.red.bold;
+    case 'high':
+      return chalk.red;
+    case 'medium':
+      return chalk.yellow;
+    case 'low':
+      return chalk.blue;
+    default:
+      return chalk.gray;
   }
 }
 

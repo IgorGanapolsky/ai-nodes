@@ -180,7 +180,7 @@ export enum ConnectorType {
   GRASS = 'grass',
   NATIX = 'natix',
   HUDDLE01 = 'huddle01',
-  OWNAI = 'ownai'
+  OWNAI = 'ownai',
 }
 
 export interface CacheEntry<T> {

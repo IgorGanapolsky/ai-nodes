@@ -20,7 +20,11 @@ export class GrassConnector extends BaseConnector {
     return this.generateMockMetrics(externalId, since);
   }
 
-  async getOccupancy(externalId: string, periodStart: Date, periodEnd: Date): Promise<DeviceOccupancy> {
+  async getOccupancy(
+    externalId: string,
+    periodStart: Date,
+    periodEnd: Date,
+  ): Promise<DeviceOccupancy> {
     await this.simulateDelay();
     return this.generateMockOccupancy(externalId, periodStart, periodEnd);
   }
@@ -80,7 +84,9 @@ export class GrassConnector extends BaseConnector {
 
   private getNetworkInterface(externalId: string, index: number): string {
     const interfaces = ['ethernet', 'wifi', 'cellular', 'fiber'];
-    const interfaceIndex = Math.floor(this.seededRandomInRange(externalId, 0, interfaces.length, index + 4018));
+    const interfaceIndex = Math.floor(
+      this.seededRandomInRange(externalId, 0, interfaces.length, index + 4018),
+    );
     return interfaces[interfaceIndex];
   }
 }

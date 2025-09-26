@@ -17,6 +17,7 @@ This API is served by the Fastify server in `apps/server`. A live Swagger UI is 
 - `DELETE /owners/:id` — Remove owner
 
 Example:
+
 ```bash
 curl -s http://localhost:4000/owners | jq
 ```
@@ -63,4 +64,3 @@ Set in `.env` (copy from `.env.example`):
 
 - CLI wraps typical operations: `pnpm depinautopilot` or `pnpm --filter @depinautopilot/cli dev`.
 - For TypeScript usage, prefer the packages in `packages/core` and `packages/db`.
-

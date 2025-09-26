@@ -24,7 +24,14 @@ const DashboardScreen: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { nodes, loading: nodesLoading, totalNodes, onlineNodes, offlineNodes, refreshNodes } = useNodes();
+  const {
+    nodes,
+    loading: nodesLoading,
+    totalNodes,
+    onlineNodes,
+    offlineNodes,
+    refreshNodes,
+  } = useNodes();
   const { totalEarnings, todayEarnings, earningsGrowth } = useEarnings();
   const { settings } = useSettings();
   const { checkAutoReinvest, isReinvesting } = useReinvest();
@@ -64,7 +71,7 @@ const DashboardScreen: React.FC = () => {
   // Listen for alerts from WebSocket
   useEffect(() => {
     const unsubscribe = webSocketService.subscribe('alert', (alertData: AlertType) => {
-      setAlerts(prev => [alertData, ...prev.filter(alert => alert.id !== alertData.id)]);
+      setAlerts((prev) => [alertData, ...prev.filter((alert) => alert.id !== alertData.id)]);
 
       // Send local notification based on alert type
       if (settings.notifications.enabled) {
@@ -73,7 +80,7 @@ const DashboardScreen: React.FC = () => {
             if (settings.notifications.nodeOffline) {
               notificationService.scheduleNodeOfflineAlert(
                 alertData.nodeId || 'Unknown Node',
-                alertData.nodeId || ''
+                alertData.nodeId || '',
               );
             }
             break;
@@ -81,7 +88,7 @@ const DashboardScreen: React.FC = () => {
             if (settings.notifications.lowPerformance) {
               notificationService.scheduleLowPerformanceAlert(
                 alertData.nodeId || 'Unknown Node',
-                75 // This would come from the alert data
+                75, // This would come from the alert data
               );
             }
             break;
@@ -104,7 +111,7 @@ const DashboardScreen: React.FC = () => {
     try {
       await refreshNodes();
       // Clear dismissed alerts on refresh
-      setAlerts(prev => prev.filter(alert => !alert.dismissed));
+      setAlerts((prev) => prev.filter((alert) => !alert.dismissed));
     } catch (error) {
       console.error('Refresh failed:', error);
     } finally {
@@ -113,10 +120,8 @@ const DashboardScreen: React.FC = () => {
   };
 
   const handleDismissAlert = (alertId: string) => {
-    setAlerts(prev =>
-      prev.map(alert =>
-        alert.id === alertId ? { ...alert, dismissed: true } : alert
-      )
+    setAlerts((prev) =>
+      prev.map((alert) => (alert.id === alertId ? { ...alert, dismissed: true } : alert)),
     );
   };
 
@@ -148,24 +153,24 @@ const DashboardScreen: React.FC = () => {
     );
   }
 
-  const activeAlerts = alerts.filter(alert => !alert.dismissed);
+  const activeAlerts = alerts.filter((alert) => !alert.dismissed);
 
   return (
     <ScrollView
       style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-      }
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
     >
       {/* Connection Status */}
-      <View style={[styles.connectionStatus, { backgroundColor: isConnected ? '#10B981' : '#EF4444' }]}>
+      <View
+        style={[styles.connectionStatus, { backgroundColor: isConnected ? '#10B981' : '#EF4444' }]}
+      >
         <Text style={styles.connectionText}>
           {isConnected ? '🟢 Connected' : '🔴 Disconnected'}
         </Text>
       </View>
 
       {/* Alerts */}
-      {activeAlerts.map(alert => (
+      {activeAlerts.map((alert) => (
         <AlertBanner
           key={alert.id}
           alert={alert}
@@ -202,10 +207,12 @@ const DashboardScreen: React.FC = () => {
             <Text style={styles.earningsLabel}>Today</Text>
             <View style={styles.earningsWithGrowth}>
               <Text style={styles.earningsValue}>{formatCurrency(todayEarnings)}</Text>
-              <Text style={[
-                styles.growthIndicator,
-                { color: earningsGrowth >= 0 ? '#10B981' : '#EF4444' }
-              ]}>
+              <Text
+                style={[
+                  styles.growthIndicator,
+                  { color: earningsGrowth >= 0 ? '#10B981' : '#EF4444' },
+                ]}
+              >
                 {earningsGrowth >= 0 ? '↗' : '↘'} {formatPercentage(Math.abs(earningsGrowth))}
               </Text>
             </View>
@@ -222,7 +229,7 @@ const DashboardScreen: React.FC = () => {
       {/* Recent Nodes */}
       <View style={styles.nodesSection}>
         <Text style={styles.sectionTitle}>Recent Nodes</Text>
-        {nodes.slice(0, 3).map(node => (
+        {nodes.slice(0, 3).map((node) => (
           <NodeCard
             key={node.id}
             node={node}

@@ -126,44 +126,32 @@
       "indexes": {
         "alerts_owner_id_idx": {
           "name": "alerts_owner_id_idx",
-          "columns": [
-            "owner_id"
-          ],
+          "columns": ["owner_id"],
           "isUnique": false
         },
         "alerts_device_id_idx": {
           "name": "alerts_device_id_idx",
-          "columns": [
-            "device_id"
-          ],
+          "columns": ["device_id"],
           "isUnique": false
         },
         "alerts_type_idx": {
           "name": "alerts_type_idx",
-          "columns": [
-            "type"
-          ],
+          "columns": ["type"],
           "isUnique": false
         },
         "alerts_severity_idx": {
           "name": "alerts_severity_idx",
-          "columns": [
-            "severity"
-          ],
+          "columns": ["severity"],
           "isUnique": false
         },
         "alerts_resolved_idx": {
           "name": "alerts_resolved_idx",
-          "columns": [
-            "resolved"
-          ],
+          "columns": ["resolved"],
           "isUnique": false
         },
         "alerts_timestamp_idx": {
           "name": "alerts_timestamp_idx",
-          "columns": [
-            "timestamp"
-          ],
+          "columns": ["timestamp"],
           "isUnique": false
         }
       },
@@ -172,12 +160,8 @@
           "name": "alerts_owner_id_owners_id_fk",
           "tableFrom": "alerts",
           "tableTo": "owners",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -185,12 +169,8 @@
           "name": "alerts_device_id_devices_id_fk",
           "tableFrom": "alerts",
           "tableTo": "devices",
-          "columnsFrom": [
-            "device_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["device_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -277,30 +257,22 @@
       "indexes": {
         "devices_owner_id_idx": {
           "name": "devices_owner_id_idx",
-          "columns": [
-            "owner_id"
-          ],
+          "columns": ["owner_id"],
           "isUnique": false
         },
         "devices_marketplace_idx": {
           "name": "devices_marketplace_idx",
-          "columns": [
-            "marketplace"
-          ],
+          "columns": ["marketplace"],
           "isUnique": false
         },
         "devices_active_idx": {
           "name": "devices_active_idx",
-          "columns": [
-            "active"
-          ],
+          "columns": ["active"],
           "isUnique": false
         },
         "devices_external_id_idx": {
           "name": "devices_external_id_idx",
-          "columns": [
-            "external_id"
-          ],
+          "columns": ["external_id"],
           "isUnique": false
         }
       },
@@ -309,12 +281,8 @@
           "name": "devices_owner_id_owners_id_fk",
           "tableFrom": "devices",
           "tableTo": "owners",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -435,24 +403,17 @@
       "indexes": {
         "metrics_device_id_idx": {
           "name": "metrics_device_id_idx",
-          "columns": [
-            "device_id"
-          ],
+          "columns": ["device_id"],
           "isUnique": false
         },
         "metrics_timestamp_idx": {
           "name": "metrics_timestamp_idx",
-          "columns": [
-            "timestamp"
-          ],
+          "columns": ["timestamp"],
           "isUnique": false
         },
         "metrics_device_timestamp_idx": {
           "name": "metrics_device_timestamp_idx",
-          "columns": [
-            "device_id",
-            "timestamp"
-          ],
+          "columns": ["device_id", "timestamp"],
           "isUnique": false
         }
       },
@@ -461,12 +422,8 @@
           "name": "metrics_device_id_devices_id_fk",
           "tableFrom": "metrics",
           "tableTo": "devices",
-          "columnsFrom": [
-            "device_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["device_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -532,16 +489,12 @@
       "indexes": {
         "owners_email_unique": {
           "name": "owners_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         },
         "owners_email_idx": {
           "name": "owners_email_idx",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": false
         }
       },
@@ -683,31 +636,22 @@
       "indexes": {
         "statements_owner_id_idx": {
           "name": "statements_owner_id_idx",
-          "columns": [
-            "owner_id"
-          ],
+          "columns": ["owner_id"],
           "isUnique": false
         },
         "statements_device_id_idx": {
           "name": "statements_device_id_idx",
-          "columns": [
-            "device_id"
-          ],
+          "columns": ["device_id"],
           "isUnique": false
         },
         "statements_period_idx": {
           "name": "statements_period_idx",
-          "columns": [
-            "period_start",
-            "period_end"
-          ],
+          "columns": ["period_start", "period_end"],
           "isUnique": false
         },
         "statements_status_idx": {
           "name": "statements_status_idx",
-          "columns": [
-            "status"
-          ],
+          "columns": ["status"],
           "isUnique": false
         }
       },
@@ -716,12 +660,8 @@
           "name": "statements_owner_id_owners_id_fk",
           "tableFrom": "statements",
           "tableTo": "owners",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -729,12 +669,8 @@
           "name": "statements_device_id_devices_id_fk",
           "tableFrom": "statements",
           "tableTo": "devices",
-          "columnsFrom": [
-            "device_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["device_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

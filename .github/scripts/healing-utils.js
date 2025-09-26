@@ -32,7 +32,7 @@ class HealingUtils {
         // TypeScript version conflicts
         { pattern: /typescript.*\^5/, fix: () => this.fixTypeScriptVersion() },
         // ESLint plugin conflicts
-        { pattern: /@typescript-eslint\/.*\^8/, fix: () => this.fixESLintPlugins() }
+        { pattern: /@typescript-eslint\/.*\^8/, fix: () => this.fixESLintPlugins() },
       ];
 
       const conflicts = [];
@@ -40,7 +40,7 @@ class HealingUtils {
       // Check for known conflict patterns
       const allDeps = {
         ...packageJson.dependencies,
-        ...packageJson.devDependencies
+        ...packageJson.devDependencies,
       };
 
       for (const [name, version] of Object.entries(allDeps)) {
@@ -68,10 +68,10 @@ class HealingUtils {
       // Align all React packages to the same version
       const commands = [
         'pnpm add react@^18.3.0 react-dom@^18.3.0',
-        'pnpm add -D @types/react@^18.3.0 @types/react-dom@^18.3.0'
+        'pnpm add -D @types/react@^18.3.0 @types/react-dom@^18.3.0',
       ];
 
-      commands.forEach(cmd => {
+      commands.forEach((cmd) => {
         try {
           execSync(cmd, { stdio: 'pipe' });
         } catch (e) {
@@ -117,7 +117,7 @@ class HealingUtils {
         '@typescript-eslint/eslint-plugin',
         '@typescript-eslint/parser',
         'eslint-config-prettier',
-        '@eslint/js'
+        '@eslint/js',
       ];
 
       // Remove packages
@@ -147,10 +147,10 @@ class HealingUtils {
       () => this.fixUnusedImports(),
       () => this.fixQuoteStyle(),
       () => this.fixSemicolons(),
-      () => this.fixIndentation()
+      () => this.fixIndentation(),
     ];
 
-    fixes.forEach(fix => {
+    fixes.forEach((fix) => {
       try {
         fix();
       } catch (error) {
@@ -167,7 +167,7 @@ class HealingUtils {
 
     const files = this.getSourceFiles();
 
-    files.forEach(file => {
+    files.forEach((file) => {
       try {
         let content = fs.readFileSync(file, 'utf8');
 
@@ -179,7 +179,7 @@ class HealingUtils {
         while ((match = importRegex.exec(content)) !== null) {
           imports.push({
             full: match[0],
-            module: match[1]
+            module: match[1],
           });
         }
 
@@ -197,7 +197,7 @@ class HealingUtils {
 
         // Remove old imports and add sorted ones
         content = content.replace(importRegex, '');
-        const sortedImportString = sortedImports.map(imp => imp.full).join('\n') + '\n';
+        const sortedImportString = sortedImports.map((imp) => imp.full).join('\n') + '\n';
         content = sortedImportString + content;
 
         fs.writeFileSync(file, content);
@@ -216,7 +216,7 @@ class HealingUtils {
     try {
       // Use ESLint to remove unused imports
       execSync('npx eslint --fix --rule "no-unused-vars: error" --ext .ts,.tsx,.js,.jsx .', {
-        stdio: 'pipe'
+        stdio: 'pipe',
       });
     } catch (error) {
       console.warn('ESLint unused import fix failed (non-critical)');
@@ -231,7 +231,7 @@ class HealingUtils {
 
     const files = this.getSourceFiles();
 
-    files.forEach(file => {
+    files.forEach((file) => {
       try {
         let content = fs.readFileSync(file, 'utf8');
 
@@ -259,7 +259,7 @@ class HealingUtils {
 
     const files = this.getSourceFiles();
 
-    files.forEach(file => {
+    files.forEach((file) => {
       try {
         let content = fs.readFileSync(file, 'utf8');
 
@@ -282,7 +282,7 @@ class HealingUtils {
     try {
       // Use Prettier for consistent indentation
       execSync('npx prettier --write "**/*.{ts,tsx,js,jsx,json,md,yml,yaml}"', {
-        stdio: 'pipe'
+        stdio: 'pipe',
       });
     } catch (error) {
       console.warn('Prettier indentation fix failed (non-critical)');
@@ -299,7 +299,7 @@ class HealingUtils {
       // Get type errors
       const typeCheckResult = execSync('npx tsc --noEmit', {
         stdio: 'pipe',
-        encoding: 'utf8'
+        encoding: 'utf8',
       });
     } catch (error) {
       const errorOutput = error.stdout || error.message;
@@ -316,7 +316,7 @@ class HealingUtils {
     const lines = errorOutput.split('\n');
     const errors = [];
 
-    lines.forEach(line => {
+    lines.forEach((line) => {
       const match = line.match(/(.+\.tsx?)\((\d+),(\d+)\): error TS(\d+): (.+)/);
       if (match) {
         errors.push({
@@ -324,13 +324,13 @@ class HealingUtils {
           line: parseInt(match[2]),
           column: parseInt(match[3]),
           code: match[4],
-          message: match[5]
+          message: match[5],
         });
       }
     });
 
     // Apply fixes based on error types
-    errors.forEach(error => {
+    errors.forEach((error) => {
       try {
         this.fixSpecificTypeError(error);
       } catch (e) {
@@ -372,11 +372,11 @@ class HealingUtils {
 
     if (missingName) {
       const importMap = {
-        'React': "import React from 'react';",
-        'useState': "import { useState } from 'react';",
-        'useEffect': "import { useEffect } from 'react';",
-        'NextPage': "import { NextPage } from 'next';",
-        'GetServerSideProps': "import { GetServerSideProps } from 'next';"
+        React: "import React from 'react';",
+        useState: "import { useState } from 'react';",
+        useEffect: "import { useEffect } from 'react';",
+        NextPage: "import { NextPage } from 'next';",
+        GetServerSideProps: "import { GetServerSideProps } from 'next';",
       };
 
       if (importMap[missingName]) {
@@ -412,7 +412,11 @@ class HealingUtils {
    */
   addTypeSuppressionComment(error, lines) {
     if (error.line <= lines.length) {
-      lines.splice(error.line - 1, 0, '  // @ts-expect-error: Auto-generated suppression - needs manual review');
+      lines.splice(
+        error.line - 1,
+        0,
+        '  // @ts-expect-error: Auto-generated suppression - needs manual review',
+      );
     }
   }
 
@@ -428,20 +432,20 @@ class HealingUtils {
 
       const items = fs.readdirSync(dir);
 
-      items.forEach(item => {
+      items.forEach((item) => {
         const fullPath = path.join(dir, item);
         const stat = fs.statSync(fullPath);
 
         if (stat.isDirectory()) {
           searchDir(fullPath);
-        } else if (extensions.some(ext => item.endsWith(ext))) {
+        } else if (extensions.some((ext) => item.endsWith(ext))) {
           files.push(fullPath);
         }
       });
     };
 
     searchDir('.');
-    return files.filter(file => !file.includes('node_modules'));
+    return files.filter((file) => !file.includes('node_modules'));
   }
 
   /**
@@ -454,7 +458,7 @@ class HealingUtils {
       // Run tests and capture failures
       const testResult = execSync('npm test -- --reporter=json', {
         stdio: 'pipe',
-        encoding: 'utf8'
+        encoding: 'utf8',
       });
     } catch (error) {
       const testOutput = error.stdout || error.message;
@@ -472,16 +476,16 @@ class HealingUtils {
     const failurePatterns = [
       {
         pattern: /timeout/i,
-        fix: (file) => this.increaseTestTimeout(file)
+        fix: (file) => this.increaseTestTimeout(file),
       },
       {
         pattern: /cannot find module/i,
-        fix: (file) => this.addTestMocks(file)
+        fix: (file) => this.addTestMocks(file),
       },
       {
         pattern: /render.*error/i,
-        fix: (file) => this.wrapInTestingLibrary(file)
-      }
+        fix: (file) => this.wrapInTestingLibrary(file),
+      },
     ];
 
     // Apply fixes based on patterns
@@ -503,7 +507,7 @@ class HealingUtils {
       // Add timeout to test suites
       content = content.replace(
         /describe\((['"`])(.+?)\1,\s*\(\)\s*=>\s*{/g,
-        "describe('$2', () => {\n  jest.setTimeout(30000);"
+        "describe('$2', () => {\n  jest.setTimeout(30000);",
       );
 
       fs.writeFileSync(file, content);
@@ -558,10 +562,7 @@ jest.mock('next/head', () => {
       }
 
       // Wrap render calls in proper testing library setup
-      content = content.replace(
-        /render\(<(.+?)\/>\)/g,
-        'render(<$1 />)'
-      );
+      content = content.replace(/render\(<(.+?)\/>\)/g, 'render(<$1 />)');
 
       fs.writeFileSync(file, content);
     } catch (error) {
@@ -574,8 +575,8 @@ jest.mock('next/head', () => {
    */
   getTestFiles() {
     const testPatterns = ['.test.', '.spec.'];
-    return this.getSourceFiles().filter(file =>
-      testPatterns.some(pattern => file.includes(pattern))
+    return this.getSourceFiles().filter((file) =>
+      testPatterns.some((pattern) => file.includes(pattern)),
     );
   }
 }
@@ -589,7 +590,7 @@ if (require.main === module) {
     case 'dependencies':
       console.log('🔧 Healing dependencies...');
       const conflicts = utils.analyzeDependencyConflicts();
-      conflicts.forEach(conflict => conflict.fix());
+      conflicts.forEach((conflict) => conflict.fix());
       break;
 
     case 'lint':
@@ -610,7 +611,7 @@ if (require.main === module) {
     case 'all':
       console.log('🚀 Running complete healing suite...');
       const allConflicts = utils.analyzeDependencyConflicts();
-      allConflicts.forEach(conflict => conflict.fix());
+      allConflicts.forEach((conflict) => conflict.fix());
       utils.smartLintFix();
       utils.advancedTypeHealing();
       utils.smartTestHealing();

@@ -6,7 +6,7 @@ import {
   PricingStrategy,
   OptimizationParams,
   ConnectorConfig,
-  ConnectorType
+  ConnectorType,
 } from './types';
 
 /**

@@ -77,10 +77,12 @@ describe('Statements Functions', () => {
     });
 
     it('should escape CSV values with commas', () => {
-      const records = [createStatementRecord({
-        nodeName: 'Node, with comma',
-        notes: 'Note with "quotes" and commas, here'
-      })];
+      const records = [
+        createStatementRecord({
+          nodeName: 'Node, with comma',
+          notes: 'Note with "quotes" and commas, here',
+        }),
+      ];
       const csv = recordsToCSV(records);
 
       expect(csv).toContain('"Node, with comma"');
@@ -115,7 +117,7 @@ describe('Statements Functions', () => {
           operatorCutUsd: 30,
           ownerCutUsd: 70,
           utilizationPercent: 80,
-          uptime: 95
+          uptime: 95,
         }),
         createStatementRecord({
           date: new Date('2024-01-02'),
@@ -124,7 +126,7 @@ describe('Statements Functions', () => {
           operatorCutUsd: 60,
           ownerCutUsd: 140,
           utilizationPercent: 70,
-          uptime: 90
+          uptime: 90,
         }),
       ];
 
@@ -145,15 +147,15 @@ describe('Statements Functions', () => {
       const records = [
         createStatementRecord({
           nodeId: 'node-1',
-          grossRevenueUsd: 100
+          grossRevenueUsd: 100,
         }),
         createStatementRecord({
           nodeId: 'node-2',
-          grossRevenueUsd: 200
+          grossRevenueUsd: 200,
         }),
         createStatementRecord({
           nodeId: 'node-1',
-          grossRevenueUsd: 50
+          grossRevenueUsd: 50,
         }),
       ];
 
@@ -172,8 +174,9 @@ describe('Statements Functions', () => {
     });
 
     it('should throw error for empty records', () => {
-      expect(() => generateStatementSummary([]))
-        .toThrow('Cannot generate summary from empty records');
+      expect(() => generateStatementSummary([])).toThrow(
+        'Cannot generate summary from empty records',
+      );
     });
 
     it('should count unique nodes correctly', () => {
@@ -208,8 +211,9 @@ describe('Statements Functions', () => {
     it('should throw error for month with no records', () => {
       const records = [createStatementRecord({ date: new Date('2024-01-15') })];
 
-      expect(() => generateMonthlyStatement(records, 3, 2024))
-        .toThrow('No records found for 3/2024');
+      expect(() => generateMonthlyStatement(records, 3, 2024)).toThrow(
+        'No records found for 3/2024',
+      );
     });
 
     it('should handle different years correctly', () => {
@@ -264,8 +268,8 @@ describe('Statements Functions', () => {
       const originalRecords = [
         createStatementRecord({
           nodeId: 'node-1',
-          nodeName: 'Test Node'
-        })
+          nodeName: 'Test Node',
+        }),
       ];
       const csv = recordsToCSV(originalRecords);
       const parsedRecords = parseCSVToRecords(csv);
@@ -297,10 +301,12 @@ describe('Statements Functions', () => {
     });
 
     it('should handle quoted values with commas', () => {
-      const originalRecords = [createStatementRecord({
-        nodeName: 'Node, with comma',
-        notes: 'Complex "quoted" value, with commas'
-      })];
+      const originalRecords = [
+        createStatementRecord({
+          nodeName: 'Node, with comma',
+          notes: 'Complex "quoted" value, with commas',
+        }),
+      ];
       const csv = recordsToCSV(originalRecords);
       const parsedRecords = parseCSVToRecords(csv);
 
@@ -335,7 +341,10 @@ invalid-date,node-1,Test Node,helium,12,24,50,10,120,30,36,84,95,us-west,Test no
 
       expect(parsedRecords).toHaveLength(1); // Only valid record
       expect(parsedRecords[0].nodeId).toBe('node-2');
-      expect(consoleSpy).toHaveBeenCalledWith('Skipping invalid record at line 2:', expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Skipping invalid record at line 2:',
+        expect.any(Error),
+      );
 
       consoleSpy.mockRestore();
     });
@@ -358,7 +367,7 @@ invalid-date,node-1,Test Node,helium,12,24,50,10,120,30,36,84,95,us-west,Test no
           nodeId: 'node-1',
           nodeName: 'Complex, "Node" Name',
           nodeType: 'helium',
-          notes: 'Multi-line note with "quotes" and, commas.'
+          notes: 'Multi-line note with "quotes" and, commas.',
         }),
         createStatementRecord({
           date: new Date('2024-01-16T00:00:00.000Z'),
@@ -366,7 +375,7 @@ invalid-date,node-1,Test Node,helium,12,24,50,10,120,30,36,84,95,us-west,Test no
           nodeName: 'Simple Node',
           nodeType: 'filecoin',
           region: undefined,
-          notes: undefined
+          notes: undefined,
         }),
       ];
 

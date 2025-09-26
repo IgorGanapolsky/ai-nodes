@@ -7,17 +7,23 @@ const createOwnerSchema = z.object({
   email: z.string().email('Invalid email format'),
   walletAddress: z.string().min(1, 'Wallet address is required'),
   tier: z.enum(['basic', 'premium', 'enterprise']).default('basic'),
-  preferences: z.object({
-    notifications: z.object({
-      email: z.boolean().default(true),
-      sms: z.boolean().default(false),
-      push: z.boolean().default(true),
-    }).default({}),
-    alertThresholds: z.object({
-      utilizationLow: z.number().min(0).max(100).default(20),
-      utilizationHigh: z.number().min(0).max(100).default(90),
-    }).default({}),
-  }).default({}),
+  preferences: z
+    .object({
+      notifications: z
+        .object({
+          email: z.boolean().default(true),
+          sms: z.boolean().default(false),
+          push: z.boolean().default(true),
+        })
+        .default({}),
+      alertThresholds: z
+        .object({
+          utilizationLow: z.number().min(0).max(100).default(20),
+          utilizationHigh: z.number().min(0).max(100).default(90),
+        })
+        .default({}),
+    })
+    .default({}),
 });
 
 const ownerResponseSchema = z.object({
@@ -56,55 +62,59 @@ const ownerRoutes: FastifyPluginCallback = async (fastify) => {
   // GET /owners - List owners with pagination and filtering
   fastify.get<{
     Querystring: GetOwnersQuery;
-  }>('/', {
-    schema: {
-      querystring: getOwnersQuerySchema,
+  }>(
+    '/',
+    {
+      schema: {
+        querystring: getOwnersQuerySchema,
+      },
     },
-  }, async (request, reply) => {
-    try {
-      const { page, limit, tier, search } = request.query;
+    async (request, reply) => {
+      try {
+        const { page, limit, tier, search } = request.query;
 
-      // TODO: Replace with actual database query
-      const mockOwners: OwnerResponse[] = [
-        {
-          id: '1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          walletAddress: '0x1234567890abcdef',
-          tier: 'premium',
-          preferences: {
-            notifications: { email: true, sms: false, push: true },
-            alertThresholds: { utilizationLow: 15, utilizationHigh: 85 },
+        // TODO: Replace with actual database query
+        const mockOwners: OwnerResponse[] = [
+          {
+            id: '1',
+            name: 'John Doe',
+            email: 'john@example.com',
+            walletAddress: '0x1234567890abcdef',
+            tier: 'premium',
+            preferences: {
+              notifications: { email: true, sms: false, push: true },
+              alertThresholds: { utilizationLow: 15, utilizationHigh: 85 },
+            },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
           },
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ];
+        ];
 
-      const totalCount = mockOwners.length;
-      const totalPages = Math.ceil(totalCount / limit);
+        const totalCount = mockOwners.length;
+        const totalPages = Math.ceil(totalCount / limit);
 
-      const response = {
-        owners: mockOwners,
-        pagination: {
-          page,
-          limit,
-          totalCount,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
-        },
-      };
+        const response = {
+          owners: mockOwners,
+          pagination: {
+            page,
+            limit,
+            totalCount,
+            totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
+          },
+        };
 
-      return reply.send(response);
-    } catch (error) {
-      fastify.log.error('Error fetching owners:', error);
-      return reply.status(500).send({
-        error: 'Internal server error',
-        message: 'Failed to fetch owners',
-      });
-    }
-  });
+        return reply.send(response);
+      } catch (error) {
+        fastify.log.error('Error fetching owners:', error);
+        return reply.status(500).send({
+          error: 'Internal server error',
+          message: 'Failed to fetch owners',
+        });
+      }
+    },
+  );
 
   // GET /owners/:id - Get specific owner
   fastify.get<{
@@ -141,73 +151,81 @@ const ownerRoutes: FastifyPluginCallback = async (fastify) => {
   // POST /owners - Create new owner
   fastify.post<{
     Body: CreateOwnerBody;
-  }>('/', {
-    schema: {
-      body: createOwnerSchema,
+  }>(
+    '/',
+    {
+      schema: {
+        body: createOwnerSchema,
+      },
     },
-  }, async (request, reply) => {
-    try {
-      const ownerData = request.body;
+    async (request, reply) => {
+      try {
+        const ownerData = request.body;
 
-      // TODO: Replace with actual database insertion
-      const newOwner: OwnerResponse = {
-        id: Math.random().toString(36).substr(2, 9), // Generate random ID
-        ...ownerData,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+        // TODO: Replace with actual database insertion
+        const newOwner: OwnerResponse = {
+          id: Math.random().toString(36).substr(2, 9), // Generate random ID
+          ...ownerData,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
 
-      fastify.log.info('Created new owner:', { ownerId: newOwner.id, email: newOwner.email });
+        fastify.log.info('Created new owner:', { ownerId: newOwner.id, email: newOwner.email });
 
-      return reply.status(201).send(newOwner);
-    } catch (error) {
-      fastify.log.error('Error creating owner:', error);
-      return reply.status(500).send({
-        error: 'Internal server error',
-        message: 'Failed to create owner',
-      });
-    }
-  });
+        return reply.status(201).send(newOwner);
+      } catch (error) {
+        fastify.log.error('Error creating owner:', error);
+        return reply.status(500).send({
+          error: 'Internal server error',
+          message: 'Failed to create owner',
+        });
+      }
+    },
+  );
 
   // PUT /owners/:id - Update existing owner
   fastify.put<{
     Params: { id: string };
     Body: Partial<CreateOwnerBody>;
-  }>('/:id', {
-    schema: {
-      body: createOwnerSchema.partial(),
+  }>(
+    '/:id',
+    {
+      schema: {
+        body: createOwnerSchema.partial(),
+      },
     },
-  }, async (request, reply) => {
-    try {
-      const { id } = request.params;
-      const updates = request.body;
+    async (request, reply) => {
+      try {
+        const { id } = request.params;
+        const updates = request.body;
 
-      // TODO: Replace with actual database update
-      const updatedOwner: OwnerResponse = {
-        id,
-        name: 'John Doe Updated',
-        email: 'john.updated@example.com',
-        walletAddress: '0x1234567890abcdef',
-        tier: 'premium',
-        preferences: {
-          notifications: { email: true, sms: false, push: true },
-          alertThresholds: { utilizationLow: 15, utilizationHigh: 85 },
-        },
-        createdAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-        updatedAt: new Date().toISOString(),
-      };
+        // TODO: Replace with actual database update
+        const updatedOwner: OwnerResponse = {
+          id,
+          name: 'John Doe Updated',
+          email: 'john.updated@example.com',
+          walletAddress: '0x1234567890abcdef',
+          tier: 'premium',
+          preferences: {
+            notifications: { email: true, sms: false, push: true },
+            alertThresholds: { utilizationLow: 15, utilizationHigh: 85 },
+          },
+          createdAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+          updatedAt: new Date().toISOString(),
+        };
 
-      fastify.log.info('Updated owner:', { ownerId: id });
+        fastify.log.info('Updated owner:', { ownerId: id });
 
-      return reply.send(updatedOwner);
-    } catch (error) {
-      fastify.log.error(`Error updating owner ${request.params.id}:`, error);
-      return reply.status(500).send({
-        error: 'Internal server error',
-        message: 'Failed to update owner',
-      });
-    }
-  });
+        return reply.send(updatedOwner);
+      } catch (error) {
+        fastify.log.error(`Error updating owner ${request.params.id}:`, error);
+        return reply.status(500).send({
+          error: 'Internal server error',
+          message: 'Failed to update owner',
+        });
+      }
+    },
+  );
 
   // DELETE /owners/:id - Delete owner
   fastify.delete<{

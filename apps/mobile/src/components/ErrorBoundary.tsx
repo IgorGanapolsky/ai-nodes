@@ -1,11 +1,5 @@
 import React, { Component, ReactNode } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 interface Props {
   children: ReactNode;
@@ -64,31 +58,25 @@ class ErrorBoundary extends Component<Props, State> {
             {__DEV__ && this.state.error && (
               <ScrollView style={styles.errorDetails}>
                 <Text style={styles.errorTitle}>Error Details (Development Mode):</Text>
-                <Text style={styles.errorText}>
-                  {this.state.error.toString()}
-                </Text>
+                <Text style={styles.errorText}>{this.state.error.toString()}</Text>
                 {this.state.errorInfo && (
                   <>
                     <Text style={styles.errorTitle}>Component Stack:</Text>
-                    <Text style={styles.errorText}>
-                      {this.state.errorInfo}
-                    </Text>
+                    <Text style={styles.errorText}>{this.state.errorInfo}</Text>
                   </>
                 )}
               </ScrollView>
             )}
 
             <View style={styles.actions}>
-              <TouchableOpacity
-                style={styles.restartButton}
-                onPress={this.handleRestart}
-              >
+              <TouchableOpacity style={styles.restartButton} onPress={this.handleRestart}>
                 <Text style={styles.restartButtonText}>Restart App</Text>
               </TouchableOpacity>
             </View>
 
             <Text style={styles.helpText}>
-              If this problem persists, please check your internet connection and API key configuration in Settings.
+              If this problem persists, please check your internet connection and API key
+              configuration in Settings.
             </Text>
           </View>
         </View>

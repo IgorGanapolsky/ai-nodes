@@ -20,25 +20,21 @@ export const metadata: Metadata = {
     title: 'DePIN Autopilot',
     description: 'Manage and monitor your DePIN nodes with ease',
     type: 'website',
-    locale: 'en_US'
+    locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'DePIN Autopilot',
-    description: 'Manage and monitor your DePIN nodes with ease'
+    description: 'Manage and monitor your DePIN nodes with ease',
   },
   viewport: {
     width: 'device-width',
     initialScale: 1,
-    maximumScale: 1
-  }
+    maximumScale: 1,
+  },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
@@ -47,9 +43,7 @@ export default function RootLayout({
             <Sidebar />
             <div className="flex flex-1 flex-col overflow-hidden">
               <Header />
-              <main className="flex-1 overflow-auto p-6">
-                {children}
-              </main>
+              <main className="flex-1 overflow-auto p-6">{children}</main>
             </div>
           </div>
           <Toaster

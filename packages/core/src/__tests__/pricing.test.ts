@@ -43,7 +43,9 @@ describe('Pricing Functions', () => {
       const conservative = suggestPriceAdjustment(0.9, 0.7, 10, 5, 'conservative');
       const aggressive = suggestPriceAdjustment(0.9, 0.7, 10, 5, 'aggressive');
 
-      expect(Math.abs(aggressive.adjustmentPercent)).toBeGreaterThan(Math.abs(conservative.adjustmentPercent));
+      expect(Math.abs(aggressive.adjustmentPercent)).toBeGreaterThan(
+        Math.abs(conservative.adjustmentPercent),
+      );
     });
 
     it('should apply market conditions correctly', () => {
@@ -57,24 +59,30 @@ describe('Pricing Functions', () => {
       const withMarket = suggestPriceAdjustment(0.9, 0.7, 10, 5, 'conservative', marketConditions);
 
       // High demand should increase adjustments
-      expect(Math.abs(withMarket.adjustmentPercent)).toBeGreaterThan(Math.abs(withoutMarket.adjustmentPercent));
+      expect(Math.abs(withMarket.adjustmentPercent)).toBeGreaterThan(
+        Math.abs(withoutMarket.adjustmentPercent),
+      );
     });
 
     it('should throw error for invalid utilization values', () => {
-      expect(() => suggestPriceAdjustment(-0.1, 0.7, 10))
-        .toThrow('Current utilization must be between 0 and 1');
-      expect(() => suggestPriceAdjustment(0.8, 1.1, 10))
-        .toThrow('Target utilization must be between 0 and 1');
+      expect(() => suggestPriceAdjustment(-0.1, 0.7, 10)).toThrow(
+        'Current utilization must be between 0 and 1',
+      );
+      expect(() => suggestPriceAdjustment(0.8, 1.1, 10)).toThrow(
+        'Target utilization must be between 0 and 1',
+      );
     });
 
     it('should throw error for negative price', () => {
-      expect(() => suggestPriceAdjustment(0.8, 0.7, -10))
-        .toThrow('Current price must be non-negative');
+      expect(() => suggestPriceAdjustment(0.8, 0.7, -10)).toThrow(
+        'Current price must be non-negative',
+      );
     });
 
     it('should throw error for negative queue depth', () => {
-      expect(() => suggestPriceAdjustment(0.8, 0.7, 10, -5))
-        .toThrow('Queue depth must be non-negative');
+      expect(() => suggestPriceAdjustment(0.8, 0.7, 10, -5)).toThrow(
+        'Queue depth must be non-negative',
+      );
     });
 
     it('should never suggest negative prices', () => {
@@ -105,13 +113,15 @@ describe('Pricing Functions', () => {
     });
 
     it('should throw error for positive elasticity', () => {
-      expect(() => calculateOptimalPrice(10, 0.8, 1.5, 0.6))
-        .toThrow('Demand elasticity should typically be negative');
+      expect(() => calculateOptimalPrice(10, 0.8, 1.5, 0.6)).toThrow(
+        'Demand elasticity should typically be negative',
+      );
     });
 
     it('should throw error for zero utilization', () => {
-      expect(() => calculateOptimalPrice(10, 0, -1.5, 0.6))
-        .toThrow('Utilization values must be positive');
+      expect(() => calculateOptimalPrice(10, 0, -1.5, 0.6)).toThrow(
+        'Utilization values must be positive',
+      );
     });
   });
 
@@ -170,7 +180,9 @@ describe('Pricing Functions', () => {
       const suggestion = suggestPriceAdjustment(0.8, 0.7, 10, 2, 'conservative', highDemand);
       const baselineSuggestion = suggestPriceAdjustment(0.8, 0.7, 10, 2, 'conservative');
 
-      expect(Math.abs(suggestion.adjustmentPercent)).toBeGreaterThan(Math.abs(baselineSuggestion.adjustmentPercent));
+      expect(Math.abs(suggestion.adjustmentPercent)).toBeGreaterThan(
+        Math.abs(baselineSuggestion.adjustmentPercent),
+      );
     });
 
     it('should handle low demand market conditions', () => {
@@ -179,30 +191,34 @@ describe('Pricing Functions', () => {
       const suggestion = suggestPriceAdjustment(0.8, 0.7, 10, 2, 'conservative', lowDemand);
       const baselineSuggestion = suggestPriceAdjustment(0.8, 0.7, 10, 2, 'conservative');
 
-      expect(Math.abs(suggestion.adjustmentPercent)).toBeLessThan(Math.abs(baselineSuggestion.adjustmentPercent));
+      expect(Math.abs(suggestion.adjustmentPercent)).toBeLessThan(
+        Math.abs(baselineSuggestion.adjustmentPercent),
+      );
     });
 
     it('should handle seasonality adjustments', () => {
       const seasonalHigh: MarketConditions = {
         demandLevel: 'medium',
-        seasonality: 1.0 // Peak season
+        seasonality: 1.0, // Peak season
       };
 
       const seasonalLow: MarketConditions = {
         demandLevel: 'medium',
-        seasonality: 0.0 // Off season
+        seasonality: 0.0, // Off season
       };
 
       const highSuggestion = suggestPriceAdjustment(0.8, 0.7, 10, 2, 'conservative', seasonalHigh);
       const lowSuggestion = suggestPriceAdjustment(0.8, 0.7, 10, 2, 'conservative', seasonalLow);
 
-      expect(Math.abs(highSuggestion.adjustmentPercent)).toBeGreaterThan(Math.abs(lowSuggestion.adjustmentPercent));
+      expect(Math.abs(highSuggestion.adjustmentPercent)).toBeGreaterThan(
+        Math.abs(lowSuggestion.adjustmentPercent),
+      );
     });
 
     it('should handle network congestion', () => {
       const congested: MarketConditions = {
         demandLevel: 'medium',
-        networkCongestion: 1.0
+        networkCongestion: 1.0,
       };
 
       const suggestion = suggestPriceAdjustment(0.7, 0.7, 10, 0, 'conservative', congested);

@@ -66,7 +66,7 @@ export function generateOtp(length: number = 6): string {
 export function generateSecureRandomNumber(min: number, max: number): number {
   const range = max - min + 1;
   const bytesNeeded = Math.ceil(Math.log2(range) / 8);
-  const cutoff = Math.floor((256 ** bytesNeeded) / range) * range;
+  const cutoff = Math.floor(256 ** bytesNeeded / range) * range;
 
   let randomNumber: number;
   do {
@@ -115,7 +115,10 @@ export function generateSha512(data: string): string {
 /**
  * Hash password with salt using scrypt
  */
-export function hashPassword(password: string, salt?: Buffer): {
+export function hashPassword(
+  password: string,
+  salt?: Buffer,
+): {
   hash: string;
   salt: string;
 } {
@@ -131,11 +134,7 @@ export function hashPassword(password: string, salt?: Buffer): {
 /**
  * Verify password against hash
  */
-export function verifyPassword(
-  password: string,
-  hashedPassword: string,
-  salt: string
-): boolean {
+export function verifyPassword(password: string, hashedPassword: string, salt: string): boolean {
   const saltBuffer = Buffer.from(salt, 'hex');
   const hash = scryptSync(password, saltBuffer, 64);
   const hashBuffer = Buffer.from(hashedPassword, 'hex');
@@ -284,10 +283,7 @@ export function generateChecksum(data: string): string {
  */
 export function validateChecksum(data: string, checksum: string): boolean {
   const calculatedChecksum = generateChecksum(data);
-  return timingSafeEqual(
-    Buffer.from(calculatedChecksum),
-    Buffer.from(checksum)
-  );
+  return timingSafeEqual(Buffer.from(calculatedChecksum), Buffer.from(checksum));
 }
 
 /**
@@ -310,7 +306,7 @@ export function generateEntropy(bits: number = 256): Buffer {
 export function generateHmacSignature(
   data: string,
   secret: string,
-  algorithm: string = 'sha256'
+  algorithm: string = 'sha256',
 ): string {
   const hmac = require('crypto').createHmac(algorithm, secret);
   hmac.update(data);
@@ -324,13 +320,10 @@ export function verifyHmacSignature(
   data: string,
   signature: string,
   secret: string,
-  algorithm: string = 'sha256'
+  algorithm: string = 'sha256',
 ): boolean {
   const expectedSignature = generateHmacSignature(data, secret, algorithm);
-  return timingSafeEqual(
-    Buffer.from(signature, 'hex'),
-    Buffer.from(expectedSignature, 'hex')
-  );
+  return timingSafeEqual(Buffer.from(signature, 'hex'), Buffer.from(expectedSignature, 'hex'));
 }
 
 /**
