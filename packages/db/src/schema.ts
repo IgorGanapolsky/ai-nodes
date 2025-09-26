@@ -223,3 +223,12 @@ export type NewStatement = typeof statements.$inferInsert;
 
 export type Alert = typeof alerts.$inferSelect;
 export type NewAlert = typeof alerts.$inferInsert;
+
+// Export schema object for Drizzle
+export const schema = {
+  owners,
+  devices,
+  metrics,
+  statements,
+  alerts,
+};

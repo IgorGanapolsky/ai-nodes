@@ -33,7 +33,7 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
   async findById(id: string): Promise<TSelect | null> {
     const result = await this.db.select().from(this.table).where(eq(this.table.id, id)).limit(1);
 
-    return result[0] || null;
+    return (result[0] as TSelect) || null;
   }
 
   async findMany(
@@ -85,7 +85,7 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
     const total = totalResult[0]?.count || 0;
 
     return {
-      data,
+      data: data as TSelect[],
       total,
       page,
       limit,
@@ -94,25 +94,25 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
   }
 
   async create(data: TInsert): Promise<TSelect> {
-    const result = await this.db.insert(this.table).values(data).returning();
+    const result = await this.db.insert(this.table).values(data as any).returning();
 
-    return result[0];
+    return result[0] as TSelect;
   }
 
   async createMany(data: TInsert[]): Promise<TSelect[]> {
-    const result = await this.db.insert(this.table).values(data).returning();
+    const result = await this.db.insert(this.table).values(data as any).returning();
 
-    return result;
+    return result as TSelect[];
   }
 
   async update(id: string, data: Partial<TInsert>): Promise<TSelect | null> {
     const result = await this.db
       .update(this.table)
-      .set(data)
+      .set(data as any)
       .where(eq(this.table.id, id))
       .returning();
 
-    return result[0] || null;
+    return (result[0] as TSelect) || null;
   }
 
   async delete(id: string): Promise<boolean> {
@@ -243,7 +243,7 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
     const total = totalResult[0]?.count || 0;
 
     return {
-      data,
+      data: data as TSelect[],
       total,
       page,
       limit,

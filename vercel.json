@@ -4,7 +4,7 @@
     "autoJobCancelation": true
   },
   "functions": {
-    "src/app/api/**/*": {
+    "apps/web/src/app/api/**/*": {
       "maxDuration": 30
     }
   },

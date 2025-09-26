@@ -1,0 +1,71 @@
+# CodeRabbit Configuration
+# Documentation: https://docs.coderabbit.ai/guides/configure-coderabbit
+
+# Language settings
+language: en-US
+
+# Reviews configuration
+reviews:
+  # Enable automatic code reviews on pull requests
+  auto_review: true
+
+  # Review scope
+  path_filters:
+    - "**/*.ts"
+    - "**/*.tsx"
+    - "**/*.js"
+    - "**/*.jsx"
+    - "**/*.json"
+    - "**/*.md"
+    - "**/*.yml"
+    - "**/*.yaml"
+
+  # Ignore patterns
+  ignore_patterns:
+    - "node_modules/**"
+    - "dist/**"
+    - "build/**"
+    - "coverage/**"
+    - "*.lock"
+    - "*.log"
+
+  # Review rules
+  rules:
+    # Focus on code quality and best practices
+    - check_performance
+    - check_security
+    - check_bugs
+    - check_maintainability
+    - check_typescript_best_practices
+    - check_react_best_practices
+
+# Feedback configuration
+feedback:
+  # Tone and style
+  tone: constructive
+  verbosity: balanced
+
+  # Include suggestions for improvements
+  include_suggestions: true
+
+  # Focus areas for this project
+  focus_areas:
+    - TypeScript type safety
+    - Performance optimization
+    - Security best practices
+    - Code maintainability
+    - API design
+    - Error handling
+    - Testing coverage
+
+# Integration settings
+integrations:
+  github:
+    # Post reviews as PR comments
+    pr_comments: true
+
+    # Create review summaries
+    review_summary: true
+
+    # Auto-approve minor changes (like formatting)
+    auto_approve_minor: false

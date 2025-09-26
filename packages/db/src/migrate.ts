@@ -8,10 +8,9 @@ async function main() {
 
   try {
     const migrationsPath = path.join(__dirname, '../migrations');
-    const db = await runDatabaseMigrations(migrationsPath);
+    await runDatabaseMigrations(migrationsPath);
 
     console.log('✅ Migrations completed successfully');
-
     console.log('✅ Database connection verified');
   } catch (error) {
     console.error('❌ Migration failed:', error);

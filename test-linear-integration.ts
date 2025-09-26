@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 
-import { OnaLinearAgent } from './packages/core/src/linear/ona-agent';
+import { OnaLinearAgent } from './packages/core/dist/linear/ona-agent.js';
 import * as dotenv from 'dotenv';
 
 // Load environment variables

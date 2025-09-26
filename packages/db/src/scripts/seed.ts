@@ -155,6 +155,8 @@ function generateAlerts(nodeIds: string[]) {
         notificationSent: true,
         notificationChannels: JSON.stringify(['email', 'slack']),
         timestamp,
+        createdAt: timestamp,
+        updatedAt: timestamp,
       };
     });
   });
@@ -190,6 +192,7 @@ function generateRevenueShares(nodeIds: string[]) {
           transactionHash:
             Math.random() > 0.3 ? `0x${crypto.randomBytes(32).toString('hex')}` : null,
           notes: `Revenue share for ${period}`,
+          updatedAt: new Date(),
         };
       });
     });

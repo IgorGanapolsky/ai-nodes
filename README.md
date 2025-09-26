@@ -7,6 +7,10 @@
 [![Node](https://img.shields.io/badge/Node-20+-green)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+[![CodeRabbit](https://img.shields.io/badge/CodeRabbit-AI%20Powered%20Code%20Reviews-orange?logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K)](https://coderabbit.ai)
+[![GitHub Copilot](https://img.shields.io/badge/GitHub%20Copilot-AI%20Powered%20Development-blue?logo=github)](https://github.com/features/copilot)
+[![Claude AI](https://img.shields.io/badge/Claude%20AI-Anthropic%20Assistant-purple?logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Im0xMiA2IDYgNi02IDZ6IiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K)](https://claude.ai)
+
 ## 📋 Table of Contents
 
 - [Overview](#overview)

@@ -11,7 +11,8 @@ import {
   Users,
   Tag,
   Calendar,
-  ExternalLink
+  ExternalLink,
+  Copy
 } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -58,8 +59,28 @@ export function LinearDashboard() {
     taskDescription: '',
     priority: 0,
   });
+  const [toasts, setToasts] = useState<Array<{ id: number; type: 'success' | 'error' | 'info'; message: string }>>([]);
+  const pushToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, type, message }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 2500);
+  };
 
   const queryClient = useQueryClient();
+
+  const handleRefreshIssues = () => {
+    refetchIssues()
+      .then(() => pushToast('Issues refreshed', 'success'))
+      .catch(() => pushToast('Failed to refresh issues', 'error'));
+  };
+
+  const handleRefreshWorkflow = () => {
+    refetchWorkflow()
+      .then(() => pushToast('Status refreshed', 'success'))
+      .catch(() => pushToast('Failed to refresh status', 'error'));
+  };
 
   // Fetch issues
   const { data: issues, isLoading: issuesLoading, refetch: refetchIssues } = useQuery({
@@ -72,22 +93,32 @@ export function LinearDashboard() {
   });
 
   // Fetch labels (commented out for now)
-  // const { data: labels } = useQuery({
-  //   queryKey: ['linear-labels'],
-  //   queryFn: async () => {
-  //     const response = await apiClient.get('/linear?action=get-labels');
-  //     return response.data.labels;
-  //   },
-  // });
+  const { data: labels } = useQuery({
+    queryKey: ['linear-labels'],
+    queryFn: async () => {
+      const response = await apiClient.get('/linear?action=get-labels');
+      return response.data.labels as Array<{ id: string; name: string; color: string }>;
+    },
+  });
 
   // Fetch states (commented out for now)
-  // const { data: states } = useQuery({
-  //   queryKey: ['linear-states'],
-  //   queryFn: async () => {
-  //     const response = await apiClient.get('/linear?action=get-states');
-  //     return response.data.states;
-  //   },
-  // });
+  const { data: states } = useQuery({
+    queryKey: ['linear-states'],
+    queryFn: async () => {
+      const response = await apiClient.get('/linear?action=get-states');
+      return response.data.states as Array<{ id: string; name: string }>;
+    },
+  });
+
+  // Workflow status
+  const { data: workflow, refetch: refetchWorkflow, isFetching: statusLoading } = useQuery({
+    queryKey: ['workflow-status'],
+    queryFn: async () => {
+      const response = await apiClient.get('/linear?action=workflow-status');
+      return response.data.state as any;
+    },
+    refetchInterval: 30000,
+  });
 
   // Create agent task mutation
   const createTaskMutation = useMutation({
@@ -108,6 +139,10 @@ export function LinearDashboard() {
         taskDescription: '',
         priority: 0,
       });
+      pushToast('Agent task created', 'success');
+    },
+    onError: (err: any) => {
+      pushToast(`Failed to create task: ${err?.message || 'Unknown error'}`, 'error');
     },
   });
 
@@ -124,7 +159,42 @@ export function LinearDashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['linear-issues'] });
+      pushToast('Task status updated', 'success');
     },
+    onError: (err: any) => {
+      pushToast(`Failed to update status: ${err?.message || 'Unknown error'}`, 'error');
+    },
+  });
+
+  // Resume workflow
+  const resumeWorkflowMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiClient.post('/linear', { action: 'resume-workflow' });
+      return response.data.state as any;
+    },
+    onSuccess: () => {
+      refetchIssues();
+      refetchWorkflow();
+      pushToast('Workflow resumed', 'success');
+    },
+    onError: (err: any) => {
+      pushToast(`Failed to resume: ${err?.message || 'Unknown error'}`, 'error');
+    }
+  });
+
+  // Reset workflow
+  const resetWorkflowMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiClient.post('/linear', { action: 'reset-workflow' });
+      return response.data.state as any;
+    },
+    onSuccess: () => {
+      refetchWorkflow();
+      pushToast('Workflow state reset', 'success');
+    },
+    onError: (err: any) => {
+      pushToast(`Failed to reset: ${err?.message || 'Unknown error'}`, 'error');
+    }
   });
 
   const handleCreateTask = () => {
@@ -176,21 +246,45 @@ export function LinearDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Toasts */}
+      <div className="fixed top-4 right-4 z-50 space-y-2">
+        {toasts.map(t => (
+          <div
+            key={t.id}
+            className={`px-3 py-2 rounded shadow text-sm text-white ${
+              t.type === 'success' ? 'bg-green-600' : t.type === 'error' ? 'bg-red-600' : 'bg-gray-800'
+            }`}
+          >
+            {t.message}
+          </div>
+        ))}
+      </div>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Linear Integration</h1>
           <p className="text-muted-foreground">
             Manage agent tasks and coordination through Linear
           </p>
+          <div className="text-xs text-gray-500 mt-1">
+            {labels ? `${labels.length} labels` : '...'} · {states ? `${states.length} states` : '...'}
+          </div>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
-            onClick={() => refetchIssues()}
+            onClick={handleRefreshIssues}
             disabled={issuesLoading}
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${issuesLoading ? 'animate-spin' : ''}`} />
             Refresh
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleRefreshWorkflow}
+            disabled={statusLoading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${statusLoading ? 'animate-spin' : ''}`} />
+            Status
           </Button>
           <Button onClick={() => setShowCreateForm(true)}>
             <Plus className="h-4 w-4 mr-2" />
@@ -198,6 +292,105 @@ export function LinearDashboard() {
           </Button>
         </div>
       </div>
+
+      {/* Workflow Status */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Workflow Status</CardTitle>
+          <CardDescription>Checkpointed progress for the agent workflow</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {workflow ? (
+            <div className="flex items-start justify-between gap-6">
+              <div className="text-sm space-y-2">
+                <div>Register Agents: <span className="font-medium">{workflow.workflow.steps.registerAgents}</span></div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span>
+                    Coordination Issue: <span className="font-medium">{workflow.workflow.steps.createCoordinationIssue}</span>
+                    {workflow.workflow.createdCoordinationIssueId ? ` (${workflow.workflow.createdCoordinationIssueId})` : ''}
+                    {workflow.workflow.createdCoordinationIssueTitle ? ` — ${workflow.workflow.createdCoordinationIssueTitle}` : ''}
+                  </span>
+                  {workflow.workflow.createdCoordinationIssueUrl && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => window.open(workflow.workflow.createdCoordinationIssueUrl, '_blank')}
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {workflow.workflow.createdCoordinationIssueId && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigator.clipboard.writeText(workflow.workflow.createdCoordinationIssueId)
+                        .then(() => pushToast('Copied coordination issue ID', 'success'))
+                        .catch(() => pushToast('Copy failed', 'error'))}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <div>Create Tasks: <span className="font-medium">{workflow.workflow.steps.createTasks}</span></div>
+                <div className="mt-1">
+                  <div className="text-xs text-gray-500">Per-agent tasks:</div>
+                  <div className="mt-1 space-y-1">
+                    {Object.keys(workflow.workflow.agentTasks || {}).length > 0 ? (
+                      Object.entries(workflow.workflow.agentTasks).map(([agent, rec]: any) => (
+                        <div key={agent} className="flex items-center gap-2 text-xs">
+                          <span className="font-medium">{agent}</span>
+                          {rec.issueId && <span className="text-gray-500">{rec.issueId}</span>}
+                          {rec.title && <span className="text-gray-700">— {rec.title}</span>}
+                          {rec.url && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(rec.url, '_blank')}
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                            </Button>
+                          )}
+                          {rec.issueId && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => navigator.clipboard.writeText(rec.issueId)
+                                .then(() => pushToast('Copied task ID', 'success'))
+                                .catch(() => pushToast('Copy failed', 'error'))}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-xs text-gray-500">No agent tasks yet.</div>
+                    )}
+                  </div>
+                </div>
+                <div>Last Updated: <span className="font-mono">{new Date(workflow.workflow.lastUpdated).toLocaleString()}</span></div>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <Button
+                  variant="outline"
+                  onClick={() => resetWorkflowMutation.mutate()}
+                  disabled={resetWorkflowMutation.isPending}
+                >
+                  {resetWorkflowMutation.isPending ? 'Resetting...' : 'Reset'}
+                </Button>
+                <Button
+                  onClick={() => resumeWorkflowMutation.mutate()}
+                  disabled={resumeWorkflowMutation.isPending}
+                >
+                  {resumeWorkflowMutation.isPending ? 'Resuming...' : 'Resume'}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-gray-500">Loading...</div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Create Task Form */}
       {showCreateForm && (

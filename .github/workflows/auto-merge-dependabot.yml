@@ -1,63 +1,46 @@
-name: Auto-merge Dependabot PRs
-
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+name: Dependabot Auto-Merge
+on: pull_request_target
 
 permissions:
-  contents: write
   pull-requests: write
+  contents: write
   issues: write
   repository-projects: write
 
 jobs:
-  dependabot-auto-merge:
+  dependabot:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'IgorGanapolsky/ai-nodes'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Fetch Dependabot metadata
+      - name: Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Auto-approve all Dependabot PRs
-        run: gh pr review --approve "$PR_URL" --body "CTO auto-approved: Keeping dependencies current"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Auto-merge all patch and minor updates
+      - name: Enable auto-merge for Dependabot PRs
         if: |
           steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
           steps.metadata.outputs.update-type == 'version-update:semver-minor'
-        run: gh pr merge --auto --squash "$PR_URL"
+        run: gh pr merge --auto --merge "$PR_URL"
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Auto-merge major updates after approval
+      - name: Approve patch and minor updates
+        if: |
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        run: gh pr review $PR_URL --approve -b "Auto-approved automated dependency update"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Label major updates for manual review
         if: steps.metadata.outputs.update-type == 'version-update:semver-major'
         run: |
-          gh pr comment "$PR_URL" --body "🚀 **Major version update auto-approved by CTO**
-
-          As per executive decision: We're a fast-moving startup. Breaking changes are learning opportunities. Ship fast, fix forward!
-
-          Update type: ${{ steps.metadata.outputs.update-type }}
-          Dependencies: ${{ steps.metadata.outputs.dependency-names }}"
-          gh pr merge --auto --squash "$PR_URL"
+          gh pr edit $PR_URL --add-label "major-update,requires-manual-review"
+          gh pr comment $PR_URL --body "⚠️ **Major version update detected**. This requires manual review before merging."
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Handle merge conflicts
-        if: failure()
-        run: |
-          gh pr comment "$PR_URL" --body "Auto-closing due to conflicts - will be recreated by Dependabot"
-          gh pr close "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}

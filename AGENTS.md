@@ -54,3 +54,11 @@
 - Resume at any time with `node scripts/linear-agent-coordination.js resume`.
 - Inspect progress with `node scripts/linear-agent-coordination.js status`.
 - Reset local checkpoints with `node scripts/linear-agent-coordination.js reset-state` (does not delete Linear issues).
+
+## Revenue Loop
+
+- Ensure labels exist in Linear: run `node scripts/linear-agent-coordination.js ensure-labels` and add any missing via the link it prints.
+- Create “opportunity” issues in Linear (manually or via integrations).
+- Run one-shot assignment: `node scripts/linear-agent-coordination.js revenue-loop [limit]`.
+  - Finds issues labeled `opportunity`, sorts by priority, assigns “Outreach: …” agent tasks to the least-busy agent with labels `agent-task,outreach`.
+- Monitor and resume via the dashboard’s Workflow Status card.

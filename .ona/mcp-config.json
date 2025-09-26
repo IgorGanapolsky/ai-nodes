@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "linear": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.linear.app/sse"],
+      "env": {
+        "LINEAR_API_KEY": "${exec:printenv LINEAR_API_KEY}"
+      }
+    }
+  },
+  "security": {
+    "allowedDomains": ["mcp.linear.app"],
+    "requireAuth": true,
+    "isolateAgents": true
+  },
+  "logging": {
+    "level": "info",
+    "logFile": "logs/mcp-activity.log"
+  }
+}
