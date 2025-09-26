@@ -21,8 +21,11 @@ importers:
         specifier: ^5.6.2
         version: 5.6.2
       date-fns:
-        specifier: ^3.0.6
-        version: 3.6.0
+        specifier: ^4.1.0
+        version: 4.1.0
+      dotenv:
+        specifier: ^17.2.2
+        version: 17.2.2
       drizzle-orm:
         specifier: ^0.44.5
         version: 0.44.5(better-sqlite3@12.4.1)
@@ -200,8 +203,8 @@ importers:
         specifier: ^1.6.2
         version: 1.12.2
       date-fns:
-        specifier: 3.6.0
-        version: 3.6.0
+        specifier: 4.1.0
+        version: 4.1.0
       expo:
         specifier: ~52.0.0
         version: 52.0.47(@babel/core@7.28.4)(@babel/preset-env@7.28.3)(react-native@0.81.4)(react@18.3.1)
@@ -448,8 +451,8 @@ importers:
         specifier: ^2.0.0
         version: 2.1.1
       date-fns:
-        specifier: 3.6.0
-        version: 3.6.0
+        specifier: 4.1.0
+        version: 4.1.0
       framer-motion:
         specifier: ^10.16.16
         version: 10.18.0(react-dom@18.3.1)(react@18.3.1)
@@ -594,8 +597,8 @@ importers:
         specifier: ^60.0.0
         version: 60.0.0
       date-fns:
-        specifier: 3.6.0
-        version: 3.6.0
+        specifier: 4.1.0
+        version: 4.1.0
       zod:
         specifier: ^3.22.4
         version: 3.25.76
@@ -714,8 +717,8 @@ importers:
   packages/utils:
     dependencies:
       date-fns:
-        specifier: 3.6.0
-        version: 3.6.0
+        specifier: 4.1.0
+        version: 4.1.0
       dotenv:
         specifier: ^16.3.1
         version: 16.6.1
@@ -9138,8 +9141,8 @@ packages:
       is-data-view: 1.0.2
     dev: true
 
-  /date-fns@3.6.0:
-    resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
+  /date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
     dev: false
 
   /dateformat@4.6.3:
@@ -9486,7 +9489,7 @@ packages:
     resolution: {integrity: sha512-zIHwmZPRshsCdpMDyVsqGmgyP0yT8GAgXUnkdAoJisxvf33k7yO6OuoKmcTGuXPWSsm8Oh88nZicRLA9Y0rUeA==}
     engines: {node: '>=12'}
     dependencies:
-      dotenv: 16.6.1
+      dotenv: 16.4.7
 
   /dotenv@16.4.7:
     resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
@@ -9495,6 +9498,12 @@ packages:
   /dotenv@16.6.1:
     resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
     engines: {node: '>=12'}
+    dev: false
+
+  /dotenv@17.2.2:
+    resolution: {integrity: sha512-Sf2LSQP+bOlhKWWyhFsn0UsfdK/kCWRv1iuA2gXAwt3dyNabr6QSj00I2V10pidqz69soatm9ZwZvpQMTIOd5Q==}
+    engines: {node: '>=12'}
+    dev: false
 
   /dreamopt@0.8.0:
     resolution: {integrity: sha512-vyJTp8+mC+G+5dfgsY+r3ckxlz+QMX40VjPQsZc5gxVAxLmi64TBoVkP54A/pRAXMXsbu2GMMBrZPxNv23waMg==}

@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@linear/sdk": "^60.0.0",
-    "date-fns": "3.6.0",
+    "date-fns": "4.1.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
