@@ -123,7 +123,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     filters: EarningsFilters = {},
     dateRange?: { start: Date; end: Date },
   ): Promise<EarningsReport> {
-    const whereConditions = [];
+    const whereConditions: any[] = [];
 
     // Apply filters
     if (filters.nodeId) {
@@ -261,7 +261,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     endDate: Date,
     filters: EarningsFilters = {},
   ): Promise<TimeSeriesPoint[]> {
-    const whereConditions = [];
+    const whereConditions: any[] = [];
 
     // Apply date range
     whereConditions.push(

@@ -1,4 +1,4 @@
-import type { FastifyPluginCallback } from 'fastify';
+import type { FastifyPluginCallback, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 // Validation schemas

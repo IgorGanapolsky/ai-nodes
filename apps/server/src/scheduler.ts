@@ -1,6 +1,7 @@
 import cron from 'node-cron';
 import type { FastifyInstance } from 'fastify';
 import { LinearService, AgentCoordination } from '@depinautopilot/core';
+import { runProspectors } from '@depinautopilot/connectors';
 
 export class Scheduler {
   private app: FastifyInstance;
@@ -33,6 +34,9 @@ export class Scheduler {
 
     // Revenue loop (opportunity → outreach tasks)
     this.scheduleRevenueLoop();
+
+    // Prospecting to create 'opportunity' issues
+    this.scheduleProspecting();
 
     this.app.log.info(`Scheduler started with ${this.jobs.size} active jobs`);
   }
@@ -231,6 +235,65 @@ export class Scheduler {
 
     this.jobs.set(jobName, task);
     this.app.log.info(`Scheduled ${jobName}: every 10 minutes`);
+  }
+
+  /**
+   * Schedule prospecting sources to feed 'opportunity' issues
+   */
+  private scheduleProspecting(): void {
+    const jobName = 'prospecting';
+    const task = cron.schedule(
+      '*/15 * * * *',
+      async () => {
+        const jitterMs = Math.floor(Math.random() * 90_000);
+        await new Promise((r) => setTimeout(r, jitterMs));
+        try {
+          this.app.log.info('Running prospecting...');
+          const results = await runProspectors();
+          const apiKey = process.env.LINEAR_API_KEY || '';
+          const teamId = process.env.LINEAR_TEAM_ID;
+          if (!apiKey) {
+            this.app.log.warn('Skipping prospecting → Linear: LINEAR_API_KEY not set');
+            return;
+          }
+          const linear = new LinearService({ apiKey, teamId });
+          // Fetch recent issues to dedupe by title/url presence
+          const existing = await linear.listIssues({ limit: 100 });
+          const existingKeys = new Set<string>();
+          for (const i of existing) {
+            existingKeys.add(i.title);
+            existingKeys.add(i.url);
+          }
+          let created = 0;
+          for (const op of results) {
+            const title = `[OPP/${op.source.toUpperCase()}] ${op.title}`;
+            const keyUrl = op.url;
+            if (existingKeys.has(title) || existingKeys.has(keyUrl)) continue;
+            const description = `**Source:** ${op.source}\n\n**URL:** ${op.url}\n\n${op.description || ''}`;
+            try {
+              await linear.createIssue({
+                title,
+                description,
+                priority: op.priority ?? 0,
+                labelIds: ['opportunity'],
+              });
+              created += 1;
+            } catch (e) {
+              this.app.log.warn(`Failed to create opportunity: ${(e as Error).message}`);
+            }
+          }
+          this.app.log.info(`Prospecting created ${created} new opportunities (from ${results.length})`);
+        } catch (error) {
+          this.app.log.error('Error during prospecting:', error);
+        }
+      },
+      {
+        scheduled: true,
+        timezone: 'UTC',
+      },
+    );
+    this.jobs.set(jobName, task);
+    this.app.log.info(`Scheduled ${jobName}: every 15 minutes`);
   }
 
   /**
@@ -566,6 +629,12 @@ export class Scheduler {
         return true;
       case 'performance-optimization':
         await this.checkPerformanceOptimization();
+        return true;
+      case 'prospecting':
+        await (async () => {
+          const results = await runProspectors();
+          this.app.log.info(`Prospecting fetched ${results.length} candidates`);
+        })();
         return true;
       case 'revenue-loop':
         await this.runRevenueLoop();

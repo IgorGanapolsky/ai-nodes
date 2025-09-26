@@ -140,7 +140,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
 
   // Get alert statistics
   async getAlertStats(filters: Omit<AlertFilters, 'resolved'> = {}): Promise<AlertStats> {
-    const whereConditions = [];
+    const whereConditions: any[] = [];
 
     // Simplified filtering for now - complex array filtering commented out due to type issues
     // TODO: Fix advanced filtering with proper Drizzle ORM types
