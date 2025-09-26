@@ -1,16 +1,15 @@
 {
   "version": 2,
-  "github": {
-    "silent": true,
-    "autoJobCancelation": true
-  },
-  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- apps/web packages/core packages/db packages/utils package.json pnpm-lock.yaml",
-  "buildCommand": "npm install -g pnpm@8.15.0 && pnpm install --frozen-lockfile && pnpm --filter @depinautopilot/web build",
-  "installCommand": "npm install -g pnpm@8.15.0 && pnpm install --frozen-lockfile",
-  "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
+  "buildCommand": "pnpm install --frozen-lockfile && pnpm --filter @depinautopilot/web build",
+  "outputDirectory": "apps/web/.next",
+  "installCommand": "npm install -g pnpm@8.15.0",
+  "root": ".",
   "env": {
-    "NODE_ENV": "production",
-    "NEXT_TELEMETRY_DISABLED": "1"
+    "STRIPE_SECRET_KEY": "@stripe_secret_key",
+    "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": "@stripe_publishable_key",
+    "DATABASE_URL": "@database_url",
+    "JWT_SECRET": "@jwt_secret"
   }
 }
