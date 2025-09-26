@@ -208,26 +208,29 @@ function generateMockUtilizationData(
   granularity: string,
   deviceId?: string,
 ): MetricsResponse['utilization'] {
-  const data = [];
   const deviceIds = deviceId ? [deviceId] : ['1', '2', '3'];
   const deviceNames = { '1': 'GPU Rig Alpha', '2': 'Storage Node Beta', '3': 'CPU Farm Gamma' };
 
   // Generate time intervals based on granularity
   const interval = granularity === 'hour' ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
-
+  
+  const timePoints = [];
   for (let time = start.getTime(); time <= end.getTime(); time += interval) {
-    for (const devId of deviceIds) {
-      data.push({
-        timestamp: new Date(time).toISOString(),
-        deviceId: devId,
-        deviceName: deviceNames[devId as keyof typeof deviceNames] || `Device ${devId}`,
-        utilizationPercent: Math.floor(Math.random() * 40 + 60), // 60-100%
-        cpuUsage: Math.floor(Math.random() * 30 + 40), // 40-70%
-        memoryUsage: Math.floor(Math.random() * 25 + 50), // 50-75%
-        gpuUsage: devId === '1' ? Math.floor(Math.random() * 40 + 60) : undefined,
-      });
-    }
+    timePoints.push(time);
   }
+
+  // Generate data for all devices and time points in a single pass
+  const data = timePoints.flatMap(time => 
+    deviceIds.map(devId => ({
+      timestamp: new Date(time).toISOString(),
+      deviceId: devId,
+      deviceName: deviceNames[devId as keyof typeof deviceNames] || `Device ${devId}`,
+      utilizationPercent: Math.floor(Math.random() * 40 + 60), // 60-100%
+      cpuUsage: Math.floor(Math.random() * 30 + 40), // 40-70%
+      memoryUsage: Math.floor(Math.random() * 25 + 50), // 50-75%
+      gpuUsage: devId === '1' ? Math.floor(Math.random() * 40 + 60) : undefined,
+    }))
+  );
 
   return data;
 }
@@ -238,7 +241,6 @@ function generateMockEarningsData(
   granularity: string,
   deviceId?: string,
 ): MetricsResponse['earnings'] {
-  const data = [];
   const deviceIds = deviceId ? [deviceId] : ['1', '2', '3'];
   const deviceNames = { '1': 'GPU Rig Alpha', '2': 'Storage Node Beta', '3': 'CPU Farm Gamma' };
   const rates = { '1': 2.5, '2': 0.15, '3': 1.2 };
@@ -246,12 +248,18 @@ function generateMockEarningsData(
   const interval = granularity === 'hour' ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
   const hoursPerInterval = granularity === 'hour' ? 1 : 24;
 
+  const timePoints = [];
   for (let time = start.getTime(); time <= end.getTime(); time += interval) {
-    for (const devId of deviceIds) {
+    timePoints.push(time);
+  }
+
+  // Generate data for all devices and time points in a single pass
+  const data = timePoints.flatMap(time => 
+    deviceIds.map(devId => {
       const hourlyRate = rates[devId as keyof typeof rates] || 1.0;
       const hoursOnline = hoursPerInterval * (Math.random() * 0.4 + 0.6); // 60-100% uptime
 
-      data.push({
+      return {
         timestamp: new Date(time).toISOString(),
         deviceId: devId,
         deviceName: deviceNames[devId as keyof typeof deviceNames] || `Device ${devId}`,
@@ -259,9 +267,9 @@ function generateMockEarningsData(
         currency: 'USD',
         hoursOnline: Number(hoursOnline.toFixed(2)),
         hourlyRate,
-      });
-    }
-  }
+      };
+    })
+  );
 
   return data;
 }
@@ -272,25 +280,28 @@ function generateMockPerformanceData(
   granularity: string,
   deviceId?: string,
 ): MetricsResponse['performance'] {
-  const data = [];
   const deviceIds = deviceId ? [deviceId] : ['1', '2', '3'];
   const deviceNames = { '1': 'GPU Rig Alpha', '2': 'Storage Node Beta', '3': 'CPU Farm Gamma' };
 
   const interval = granularity === 'hour' ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
 
+  const timePoints = [];
   for (let time = start.getTime(); time <= end.getTime(); time += interval) {
-    for (const devId of deviceIds) {
-      data.push({
-        timestamp: new Date(time).toISOString(),
-        deviceId: devId,
-        deviceName: deviceNames[devId as keyof typeof deviceNames] || `Device ${devId}`,
-        responseTime: Math.floor(Math.random() * 100 + 50), // 50-150ms
-        throughput: Math.floor(Math.random() * 500 + 100), // 100-600 req/s
-        errorRate: Math.random() * 2, // 0-2% error rate
-        uptime: Math.random() * 5 + 95, // 95-100% uptime
-      });
-    }
+    timePoints.push(time);
   }
+
+  // Generate data for all devices and time points in a single pass
+  const data = timePoints.flatMap(time => 
+    deviceIds.map(devId => ({
+      timestamp: new Date(time).toISOString(),
+      deviceId: devId,
+      deviceName: deviceNames[devId as keyof typeof deviceNames] || `Device ${devId}`,
+      responseTime: Math.floor(Math.random() * 100 + 50), // 50-150ms
+      throughput: Math.floor(Math.random() * 500 + 100), // 100-600 req/s
+      errorRate: Math.random() * 2, // 0-2% error rate
+      uptime: Math.random() * 5 + 95, // 95-100% uptime
+    }))
+  );
 
   return data;
 }
