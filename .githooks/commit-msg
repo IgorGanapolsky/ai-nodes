@@ -1,0 +1,39 @@
+#!/bin/sh
+# Git hook to prevent AI tool outputs from being committed as commit messages
+
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# Check for AI tool output patterns
+if echo "$commit_msg" | grep -q '{"tool_use_id"'; then
+    echo "❌ ERROR: Commit message appears to be an AI tool output"
+    echo "Please write a proper commit message describing your changes."
+    echo ""
+    echo "See .github/COMMIT_GUIDELINES.md for examples of good commit messages."
+    exit 1
+fi
+
+if echo "$commit_msg" | grep -q '\[{"tool_use_id"'; then
+    echo "❌ ERROR: Commit message appears to be an AI tool output"
+    echo "Please write a proper commit message describing your changes."
+    echo ""
+    echo "See .github/COMMIT_GUIDELINES.md for examples of good commit messages."
+    exit 1
+fi
+
+# Check for overly dramatic CEO/CTO language
+if echo "$commit_msg" | grep -qi "CEO OVERRIDE\|CTO EMERGENCY\|ULTIMATE.*AUTOMATION"; then
+    echo "⚠️  WARNING: Commit message contains dramatic language"
+    echo "Consider using a more professional tone."
+    echo ""
+    echo "See .github/COMMIT_GUIDELINES.md for examples of good commit messages."
+    # Don't exit - just warn for dramatic language
+fi
+
+# Check for incomplete messages (ending with ...)
+if echo "$commit_msg" | grep -q '\.\.\.$'; then
+    echo "⚠️  WARNING: Commit message appears to be incomplete (ends with ...)"
+    echo "Please complete your commit message."
+fi
+
+exit 0
