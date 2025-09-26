@@ -6,7 +6,7 @@ export async function prospectReddit(subreddit: string = 'Entrepreneur', limit: 
   try {
     const res = await fetch(url, { headers: { 'User-Agent': 'depinautopilot/1.0' } });
     if (!res.ok) return [];
-    const data = await res.json();
+    const data = await res.json() as any;
     const posts = data?.data?.children || [];
     return posts.map((p: any) => ({
       source: 'reddit',

@@ -11,8 +11,8 @@ export async function prospectGitHub(search: string = 'label:help-wanted languag
   try {
     const res = await fetch(url, { headers });
     if (!res.ok) return [];
-    const data = await res.json();
-    const items = Array.isArray(data.items) ? data.items : [];
+    const data = await res.json() as any;
+    const items = Array.isArray(data?.items) ? data.items : [];
     return items.map((it: any) => ({
       source: 'github',
       title: it.title,
