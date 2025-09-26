@@ -4,23 +4,44 @@
     "autoJobCancelation": true
   },
   "functions": {
-    "api/**/*": {
+    "src/app/api/**/*": {
       "maxDuration": 30
     }
   },
   "crons": [],
   "redirects": [],
-  "headers": [],
-  "buildCommand": "pnpm build",
-  "installCommand": "pnpm install",
-  "devCommand": "pnpm dev",
-  "agent": {
-    "enabled": true,
-    "review": {
-      "enabled": true,
-      "mode": "auto",
-      "triggers": ["pull_request_opened", "pull_request_synchronize"],
-      "instructions": "Review this PR for code quality, best practices, performance, and security. Focus on: TypeScript type safety, React patterns, potential bugs, and suggest improvements where applicable."
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ],
+  "buildCommand": "pnpm --filter @depinautopilot/web build",
+  "installCommand": "pnpm install --frozen-lockfile --ignore-scripts",
+  "devCommand": "pnpm --filter @depinautopilot/web dev",
+  "outputDirectory": "apps/web/.next",
+  "framework": "nextjs",
+  "env": {
+    "NODE_ENV": "production",
+    "CI": "true"
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production",
+      "NEXT_TELEMETRY_DISABLED": "1"
     }
   }
 }

@@ -1,0 +1,64 @@
+name: Validate Deployment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Setup PNPM
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      
+    - name: Validate Vercel configuration
+      run: |
+        if [ ! -f vercel.json ]; then
+          echo "❌ vercel.json not found"
+          exit 1
+        fi
+        
+        if ! python3 -m json.tool vercel.json > /dev/null 2>&1; then
+          echo "❌ vercel.json has invalid JSON syntax"
+          exit 1
+        fi
+        
+        echo "✅ vercel.json is valid"
+        
+    - name: TypeScript type checking
+      run: |
+        cd apps/web
+        pnpm type-check
+        
+    - name: Build validation
+      run: |
+        cd apps/web
+        pnpm build
+        
+    - name: Run deployment validation script
+      run: |
+        chmod +x scripts/validate-deployment.sh
+        ./scripts/validate-deployment.sh
+        
+    - name: Upload validation logs
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: validation-logs
+        path: logs/
