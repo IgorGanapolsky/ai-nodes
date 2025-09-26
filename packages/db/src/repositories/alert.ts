@@ -1,4 +1,4 @@
-import { eq, and, desc, count, sql } from 'drizzle-orm';
+import { eq, and, desc, count, sql, gte, lte } from 'drizzle-orm';
 import { BaseRepository, QueryResult, FilterOptions, PaginationOptions } from './base';
 import { alerts, type Alert, type NewAlert } from '../schema/alerts';
 
@@ -154,19 +154,19 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
       whereConditions.push(eq(this.table.severity, filters.severity as any));
     }
 
-    const whereClause = whereConditions.length > 0 ? and(...whereConditions) : sql`1=1`;
+    const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
     // Get total count
     const totalResult = await this.db
       .select({ count: count() })
       .from(this.table)
-      .where(whereClause);
+      .where(whereClause || undefined);
 
     // Get unresolved count
     const unresolvedResult = await this.db
       .select({ count: count() })
       .from(this.table)
-      .where(and(whereClause, eq(this.table.resolved, false)));
+      .where(whereClause ? and(whereClause, eq(this.table.resolved, false)) : eq(this.table.resolved, false));
 
     // Get severity breakdown
     const severityResult = await this.db
@@ -175,7 +175,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
         count: count(),
       })
       .from(this.table)
-      .where(and(whereClause, eq(this.table.resolved, false)))
+      .where(whereClause ? and(whereClause, eq(this.table.resolved, false)) : eq(this.table.resolved, false))
       .groupBy(this.table.severity);
 
     // Get type breakdown
@@ -185,7 +185,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
         count: count(),
       })
       .from(this.table)
-      .where(and(whereClause, eq(this.table.resolved, false)))
+      .where(whereClause ? and(whereClause, eq(this.table.resolved, false)) : eq(this.table.resolved, false))
       .groupBy(this.table.type);
 
     // Get node breakdown
@@ -195,7 +195,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
         count: count(),
       })
       .from(this.table)
-      .where(and(whereClause, eq(this.table.resolved, false)))
+      .where(whereClause ? and(whereClause, eq(this.table.resolved, false)) : eq(this.table.resolved, false))
       .groupBy(this.table.nodeId);
 
     const total = totalResult[0]?.count || 0;
@@ -242,11 +242,10 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     } = {},
   ): Promise<QueryResult<Alert>> {
     const cutoffDate = new Date(Date.now() - hours * 60 * 60 * 1000);
-    const cutoffTimestamp = Math.floor(cutoffDate.getTime() / 1000);
 
     const { pagination } = options;
 
-    const whereConditions = [sql`${this.table.timestamp} >= ${cutoffTimestamp}`];
+    const whereConditions: any[] = [gte(this.table.timestamp, cutoffDate)];
 
     // Simplified filtering for now - complex array filtering commented out due to type issues
     // TODO: Fix advanced filtering with proper Drizzle ORM types
@@ -299,8 +298,6 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
   > {
     const endDate = new Date();
     const startDate = new Date(endDate.getTime() - days * 24 * 60 * 60 * 1000);
-    const startTimestamp = Math.floor(startDate.getTime() / 1000);
-    const endTimestamp = Math.floor(endDate.getTime() / 1000);
 
     const results = await this.db
       .select({
@@ -313,8 +310,8 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
       .from(this.table)
       .where(
         and(
-          sql`${this.table.timestamp} >= ${startTimestamp}`,
-          sql`${this.table.timestamp} <= ${endTimestamp}`,
+          gte(this.table.timestamp, startDate),
+          lte(this.table.timestamp, endDate),
         ),
       )
       .groupBy(sql`date(${this.table.timestamp}, 'unixepoch')`)
@@ -335,14 +332,13 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     resolvedBy: string = 'system',
   ): Promise<number> {
     const cutoffDate = new Date(Date.now() - staleHours * 60 * 60 * 1000);
-    const cutoffTimestamp = Math.floor(cutoffDate.getTime() / 1000);
 
     // Find old unresolved alerts
     const staleAlerts = await this.db
       .select({ id: this.table.id })
       .from(this.table)
       .where(
-        and(eq(this.table.resolved, false), sql`${this.table.timestamp} < ${cutoffTimestamp}`),
+        and(eq(this.table.resolved, false), lte(this.table.timestamp, cutoffDate)),
       );
 
     const alertIds = staleAlerts.map((alert) => alert.id);
@@ -365,7 +361,6 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
     windowMinutes: number = 30,
   ): Promise<Alert[]> {
     const cutoffDate = new Date(Date.now() - windowMinutes * 60 * 1000);
-    const cutoffTimestamp = Math.floor(cutoffDate.getTime() / 1000);
 
     return this.db
       .select()
@@ -375,7 +370,7 @@ export class AlertRepository extends BaseRepository<typeof alerts, Alert, NewAle
           eq(this.table.nodeId, nodeId),
           eq(this.table.type, type as any),
           eq(this.table.resolved, false),
-          sql`${this.table.timestamp} >= ${cutoffTimestamp}`,
+          gte(this.table.timestamp, cutoffDate),
         ),
       )
       .orderBy(desc(this.table.timestamp));

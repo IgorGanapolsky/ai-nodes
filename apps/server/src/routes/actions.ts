@@ -1,4 +1,4 @@
-import type { FastifyPluginCallback } from 'fastify';
+import type { FastifyPluginCallback, FastifyRequest } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 
@@ -79,10 +79,7 @@ const optimizationRequestSchema = z.object({
     .optional(),
 });
 
-type RepriceRequest = z.infer<typeof repriceRequestSchema>;
 type RepriceResponse = z.infer<typeof repriceResponseSchema>;
-type MaintenanceRequest = z.infer<typeof maintenanceRequestSchema>;
-type OptimizationRequest = z.infer<typeof optimizationRequestSchema>;
 
 const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fastify) => {
   // POST /actions/reprice - Dynamic pricing adjustment
@@ -93,9 +90,9 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
         body: repriceRequestSchema,
       },
     },
-    async (request, reply) => {
+    async (request: FastifyRequest<{ Body: z.infer<typeof repriceRequestSchema> }>, reply) => {
       try {
-        const { deviceIds, strategy, parameters, scheduledFor, dryRun } = request.body;
+        const { deviceIds, strategy, parameters: _parameters, scheduledFor, dryRun } = request.body;
 
         // Generate a job ID for tracking
         const jobId = `reprice_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -147,19 +144,19 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
         if (!dryRun && !scheduledFor) {
           // TODO: Queue the repricing job for immediate execution
-          fastify.log.info('Queued repricing job:', {
+          fastify.log.info({
             jobId,
             strategy,
             devicesAffected: response.devicesAffected,
-          });
+          }, 'Queued repricing job');
         } else if (scheduledFor) {
           // TODO: Schedule the repricing job for later execution
-          fastify.log.info('Scheduled repricing job:', { jobId, scheduledFor });
+          fastify.log.info({ jobId, scheduledFor }, 'Scheduled repricing job');
         }
 
         return reply.status(202).send(response); // 202 Accepted for async operation
       } catch (error) {
-        fastify.log.error('Error processing reprice request:', error);
+        fastify.log.error(error, 'Error processing reprice request');
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to process repricing request',
@@ -176,7 +173,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
         body: maintenanceRequestSchema,
       },
     },
-    async (request, reply) => {
+    async (request: FastifyRequest<{ Body: z.infer<typeof maintenanceRequestSchema> }>, reply) => {
       try {
         const { deviceIds, action, scheduledFor, estimatedDuration, reason, notifyUsers } =
           request.body;
@@ -201,16 +198,16 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
           })),
         };
 
-        fastify.log.info('Queued maintenance job:', {
+        fastify.log.info({
           jobId,
           action,
           devicesAffected: deviceIds.length,
           scheduledFor: response.scheduledFor,
-        });
+        }, 'Queued maintenance job');
 
         return reply.status(202).send(response);
       } catch (error) {
-        fastify.log.error('Error processing maintenance request:', error);
+        fastify.log.error(error, 'Error processing maintenance request');
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to process maintenance request',
@@ -227,7 +224,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
         body: optimizationRequestSchema,
       },
     },
-    async (request, reply) => {
+    async (request: FastifyRequest<{ Body: z.infer<typeof optimizationRequestSchema> }>, reply) => {
       try {
         const { deviceIds, optimizationType, parameters } = request.body;
 
@@ -260,15 +257,15 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
           ],
         };
 
-        fastify.log.info('Queued optimization job:', {
+        fastify.log.info({
           jobId,
           optimizationType,
           devicesAffected: response.devicesAffected,
-        });
+        }, 'Queued optimization job');
 
         return reply.status(202).send(response);
       } catch (error) {
-        fastify.log.error('Error processing optimization request:', error);
+        fastify.log.error(error, 'Error processing optimization request');
         return reply.status(500).send({
           error: 'Internal server error',
           message: 'Failed to process optimization request',
@@ -278,7 +275,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
   );
 
   // GET /actions/jobs/:jobId - Get job status
-  fastify.get('/jobs/:jobId', async (request, reply) => {
+  fastify.get('/jobs/:jobId', async (request: FastifyRequest<{ Params: { jobId: string } }>, reply) => {
     try {
       const { jobId } = request.params;
 
@@ -304,7 +301,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
 
       return reply.send(jobStatus);
     } catch (error) {
-      fastify.log.error(`Error fetching job status for ${request.params.jobId}:`, error);
+      fastify.log.error(error, `Error fetching job status for ${request.params.jobId}`);
       return reply.status(404).send({
         error: 'Not found',
         message: 'Job not found',
@@ -313,7 +310,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
   });
 
   // GET /actions/jobs - List all jobs
-  fastify.get('/jobs', async (request, reply) => {
+  fastify.get('/jobs', async (request: FastifyRequest<{ Querystring: { status?: string; type?: string; limit?: number; page?: number } }>, reply) => {
     try {
       const { status, type, limit = 10, page = 1 } = request.query;
 
@@ -345,7 +342,7 @@ const actionRoutes: FastifyPluginCallback<{}, any, ZodTypeProvider> = async (fas
         },
       });
     } catch (error) {
-      fastify.log.error('Error fetching jobs:', error);
+      fastify.log.error(error, 'Error fetching jobs');
       return reply.status(500).send({
         error: 'Internal server error',
         message: 'Failed to fetch jobs',

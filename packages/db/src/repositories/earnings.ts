@@ -52,14 +52,12 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     const filters = { ...options.filters, nodeId };
 
     if (options.dateRange) {
-      return this.findByDateRange(
-        this.table.timestamp,
+      return this.findByDateRangeForEarnings(
         options.dateRange.start,
         options.dateRange.end,
         {
           filters,
           pagination: options.pagination,
-          sort: { column: 'timestamp', direction: 'desc' },
         },
       );
     }
@@ -67,7 +65,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     return this.findMany({
       filters,
       pagination: options.pagination,
-      sort: { column: 'timestamp', direction: 'desc' },
+      sort: { column: 'timestamp' as any, direction: 'desc' },
     });
   }
 
@@ -81,12 +79,12 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     return this.findMany({
       filters: { ...options.filters, isPaid: false },
       pagination: options.pagination,
-      sort: { column: 'timestamp', direction: 'desc' },
+      sort: { column: 'timestamp' as any, direction: 'desc' },
     });
   }
 
   // Find earnings by date range
-  async findByDateRange(
+  async findByDateRangeForEarnings(
     startDate: Date,
     endDate: Date,
     options: {
@@ -96,7 +94,7 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
   ): Promise<QueryResult<Earning>> {
     return super.findByDateRange(this.table.timestamp, startDate, endDate, {
       ...options,
-      sort: { column: 'timestamp', direction: 'desc' },
+      sort: { column: 'timestamp' as any, direction: 'desc' },
     });
   }
 
@@ -141,10 +139,10 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     if (filters.earningType) {
       if (Array.isArray(filters.earningType)) {
         whereConditions.push(
-          or(...filters.earningType.map((type) => eq(this.table.earningType, type))),
+          or(...filters.earningType.map((type) => eq(this.table.earningType, type as any))),
         );
       } else {
-        whereConditions.push(eq(this.table.earningType, filters.earningType));
+        whereConditions.push(eq(this.table.earningType, filters.earningType as any));
       }
     }
     if (filters.isPaid !== undefined) {
@@ -153,10 +151,8 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
 
     // Apply date range
     if (dateRange) {
-      const startTimestamp = Math.floor(dateRange.start.getTime() / 1000);
-      const endTimestamp = Math.floor(dateRange.end.getTime() / 1000);
       whereConditions.push(
-        and(gte(this.table.timestamp, startTimestamp), lte(this.table.timestamp, endTimestamp)),
+        and(gte(this.table.timestamp, dateRange.start), lte(this.table.timestamp, dateRange.end)),
       );
     }
 
@@ -268,10 +264,8 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     const whereConditions = [];
 
     // Apply date range
-    const startTimestamp = Math.floor(startDate.getTime() / 1000);
-    const endTimestamp = Math.floor(endDate.getTime() / 1000);
     whereConditions.push(
-      and(gte(this.table.timestamp, startTimestamp), lte(this.table.timestamp, endTimestamp)),
+      and(gte(this.table.timestamp, startDate), lte(this.table.timestamp, endDate)),
     );
 
     // Apply filters
@@ -355,11 +349,9 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     }
 
     const endDate = now;
-    const startTimestamp = Math.floor(startDate.getTime() / 1000);
-    const endTimestamp = Math.floor(endDate.getTime() / 1000);
 
     const whereConditions = [
-      and(gte(this.table.timestamp, startTimestamp), lte(this.table.timestamp, endTimestamp)),
+      and(gte(this.table.timestamp, startDate), lte(this.table.timestamp, endDate)),
       eq(this.table.currency, currency),
     ];
 
@@ -374,10 +366,10 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     if (filters.earningType) {
       if (Array.isArray(filters.earningType)) {
         whereConditions.push(
-          or(...filters.earningType.map((type) => eq(this.table.earningType, type))),
+          or(...filters.earningType.map((type) => eq(this.table.earningType, type as any))),
         );
       } else {
-        whereConditions.push(eq(this.table.earningType, filters.earningType));
+        whereConditions.push(eq(this.table.earningType, filters.earningType as any));
       }
     }
 
@@ -412,10 +404,8 @@ export class EarningsRepository extends BaseRepository<typeof earnings, Earning,
     const whereConditions = [eq(this.table.currency, currency)];
 
     if (dateRange) {
-      const startTimestamp = Math.floor(dateRange.start.getTime() / 1000);
-      const endTimestamp = Math.floor(dateRange.end.getTime() / 1000);
       whereConditions.push(
-        and(gte(this.table.timestamp, startTimestamp), lte(this.table.timestamp, endTimestamp)),
+        and(gte(this.table.timestamp, dateRange.start), lte(this.table.timestamp, dateRange.end)),
       );
     }
 

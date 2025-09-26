@@ -1,0 +1,45 @@
+# Vercel ignore file - Prevent deployment of non-web directories
+# Only deploy the web app and essential config files
+
+# Ignore packages (except when needed by web app)
+packages/
+scripts/
+docs/
+logs/
+test-*.js
+create-*.js
+setup-*.js
+check-*.js
+update-*.js
+
+# Ignore log files
+*.log
+
+# Ignore markdown files except README
+*.md
+!README.md
+
+# Ignore environment files except example
+.env*
+!.env.example
+
+# Ignore development files
+node_modules/
+.git/
+.github/
+.vscode/
+.idea/
+.DS_Store
+
+# Ignore temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Only deploy essential files for web app
+!apps/web/
+!vercel.json
+!package.json
+!pnpm-lock.yaml
+!turbo.json

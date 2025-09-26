@@ -470,6 +470,7 @@ export function LinearDashboard() {
           <TabsTrigger value="issues">All Issues</TabsTrigger>
           <TabsTrigger value="agent-tasks">Agent Tasks</TabsTrigger>
           <TabsTrigger value="coordination">Coordination</TabsTrigger>
+          <TabsTrigger value="revenue">Revenue</TabsTrigger>
         </TabsList>
 
         <TabsContent value="issues" className="space-y-4">
@@ -660,6 +661,80 @@ export function LinearDashboard() {
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        <TabsContent value="revenue" className="space-y-4">
+          {(() => {
+            const getByLabel = (name: string) => (issues || []).filter(i => i.labels.some(l => l.name.toLowerCase() === name));
+            const opportunity = getByLabel('opportunity');
+            const outreach = getByLabel('outreach');
+            const negotiation = getByLabel('negotiation');
+            const won = getByLabel('won');
+            const lost = getByLabel('lost');
+            return (
+              <>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Pipeline</CardTitle>
+                    <CardDescription>Counts by revenue stage (label-based)</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-5 gap-4 text-center">
+                      <div>
+                        <div className="text-xl font-bold">{opportunity.length}</div>
+                        <div className="text-xs text-gray-500">Opportunity</div>
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold">{outreach.length}</div>
+                        <div className="text-xs text-gray-500">Outreach</div>
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold">{negotiation.length}</div>
+                        <div className="text-xs text-gray-500">Negotiation</div>
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold">{won.length}</div>
+                        <div className="text-xs text-gray-500">Won</div>
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold">{lost.length}</div>
+                        <div className="text-xs text-gray-500">Lost</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Latest Opportunities</CardTitle>
+                    <CardDescription>Top 10 by priority and recency</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {opportunity
+                        .slice()
+                        .sort((a, b) => (b.priority - a.priority) || (new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()))
+                        .slice(0, 10)
+                        .map((issue) => (
+                          <div key={issue.id} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Badge className={getPriorityColor(issue.priority)}>P{issue.priority}</Badge>
+                              <span className="text-sm">{issue.title}</span>
+                            </div>
+                            <Button variant="ghost" size="sm" onClick={() => window.open(issue.url, '_blank')}>
+                              <ExternalLink className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      {opportunity.length === 0 && (
+                        <div className="text-sm text-gray-500">No opportunities yet.</div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            );
+          })()}
         </TabsContent>
       </Tabs>
     </div>

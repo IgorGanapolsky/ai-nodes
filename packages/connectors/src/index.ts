@@ -54,3 +54,4 @@ export const PACKAGE_INFO = {
     'network-specific custom metrics',
   ],
 };
+export * from './prospecting';

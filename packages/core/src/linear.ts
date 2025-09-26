@@ -293,6 +293,52 @@ export class LinearService {
   }
 
   /**
+   * Create a label if missing
+   */
+  async createLabel(name: string, color?: string, teamId?: string): Promise<{ id: string; name: string; color: string }>{
+    const mutation = `
+      mutation IssueLabelCreate($input: IssueLabelCreateInput!) {
+        issueLabelCreate(input: $input) {
+          success
+          label {
+            id
+            name
+            color
+          }
+        }
+      }
+    `;
+    const variables = {
+      input: {
+        name,
+        color,
+        teamId: teamId || this.teamId,
+      },
+    };
+    const response = await this.graphqlRequest(mutation, variables);
+    if (!response.data?.issueLabelCreate?.success || !response.data?.issueLabelCreate?.label) {
+      throw new Error('Failed to create label');
+    }
+    return response.data.issueLabelCreate.label;
+  }
+
+  /**
+   * Ensure a set of labels exist on a team
+   */
+  async ensureLabels(labels: Array<{ name: string; color?: string }>, teamId?: string): Promise<{ created: number; existing: number }>{
+    const existing = await this.getLabels(teamId);
+    const existingNames = new Set(existing.map(l => l.name.toLowerCase()));
+    let created = 0;
+    for (const l of labels) {
+      if (!existingNames.has(l.name.toLowerCase())) {
+        await this.createLabel(l.name, l.color, teamId);
+        created++;
+      }
+    }
+    return { created, existing: existing.length };
+  }
+
+  /**
    * Get available labels for the team
    */
   async getLabels(teamId?: string): Promise<Array<{ id: string; name: string; color: string }>> {

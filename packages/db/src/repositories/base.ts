@@ -58,13 +58,13 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
         }
         return eq(column, value);
       });
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
 
     // Apply sorting
     if (sort) {
       const column = this.table[sort.column as keyof TTable] as SQLiteColumn;
-      query = query.orderBy(sort.direction === 'desc' ? desc(column) : asc(column));
+      query = query.orderBy(sort.direction === 'desc' ? desc(column) : asc(column)) as any;
     }
 
     // Get total count
@@ -77,7 +77,7 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
         }
         return eq(column, value);
       });
-      countQuery = countQuery.where(and(...conditions));
+      countQuery = countQuery.where(and(...conditions)) as any;
     }
 
     const [data, totalResult] = await Promise.all([query.limit(limit).offset(offset), countQuery]);
@@ -102,7 +102,7 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
   async createMany(data: TInsert[]): Promise<TSelect[]> {
     const result = await this.db.insert(this.table).values(data as any).returning();
 
-    return result as TSelect[];
+    return result as unknown as TSelect[];
   }
 
   async update(id: string, data: Partial<TInsert>): Promise<TSelect | null> {
@@ -138,7 +138,7 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
         const column = this.table[key as keyof TTable] as SQLiteColumn;
         return eq(column, value);
       });
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
 
     const result = await query;
@@ -164,11 +164,11 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
         const tableColumn = this.table[key as keyof TTable] as SQLiteColumn;
         return eq(tableColumn, value);
       });
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
 
     const result = await query;
-    return result[0]?.result || null;
+    return Number(result[0]?.result) || null;
   }
 
   // Date range queries
@@ -182,14 +182,6 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
       sort?: SortOptions<TSelect>;
     } = {},
   ): Promise<QueryResult<TSelect>> {
-    const startTimestamp = Math.floor(startDate.getTime() / 1000);
-    const endTimestamp = Math.floor(endDate.getTime() / 1000);
-
-    const dateFilters = {
-      ...options.filters,
-      _dateRange: { column: dateColumn, start: startTimestamp, end: endTimestamp },
-    };
-
     // Custom handling for date range
     const { filters = {}, pagination = {}, sort } = options;
     const { page = 1, limit = 50 } = pagination;
@@ -198,45 +190,34 @@ export abstract class BaseRepository<TTable extends SQLiteTableWithColumns<any>,
     let query = this.db.select().from(this.table);
 
     // Apply date range filter
-    query = query.where(and(gte(dateColumn, startTimestamp), lte(dateColumn, endTimestamp)));
+    let conditions: any[] = [gte(dateColumn, startDate), lte(dateColumn, endDate)];
 
     // Apply other filters
     if (Object.keys(filters).length > 0) {
-      const conditions = Object.entries(filters).map(([key, value]) => {
+      const filterConditions = Object.entries(filters).map(([key, value]) => {
         const column = this.table[key as keyof TTable] as SQLiteColumn;
         if (Array.isArray(value)) {
           return or(...value.map((v) => eq(column, v)));
         }
         return eq(column, value);
       });
-      query = query.where(and(...conditions));
+      conditions.push(...filterConditions);
     }
+
+    query = query.where(and(...conditions)) as any;
 
     // Apply sorting
     if (sort) {
       const column = this.table[sort.column as keyof TTable] as SQLiteColumn;
-      query = query.orderBy(sort.direction === 'desc' ? desc(column) : asc(column));
+      query = query.orderBy(sort.direction === 'desc' ? desc(column) : asc(column)) as any;
     } else {
       // Default sort by date column descending
-      query = query.orderBy(desc(dateColumn));
+      query = query.orderBy(desc(dateColumn)) as any;
     }
 
     // Get total count
     let countQuery = this.db.select({ count: count() }).from(this.table);
-    countQuery = countQuery.where(
-      and(gte(dateColumn, startTimestamp), lte(dateColumn, endTimestamp)),
-    );
-
-    if (Object.keys(filters).length > 0) {
-      const conditions = Object.entries(filters).map(([key, value]) => {
-        const column = this.table[key as keyof TTable] as SQLiteColumn;
-        if (Array.isArray(value)) {
-          return or(...value.map((v) => eq(column, v)));
-        }
-        return eq(column, value);
-      });
-      countQuery = countQuery.where(and(...conditions));
-    }
+    countQuery = countQuery.where(and(...conditions)) as any;
 
     const [data, totalResult] = await Promise.all([query.limit(limit).offset(offset), countQuery]);
 

@@ -466,23 +466,32 @@ async function main() {
         break;
 
       case 'ensure-labels':
-        console.log('👉 Recommended labels to create in Linear:');
-        console.log('- agent-task');
-        console.log('- coordination');
-        console.log('- opportunity');
-        console.log('- outreach');
-        console.log('- negotiation');
-        console.log('- deal');
-        console.log('- won');
-        console.log('- lost');
-        console.log('- invoice');
-        console.log('- follow-up');
-        console.log('- blocked');
-        console.log('- hot');
-        console.log('- automation');
-        console.log('- experiment');
-        console.log('\nOpen your labels settings and add missing ones:');
-        console.log('  https://linear.app/igorganapolsky/settings/issue-labels');
+        if (!LINEAR_API_KEY) {
+          console.error('❌ LINEAR_API_KEY is required for this command.');
+          process.exit(1);
+        }
+        // Dynamically import to avoid ESM resolution at top-level
+        const mod = await import('../packages/core/dist/linear/index.js');
+        const linear = new mod.LinearService({ apiKey: LINEAR_API_KEY || '', teamId: LINEAR_TEAM_ID });
+        const recommended = [
+          { name: 'agent-task' },
+          { name: 'coordination' },
+          { name: 'opportunity' },
+          { name: 'outreach' },
+          { name: 'negotiation' },
+          { name: 'deal' },
+          { name: 'won' },
+          { name: 'lost' },
+          { name: 'invoice' },
+          { name: 'follow-up' },
+          { name: 'blocked' },
+          { name: 'hot' },
+          { name: 'automation' },
+          { name: 'experiment' },
+        ];
+        const result = await linear.ensureLabels(recommended);
+        console.log(`✅ Labels ensured. Created: ${result.created}, Existing: ${result.existing}`);
+        console.log('Manage labels at: https://linear.app/igorganapolsky/settings/issue-labels');
         break;
 
       case 'status':
