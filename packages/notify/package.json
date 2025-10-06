@@ -23,14 +23,14 @@
     "@depinautopilot/core": "workspace:*",
     "@depinautopilot/utils": "workspace:*",
     "discord.js": "^14.14.1",
-    "nodemailer": "^7.0.6",
-    "resend": "^6.1.0",
+    "nodemailer": "^7.0.7",
+    "resend": "^6.1.2",
     "axios": "^1.6.2",
     "zod": "^4.1.11"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
-    "@types/nodemailer": "^7.0.1",
+    "@types/nodemailer": "^7.0.2",
     "typescript": "^5.3.3",
     "eslint": "^9.36.0",
     "@typescript-eslint/eslint-plugin": "^8.44.1",
