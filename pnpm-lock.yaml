@@ -67,8 +67,8 @@ importers:
         specifier: ^7.37.5
         version: 7.37.5(eslint@9.37.0)
       eslint-plugin-react-hooks:
-        specifier: ^5.2.0
-        version: 5.2.0(eslint@9.37.0)
+        specifier: ^6.1.1
+        version: 6.1.1(eslint@9.37.0)
       husky:
         specifier: ^9.0.11
         version: 9.1.7
@@ -348,14 +348,14 @@ importers:
         specifier: ^4.2.1
         version: 4.2.1
       pino:
-        specifier: ^9.12.0
-        version: 9.12.0
+        specifier: ^10.0.0
+        version: 10.0.0
       playwright:
         specifier: ^1.55.1
         version: 1.55.1
       stripe:
-        specifier: ^18.5.0
-        version: 18.5.0(@types/node@24.6.2)
+        specifier: ^19.1.0
+        version: 19.1.0(@types/node@24.6.2)
       zod:
         specifier: ^4.1.11
         version: 4.1.11
@@ -463,8 +463,8 @@ importers:
         specifier: ^3.2.1
         version: 3.2.1(@types/react@18.3.24)(react-dom@19.2.0)(react-is@19.2.0)(react@18.3.1)(redux@5.0.1)
       stripe:
-        specifier: ^18.5.0
-        version: 18.5.0(@types/node@24.6.2)
+        specifier: ^19.1.0
+        version: 19.1.0(@types/node@24.6.2)
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
@@ -705,8 +705,8 @@ importers:
         specifier: ^17.2.3
         version: 17.2.3
       pino:
-        specifier: ^9.12.0
-        version: 9.12.0
+        specifier: ^10.0.0
+        version: 10.0.0
       pino-pretty:
         specifier: ^13.1.1
         version: 13.1.1
@@ -9269,6 +9269,21 @@ packages:
       eslint: 9.37.0
     dev: true
 
+  /eslint-plugin-react-hooks@6.1.1(eslint@9.37.0):
+    resolution: {integrity: sha512-St9EKZzOAQF704nt2oJvAKZHjhrpg25ClQoaAlHmPZuajFldVLqRDW4VBNAS01NzeiQF0m0qhG1ZA807K6aVaQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
+    dependencies:
+      '@babel/core': 7.28.4
+      '@babel/parser': 7.28.4
+      eslint: 9.37.0
+      zod: 4.1.11
+      zod-validation-error: 4.0.2(zod@4.1.11)
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /eslint-plugin-react@7.37.5(eslint@9.37.0):
     resolution: {integrity: sha512-Qteup0SqU15kdocexFNAJMvCJEfa2xUKNV4CC1xsVMrIIqEy3SQ/rqyxCWNzfrd3/ldy6HMlD2e0JDVpDg2qIA==}
     engines: {node: '>=4'}
@@ -9836,7 +9851,7 @@ packages:
       fast-json-stringify: 6.0.1
       find-my-way: 9.3.0
       light-my-request: 6.6.0
-      pino: 9.12.0
+      pino: 9.13.1
       process-warning: 5.0.0
       rfdc: 1.4.1
       secure-json-parse: 4.0.0
@@ -13598,8 +13613,8 @@ packages:
     resolution: {integrity: sha512-e906FRY0+tV27iq4juKzSYPbUj2do2X2JX4EzSca1631EB2QJQUqGbDuERal7LCtOpxl6x3+nvo9NPZcmjkiFA==}
     dev: false
 
-  /pino@9.12.0:
-    resolution: {integrity: sha512-0Gd0OezGvqtqMwgYxpL7P0pSHHzTJ0Lx992h+mNlMtRVfNnqweWmf0JmRWk5gJzHalyd2mxTzKjhiNbGS2Ztfw==}
+  /pino@10.0.0:
+    resolution: {integrity: sha512-eI9pKwWEix40kfvSzqEP6ldqOoBIN7dwD/o91TY5z8vQI12sAffpR/pOqAD1IVVwIVHDpHjkq0joBPdJD0rafA==}
     hasBin: true
     dependencies:
       atomic-sleep: 1.0.0
@@ -13610,7 +13625,24 @@ packages:
       quick-format-unescaped: 4.0.4
       real-require: 0.2.0
       safe-stable-stringify: 2.5.0
-      slow-redact: 0.3.0
+      slow-redact: 0.3.1
+      sonic-boom: 4.2.0
+      thread-stream: 3.1.0
+    dev: false
+
+  /pino@9.13.1:
+    resolution: {integrity: sha512-Szuj+ViDTjKPQYiKumGmEn3frdl+ZPSdosHyt9SnUevFosOkMY2b7ipxlEctNKPmMD/VibeBI+ZcZCJK+4DPuw==}
+    hasBin: true
+    dependencies:
+      atomic-sleep: 1.0.0
+      on-exit-leak-free: 2.1.2
+      pino-abstract-transport: 2.0.0
+      pino-std-serializers: 7.0.0
+      process-warning: 5.0.0
+      quick-format-unescaped: 4.0.4
+      real-require: 0.2.0
+      safe-stable-stringify: 2.5.0
+      slow-redact: 0.3.1
       sonic-boom: 4.2.0
       thread-stream: 3.1.0
     dev: false
@@ -14896,8 +14928,8 @@ packages:
       is-fullwidth-code-point: 5.1.0
     dev: true
 
-  /slow-redact@0.3.0:
-    resolution: {integrity: sha512-cf723wn9JeRIYP9tdtd86GuqoR5937u64Io+CYjlm2i7jvu7g0H+Cp0l0ShAf/4ZL+ISUTVT+8Qzz7RZmp9FjA==}
+  /slow-redact@0.3.1:
+    resolution: {integrity: sha512-NvFvl1GuLZNW4U046Tfi8b26zXo8aBzgCAS2f7yVJR/fArN93mOqSA99cB9uITm92ajSz01bsu1K7SCVVjIMpQ==}
     dev: false
 
   /slugify@1.6.6:
@@ -15270,11 +15302,11 @@ packages:
       js-tokens: 9.0.1
     dev: true
 
-  /stripe@18.5.0(@types/node@24.6.2):
-    resolution: {integrity: sha512-Hp+wFiEQtCB0LlNgcFh5uVyKznpDjzyUZ+CNVEf+I3fhlYvh7rZruIg+jOwzJRCpy0ZTPMjlzm7J2/M2N6d+DA==}
-    engines: {node: '>=12.*'}
+  /stripe@19.1.0(@types/node@24.6.2):
+    resolution: {integrity: sha512-FjgIiE98dMMTNssfdjMvFdD4eZyEzdWAOwPYqzhPRNZeg9ggFWlPXmX1iJKD5pPIwZBaPlC3SayQQkwsPo6/YQ==}
+    engines: {node: '>=16'}
     peerDependencies:
-      '@types/node': '>=12.x.x'
+      '@types/node': '>=16'
     peerDependenciesMeta:
       '@types/node':
         optional: true
@@ -16784,9 +16816,17 @@ packages:
     dependencies:
       zod: 3.25.76
 
+  /zod-validation-error@4.0.2(zod@4.1.11):
+    resolution: {integrity: sha512-Q6/nZLe6jxuU80qb/4uJ4t5v2VEZ44lzQjPDhYJNztRQ4wyWc6VF3D3Kb/fAuPetZQnhS3hnajCf9CsWesghLQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      zod: ^3.25.0 || ^4.0.0
+    dependencies:
+      zod: 4.1.11
+    dev: true
+
   /zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
   /zod@4.1.11:
     resolution: {integrity: sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==}
-    dev: false
