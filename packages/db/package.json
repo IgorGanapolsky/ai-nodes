@@ -24,7 +24,7 @@
     "db:seed": "tsx src/seed.ts"
   },
   "dependencies": {
-    "drizzle-orm": "^0.44.5",
+    "drizzle-orm": "^0.44.6",
     "better-sqlite3": "^12.4.1",
     "drizzle-kit": "^0.31.5"
   },
